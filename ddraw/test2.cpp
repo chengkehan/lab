@@ -1,4 +1,4 @@
-// 8bit	palette
+// 8bit	palette software graphics
 
 #include <cstdio>
 #include <Windows.h>
