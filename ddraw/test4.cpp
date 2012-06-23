@@ -24,7 +24,6 @@ LPDIRECTDRAWSURFACE7 lpddsPrimary(NULL);
 PALETTEENTRY palette[256];
 LPDIRECTDRAWPALETTE lpddpal;
 UCHAR *doubleBuffer(NULL);
-DDSURFACEDESC2 ddsd;
 
 BOOL GameInitialize()
 {
@@ -63,10 +62,10 @@ BOOL GameInitialize()
 	palette[0].peGreen = 0;
 	palette[0].peBlue = 0;
 	palette[0].peFlags = PC_NOCOLLAPSE;
-	palette[256].peRed = 255;
-	palette[256].peGreen = 255;
-	palette[256].peBlue = 255;
-	palette[256].peFlags = PC_NOCOLLAPSE;
+	palette[255].peRed = 255;
+	palette[255].peGreen = 255;
+	palette[255].peBlue = 255;
+	palette[255].peFlags = PC_NOCOLLAPSE;
 	
 	if(FAILED(lpdd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_ALLOW256 | DDPCAPS_INITIALIZE, palette, &lpddpal, NULL)))
 	{
@@ -134,9 +133,9 @@ VOID GameLoop()
 	
 	DDRAW_INIT_STRUCT(ddsd);
 	
-	if(FAILED(lpddsPrimary->Lock(NULL, &ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL))
+	if(FAILED(lpddsPrimary->Lock(NULL, &ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL)))
 	{
-		OutoutDebugMessage(L"lock primary surface failed");
+		OutputDebugString(L"lock primary surface failed");
 		return;
 	}
 	
@@ -159,7 +158,7 @@ VOID GameLoop()
 	
 	if(FAILED(lpddsPrimary->Unlock(NULL)))
 	{
-		OutputDebugMessage(L"unlock primary surface failed");
+		OutputDebugString(L"unlock primary surface failed");
 		return;
 	}
 	

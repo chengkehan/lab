@@ -24,7 +24,6 @@ LPDIRECTDRAWSURFACE7 lpddsPrimary(NULL);
 LPDIRECTDRAWSURFACE7 lpddsBack(NULL);
 PALETTEENTRY palette[256];
 LPDIRECTDRAWPALETTE lpddpal;
-DDSURFACEDESC2 ddsd;
 
 BOOL GameInitialize()
 {
@@ -44,8 +43,9 @@ BOOL GameInitialize()
 	}
 
 	DDRAW_INIT_STRUCT(ddsd);
-	ddsd.dwFlags = DDSD_CAPS;
-	ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
+	ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
+	ddsd.dwBackBufferCount = 1;
+	ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP;
 
 	if(FAILED(lpdd->CreateSurface(&ddsd, &lpddsPrimary, NULL)))
 	{
@@ -69,10 +69,10 @@ BOOL GameInitialize()
 	palette[0].peGreen = 0;
 	palette[0].peBlue = 0;
 	palette[0].peFlags = PC_NOCOLLAPSE;
-	palette[256].peRed = 255;
-	palette[256].peGreen = 255;
-	palette[256].peBlue = 255;
-	palette[256].peFlags = PC_NOCOLLAPSE;
+	palette[255].peRed = 255;
+	palette[255].peGreen = 255;
+	palette[255].peBlue = 255;
+	palette[255].peFlags = PC_NOCOLLAPSE;
 
 	if(FAILED(lpdd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_ALLOW256 | DDPCAPS_INITIALIZE, palette, &lpddpal, NULL)))
 	{
@@ -95,6 +95,12 @@ VOID GameRelease()
 		lpddpal = NULL;
 	}
 
+	if(lpddsBack != NULL)
+	{
+		lpddsBack->Release();
+		lpddsBack = NULL;
+	}
+
 	if(lpddsPrimary != NULL)
 	{
 		lpddsPrimary->Release();
@@ -115,11 +121,12 @@ VOID GameLoop()
 		SendMessage(g_hwnd, WM_CLOSE, 0, 0);
 		return;
 	}
-	
+
 	DDRAW_INIT_STRUCT(ddsd);
 	
 	if(FAILED(lpddsBack->Lock(NULL, &ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL)))
 	{
+		OutputDebugString(L"attached back surface lock failed");
 		return;
 	}
 	
@@ -127,7 +134,7 @@ VOID GameLoop()
 	
 	if(ddsd.lPitch == WND_WIDTH)
 	{
-		memset(buffer, 0, WND_WIDTH, WND_HEIGHT);
+		memset(buffer, 0, WND_WIDTH * WND_HEIGHT);
 	}
 	else
 	{
@@ -144,11 +151,12 @@ VOID GameLoop()
 		int x = rand() % WND_WIDTH;
 		int y = rand() % WND_HEIGHT;
 		int color = rand() % 256;
-		buffer[x + y * ddsp.lPitch] = color;
+		buffer[x + y * ddsd.lPitch] = color;
 	}
 	
 	if(FAILED(lpddsBack->Unlock(NULL)))
 	{
+		OutputDebugString(L"attached back surface unlock failed");
 		return;
 	}
 	
