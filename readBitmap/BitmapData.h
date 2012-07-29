@@ -98,14 +98,13 @@ public:
 
 public:
 	BOOL hasNext();
-	PALETTEENTRY* next();
+	INT next();
 
 private:
 	BitmapDataColorIterator8Bit();
 
 private:
 	BitmapData* bmpd;
-	PALETTEENTRY* palette;
 	CHAR* colors;
 	INT numColors;
 	INT index;

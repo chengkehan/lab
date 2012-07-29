@@ -110,8 +110,8 @@ int main()
 		BitmapDataColorIterator8Bit i8(&bmp);
 		while(i8.hasNext())
 		{
-			PALETTEENTRY* i8Color = i8.next();
-			printf("R:%x G:%x B:%x\n", i8Color->peRed, i8Color->peGreen, i8Color->peBlue);
+			PALETTEENTRY i8Color = bmp.palette[i8.next()];
+			printf("R:%x G:%x B:%x\n", i8Color.peRed, i8Color.peGreen, i8Color.peBlue);
 		}
 
 		free(bmpFileBytes);

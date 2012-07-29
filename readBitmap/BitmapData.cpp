@@ -167,13 +167,12 @@ BitmapDataRGB* BitmapDataColorIterator24Bit::next()
 	}
 }
 
-BitmapDataColorIterator8Bit::BitmapDataColorIterator8Bit(BitmapData* bmpd):numColors(0), index(0), colors(NULL), rowBytesCount(0), colsCount(0), palette(NULL)
+BitmapDataColorIterator8Bit::BitmapDataColorIterator8Bit(BitmapData* bmpd):numColors(0), index(0), colors(NULL), rowBytesCount(0), colsCount(0)
 {
 	this->bmpd = bmpd;
 	if(bmpd != NULL)
 	{
 		colors = bmpd->colors;
-		palette = bmpd->palette;
 		numColors = 
 			bmpd->bmpInfoHeader.biWidth % 4 == 0 ? 
 			bmpd->bmpInfoHeader.biWidth * bmpd->bmpInfoHeader.biHeight : 
@@ -185,7 +184,6 @@ BitmapDataColorIterator8Bit::~BitmapDataColorIterator8Bit()
 {
 	bmpd = NULL;
 	colors = NULL;
-	palette = NULL;
 }
 
 BOOL BitmapDataColorIterator8Bit::hasNext()
@@ -193,7 +191,7 @@ BOOL BitmapDataColorIterator8Bit::hasNext()
 	return index < numColors;
 }
 
-PALETTEENTRY* BitmapDataColorIterator8Bit::next()
+INT BitmapDataColorIterator8Bit::next()
 {
 	if(colors == NULL)
 	{
@@ -201,7 +199,7 @@ PALETTEENTRY* BitmapDataColorIterator8Bit::next()
 	}
 	else
 	{
-		PALETTEENTRY* color = &(palette[colors[index]]);
+		INT color = colors[index];
 		++index;
 		++rowBytesCount;
 		if(++colsCount == bmpd->bmpInfoHeader.biWidth)
