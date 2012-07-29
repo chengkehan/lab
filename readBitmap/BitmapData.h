@@ -84,8 +84,11 @@ private:
 
 private:
 	BitmapData* bmpd;
+	BitmapDataRGB* colors;
 	INT numColors;
 	INT index;
+	INT rowBytesCount;
+	INT colsCount;
 };
 
 class BitmapDataColorIterator8Bit
@@ -103,8 +106,12 @@ private:
 
 private:
 	BitmapData* bmpd;
+	PALETTEENTRY* palette;
+	CHAR* colors;
 	INT numColors;
 	INT index;
+	INT rowBytesCount;
+	INT colsCount;
 };
 
 #endif

@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
 	ifstream istream;
-	istream.open(L"E:\\lab_git\\readBitmap\\imageSmall.bmp", ifstream::in | ifstream::binary);
+	istream.open(L"E:\\lab_git\\readBitmap\\imageSmall24.bmp", ifstream::in | ifstream::binary);
 	cout << "file open" << endl;
 	if(istream.good())
 	{
@@ -48,12 +48,12 @@ int main()
 		{
 			printf("R:%x G:%x B:%x\n", colors[i].r, colors[i].g, colors[i].b);
 		}*/
-		BitmapDataColorIterator32Bit i32(&bmp);
+		/*BitmapDataColorIterator32Bit i32(&bmp);
 		while(i32.hasNext())
 		{
 			BitmapDataXRGB* i32Color = i32.next();
 			printf("R:%x G:%x B:%x\n", i32Color->r, i32Color->g, i32Color->b);
-		}
+		}*/
 
 		/*BitmapDataRGB* colors = (BitmapDataRGB*)bmp.colors;
 		INT numColors = bmp.bmpInfoHeader.biWidth * bmp.bmpInfoHeader.biHeight;
@@ -79,6 +79,12 @@ int main()
 				cols = 0;
 			}
 		}*/
+		BitmapDataColorIterator24Bit i24(&bmp);
+		while(i24.hasNext())
+		{
+			BitmapDataRGB* i24Color = i24.next();
+			printf("R:%x G:%x B:%x\n", i24Color->r, i24Color->g, i24Color->b);
+		}
 
 		/*CHAR* colors = bmp.colors;
 		INT cols = 0;
@@ -86,20 +92,26 @@ int main()
 		INT biSizeImage = bmp.bmpInfoHeader.biWidth % 4 == 0 ? bmp.bmpInfoHeader.biWidth * bmp.bmpInfoHeader.biHeight : (INT(bmp.bmpInfoHeader.biWidth / 4) + 1) * 4 * bmp.bmpInfoHeader.biHeight;
 		for (INT i = 0; i < biSizeImage; ++i)
 		{
-		PALETTEENTRY color = bmp.palette[colors[i]];
-		printf("R:%x G:%x B:%x\n", color.peRed, color.peGreen, color.peBlue);
-		++bytesCount;
+			PALETTEENTRY color = bmp.palette[colors[i]];
+			printf("R:%x G:%x B:%x\n", color.peRed, color.peGreen, color.peBlue);
+			++bytesCount;
 
-		if(++cols == bmp.bmpInfoHeader.biWidth)
+			if(++cols == bmp.bmpInfoHeader.biWidth)
+			{
+				if(bytesCount % 4 != 0)
+				{
+					INT bytesOff = (INT(bytesCount / 4) + 1) * 4 - bytesCount;
+					i += bytesOff;
+				}
+				bytesCount = 0;
+				cols = 0;
+			}
+		}*/
+		/*BitmapDataColorIterator8Bit i8(&bmp);
+		while(i8.hasNext())
 		{
-		if(bytesCount % 4 != 0)
-		{
-		INT bytesOff = (INT(bytesCount / 4) + 1) * 4 - bytesCount;
-		i += bytesOff;
-		}
-		bytesCount = 0;
-		cols = 0;
-		}
+			PALETTEENTRY* i8Color = i8.next();
+			printf("R:%x G:%x B:%x\n", i8Color->peRed, i8Color->peGreen, i8Color->peBlue);
 		}*/
 
 		free(bmpFileBytes);
