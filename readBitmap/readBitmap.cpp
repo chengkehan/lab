@@ -6,10 +6,11 @@
 #include <cstdio>
 #include <Windows.h>
 #include <WinGDI.h>
+#include "BitmapData.h"
 
 using namespace std;
 
-int main()
+int main2()
 {
 	ifstream istream;
 	istream.open(L"E:\\lab_git\\readBitmap\\imageSmall.bmp", ifstream::in | ifstream::binary);
@@ -43,7 +44,7 @@ int main()
 		printf("yPelsPerMeter %d\n", bmpInfoHead.biYPelsPerMeter);
 		printf("biClrused %d\n", bmpInfoHead.biClrUsed);
 		printf("biClrImportant %d\n", bmpInfoHead.biClrImportant);
-
+		
 		RGBQUAD apixel;
 		int apixelSize = sizeof(RGBQUAD);
 		int numPixels = bmpInfoHead.biWidth * bmpInfoHead.biHeight;
@@ -51,11 +52,6 @@ int main()
 		{
 			istream.read(reinterpret_cast<char*>(&apixel), apixelSize);
 			printf("R:%x G:%x B:%x\n", apixel.rgbRed, apixel.rgbGreen, apixel.rgbBlue);
-		}
-
-		if(istream.good())
-		{
-			printf("End of File\n");
 		}
 	}
 	istream.close();
