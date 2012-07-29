@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
 	ifstream istream;
-	istream.open(L"E:\\lab_git\\readBitmap\\imageSmall24.bmp", ifstream::in | ifstream::binary);
+	istream.open(L"E:\\lab_git\\readBitmap\\imageSmall8.bmp", ifstream::in | ifstream::binary);
 	cout << "file open" << endl;
 	if(istream.good())
 	{
@@ -79,12 +79,12 @@ int main()
 				cols = 0;
 			}
 		}*/
-		BitmapDataColorIterator24Bit i24(&bmp);
+		/*BitmapDataColorIterator24Bit i24(&bmp);
 		while(i24.hasNext())
 		{
 			BitmapDataRGB* i24Color = i24.next();
 			printf("R:%x G:%x B:%x\n", i24Color->r, i24Color->g, i24Color->b);
-		}
+		}*/
 
 		/*CHAR* colors = bmp.colors;
 		INT cols = 0;
@@ -107,12 +107,12 @@ int main()
 				cols = 0;
 			}
 		}*/
-		/*BitmapDataColorIterator8Bit i8(&bmp);
+		BitmapDataColorIterator8Bit i8(&bmp);
 		while(i8.hasNext())
 		{
 			PALETTEENTRY* i8Color = i8.next();
 			printf("R:%x G:%x B:%x\n", i8Color->peRed, i8Color->peGreen, i8Color->peBlue);
-		}*/
+		}
 
 		free(bmpFileBytes);
 	}

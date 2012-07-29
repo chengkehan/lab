@@ -37,7 +37,6 @@ BOOL BitmapData::create(CHAR* buffer)
 			}
 
 			palette = (PALETTEENTRY*)malloc(sizeof(PALETTEENTRY) * paletteNumColors);
-
 			if(palette == NULL)
 			{
 				return FALSE;
@@ -53,20 +52,26 @@ BOOL BitmapData::create(CHAR* buffer)
 				palette[i].peFlags = PC_NOCOLLAPSE;
 			}
 		}
-		
-		input = buffer + bmpFileHeader.bfOffBits;
 
-		colors = (CHAR*)malloc(bmpInfoHeader.biSizeImage);
+		if(bmpInfoHeader.biBitCount == BitmapDataBitCount_8 || bmpInfoHeader.biBitCount == BitmapDataBitCount_24 || bmpInfoHeader.biBitCount == BitmapDataBitCount_32)
+		{
+			input = buffer + bmpFileHeader.bfOffBits;
+			colors = (CHAR*)malloc(bmpInfoHeader.biSizeImage);
+			if(colors == NULL)
+			{
+				destroy();
+				return FALSE;
+			}
 
-		if(colors == NULL)
+			memcpy(colors, input, bmpInfoHeader.biSizeImage);
+
+			return TRUE;
+		}
+		else
 		{
 			destroy();
 			return FALSE;
 		}
-
-		memcpy(colors, input, bmpInfoHeader.biSizeImage);
-
-		return TRUE;
 	}
 }
 

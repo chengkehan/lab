@@ -44,7 +44,6 @@ struct BitmapDataRGB
 enum BitmapDataBitCount
 {
 	BitmapDataBitCount_8 = 8, 
-	BitmapDataBitCount_16 = 16, 
 	BitmapDataBitCount_24 = 24, 
 	BitmapDataBitCount_32 = 32
 };
