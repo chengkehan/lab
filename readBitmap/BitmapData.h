@@ -13,7 +13,7 @@ public:
 	BITMAPFILEHEADER bmpFileHeader;
 	BITMAPINFOHEADER bmpInfoHeader;
 	PALETTEENTRY *palette;
-	CHAR *colors;
+	UCHAR *colors;
 
 public:
 	BitmapData();
@@ -98,14 +98,14 @@ public:
 
 public:
 	BOOL hasNext();
-	INT next();
+	UCHAR next();
 
 private:
 	BitmapDataColorIterator8Bit();
 
 private:
 	BitmapData* bmpd;
-	CHAR* colors;
+	UCHAR* colors;
 	INT numColors;
 	INT index;
 	INT rowBytesCount;

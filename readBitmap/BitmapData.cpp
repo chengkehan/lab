@@ -56,7 +56,7 @@ BOOL BitmapData::create(CHAR* buffer)
 		if(bmpInfoHeader.biBitCount == BitmapDataBitCount_8 || bmpInfoHeader.biBitCount == BitmapDataBitCount_24 || bmpInfoHeader.biBitCount == BitmapDataBitCount_32)
 		{
 			input = buffer + bmpFileHeader.bfOffBits;
-			colors = (CHAR*)malloc(bmpInfoHeader.biSizeImage);
+			colors = (UCHAR*)malloc(bmpInfoHeader.biSizeImage);
 			if(colors == NULL)
 			{
 				destroy();
@@ -191,7 +191,7 @@ BOOL BitmapDataColorIterator8Bit::hasNext()
 	return index < numColors;
 }
 
-INT BitmapDataColorIterator8Bit::next()
+UCHAR BitmapDataColorIterator8Bit::next()
 {
 	if(colors == NULL)
 	{
@@ -199,7 +199,7 @@ INT BitmapDataColorIterator8Bit::next()
 	}
 	else
 	{
-		INT color = colors[index];
+		UCHAR color = colors[index];
 		++index;
 		++rowBytesCount;
 		if(++colsCount == bmpd->bmpInfoHeader.biWidth)
