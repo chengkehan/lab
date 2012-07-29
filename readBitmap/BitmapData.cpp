@@ -37,6 +37,12 @@ BOOL BitmapData::create(CHAR* buffer)
 			}
 
 			palette = (PALETTEENTRY*)malloc(sizeof(PALETTEENTRY) * paletteNumColors);
+
+			if(palette == NULL)
+			{
+				return FALSE;
+			}
+
 			memcpy(palette, input, sizeof(PALETTEENTRY) * paletteNumColors);
 
 			for (INT i = 0; i < paletteNumColors; ++i)
@@ -51,6 +57,13 @@ BOOL BitmapData::create(CHAR* buffer)
 		input = buffer + bmpFileHeader.bfOffBits;
 
 		colors = (CHAR*)malloc(bmpInfoHeader.biSizeImage);
+
+		if(colors == NULL)
+		{
+			destroy();
+			return FALSE;
+		}
+
 		memcpy(colors, input, bmpInfoHeader.biSizeImage);
 
 		return TRUE;
@@ -69,4 +82,29 @@ VOID BitmapData::destroy()
 		free(colors);
 		colors = NULL;
 	}
+}
+
+BitmapDataColorIterator32Bit::BitmapDataColorIterator32Bit(BitmapData * bmpd):numColors(0), index(0), colors(NULL)
+{
+	this->bmpd = bmpd;
+	if(bmpd != NULL)
+	{
+		numColors = bmpd->bmpInfoHeader.biWidth * bmpd->bmpInfoHeader.biHeight;
+		colors = (BitmapDataXRGB*)bmpd->colors;
+	}
+}
+
+BitmapDataColorIterator32Bit::~BitmapDataColorIterator32Bit()
+{
+	bmpd = NULL;
+}
+
+BOOL BitmapDataColorIterator32Bit::hasNext()
+{
+	return index < numColors;
+}
+
+BitmapDataXRGB* BitmapDataColorIterator32Bit::next()
+{
+	return colors == NULL ? NULL : &(colors[index++]);
 }

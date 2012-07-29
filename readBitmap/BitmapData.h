@@ -49,4 +49,62 @@ enum BitmapDataBitCount
 	BitmapDataBitCount_32 = 32
 };
 
+class BitmapDataColorIterator32Bit
+{
+public:
+	BitmapDataColorIterator32Bit(BitmapData* bmpd);
+	~BitmapDataColorIterator32Bit();
+
+public:
+	BOOL hasNext();
+	BitmapDataXRGB* next();
+
+private:
+	BitmapDataColorIterator32Bit();
+
+private:
+	BitmapData* bmpd;
+	BitmapDataXRGB* colors;
+	INT numColors;
+	INT index;
+};
+
+class BitmapDataColorIterator24Bit
+{
+public:
+	BitmapDataColorIterator24Bit(BitmapData* bmpd);
+	~BitmapDataColorIterator24Bit();
+
+public:
+	BOOL hasNext();
+	BitmapDataRGB* next();
+
+private:
+	BitmapDataColorIterator24Bit();
+
+private:
+	BitmapData* bmpd;
+	INT numColors;
+	INT index;
+};
+
+class BitmapDataColorIterator8Bit
+{
+public:
+	BitmapDataColorIterator8Bit(BitmapData* bmpd);
+	~BitmapDataColorIterator8Bit();
+
+public:
+	BOOL hasNext();
+	PALETTEENTRY* next();
+
+private:
+	BitmapDataColorIterator8Bit();
+
+private:
+	BitmapData* bmpd;
+	INT numColors;
+	INT index;
+};
+
 #endif
