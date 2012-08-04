@@ -1,0 +1,10 @@
+<data>
+	<role id="1">
+		<name>jim</name>
+		<age>25</age>
+	</role>
+	<role id="2">
+		<name>coco</name>
+		<age>26</age>
+	</role>
+</data>
