@@ -1,0 +1,6 @@
+<data>
+	<role>
+		<name>jim</name>
+		<age>25</age>
+	</role>
+</data>
