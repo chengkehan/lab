@@ -97,8 +97,11 @@ namespace JCDD_NS
 
 	BOOL jcdd_createOffscreenSurface(
 		LPDIRECTDRAW7 lpdd, LPDIRECTDRAWSURFACE7* lplpdds, INT width, INT height, UINT colorKey);
-
 	VOID jcdd_deleteOffscreenSurface(LPDIRECTDRAWSURFACE7* lplpdds);
+
+	BOOL jcdd_createClipper(
+		LPDIRECTDRAW7 lpdd, LPDIRECTDRAWSURFACE7 lpdds, LPDIRECTDRAWCLIPPER* lplpddc, INT numRect, LPRECT rectList);
+	VOID jcdd_deleteClipper(LPDIRECTDRAWCLIPPER* lplpddc);
 };
 
 #endif

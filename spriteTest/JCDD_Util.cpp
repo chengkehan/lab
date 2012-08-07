@@ -36,4 +36,74 @@ namespace JCDD_NS
 	{
 		jcdd_release(lplpdds);
 	}
+
+	BOOL jcdd_createClipper(LPDIRECTDRAW7 lpdd, LPDIRECTDRAWSURFACE7 lpdds, LPDIRECTDRAWCLIPPER* lplpddc, INT numRect, LPRECT rectList)
+	{
+		if(lpdd == NULL)
+		{
+			return FALSE;
+		}
+
+		if(lpdds == NULL)
+		{
+			return FALSE;
+		}
+
+		if(FAILED(lpdd->CreateClipper(0, lplpddc, NULL)))
+		{
+			return FALSE;
+		}
+
+		LPRGNDATA regionData;
+		regionData = (LPRGNDATA)malloc(sizeof(RGNDATAHEADER) + numRect * sizeof(RECT));
+		memcpy(regionData->Buffer, rectList, numRect * sizeof(RECT));
+
+		regionData->rdh.dwSize = sizeof(RGNDATAHEADER);
+		regionData->rdh.iType = RDH_RECTANGLES;
+		regionData->rdh.nCount = numRect;
+		regionData->rdh.nRgnSize = sizeof(RECT) * numRect;
+		regionData->rdh.rcBound.left = LONG_MAX;
+		regionData->rdh.rcBound.top = LONG_MAX;
+		regionData->rdh.rcBound.right = LONG_MIN;
+		regionData->rdh.rcBound.bottom = LONG_MIN;
+
+		for (INT i = 0; i < numRect; ++i)
+		{
+			if(rectList[i].left < regionData->rdh.rcBound.left)
+			{
+				regionData->rdh.rcBound.left = rectList[i].left;
+			}
+			if(rectList[i].top < regionData->rdh.rcBound.top)
+			{
+				regionData->rdh.rcBound.top = rectList[i].top;
+			}
+			if(rectList[i].right > regionData->rdh.rcBound.right)
+			{
+				regionData->rdh.rcBound.right = rectList[i].right;
+			}
+			if(rectList[i].bottom > regionData->rdh.rcBound.bottom)
+			{
+				regionData->rdh.rcBound.bottom = rectList[i].bottom;
+			}
+		}
+
+		if(FAILED((*lplpddc)->SetClipList(regionData, 0)))
+		{
+			free(regionData);
+			return NULL;
+		}
+		if(FAILED(lpdds->SetClipper(*lplpddc)))
+		{
+			free(regionData);
+			return NULL;
+		}
+		free(regionData);
+
+		return TRUE;
+	}
+
+	VOID jcdd_deleteClipper(LPDIRECTDRAWCLIPPER* lplpddc)
+	{
+		jcdd_release(lplpddc);
+	}
 };
