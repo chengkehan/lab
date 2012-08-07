@@ -94,10 +94,10 @@ namespace JCDD_NS
 		return errorID != JCDD_ERROR_ID_NO_ERROR;
 	}
 
-	BOOL createOffscreenSurface(
+	BOOL jcdd_createOffscreenSurface(
 		LPDIRECTDRAW7 lpdd, LPDIRECTDRAWSURFACE7* lplpdds, INT width, INT height, UINT colorKey);
 
-	VOID deleteOffscreenSurface(LPDIRECTDRAWSURFACE7* lplpdds);
+	VOID jcdd_deleteOffscreenSurface(LPDIRECTDRAWSURFACE7* lplpdds);
 };
 
 #endif

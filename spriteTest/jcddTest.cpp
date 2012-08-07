@@ -2,9 +2,9 @@
 
 using namespace JCDD_NS;
 
-LPJCDD lpjcdd;
+LPJCDD lpjcdd(NULL);
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK windowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	switch(msg)
 	{	
@@ -38,7 +38,7 @@ VOID mainLoopInvokeFunc()
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd )
 {
 	lpjcdd = new JCDD();
-	if(jcdd_failed(lpjcdd->initialize(0, 0, 800, 600, nShowCmd, L"MyWnd", L"MyWndTitle", hInstance, TRUE, 0x000000, WindowProc, mainLoopInvokeFunc)))
+	if(jcdd_failed(lpjcdd->initialize(0, 0, 800, 600, nShowCmd, L"MyWnd", L"MyWndTitle", hInstance, FALSE, 0x000000, windowProc, mainLoopInvokeFunc)))
 	{
 		return 0;
 	}

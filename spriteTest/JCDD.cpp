@@ -169,7 +169,7 @@ namespace JCDD_NS
 				return JCDD_ERROR_ID_ILLEGAL_PIXEL_FORMAT;
 			}
 
-			if(!createOffscreenSurface(lpdd, &lpddsBackBuffer, wndWidth, wndHeight, colorKey))
+			if(!jcdd_createOffscreenSurface(lpdd, &lpddsBackBuffer, wndWidth, wndHeight, colorKey))
 			{
 				return JCDD_ERROR_ID_BACKBUFFER_SURFACE;
 			}

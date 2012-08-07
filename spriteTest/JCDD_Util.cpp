@@ -2,7 +2,7 @@
 
 namespace JCDD_NS
 {
-	BOOL createOffscreenSurface(
+	BOOL jcdd_createOffscreenSurface(
 		LPDIRECTDRAW7 lpdd, LPDIRECTDRAWSURFACE7* lplpdds, INT width, INT height, UINT colorKey)
 	{
 		if(lpdd == NULL)
@@ -32,7 +32,7 @@ namespace JCDD_NS
 		return TRUE;
 	}
 
-	VOID deleteOffscreenSurface(LPDIRECTDRAWSURFACE7* lplpdds)
+	VOID jcdd_deleteOffscreenSurface(LPDIRECTDRAWSURFACE7* lplpdds)
 	{
 		jcdd_release(lplpdds);
 	}
