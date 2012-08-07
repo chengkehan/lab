@@ -39,6 +39,11 @@ namespace JCDD_NS
 		}
 		initialized = TRUE;
 
+		if(mainLoopInvokeFunc == NULL)
+		{
+			return JCDD_ERROR_ID_NULL_INPUT_VALUE;
+		}
+
 		this->wndX = wndX;
 		this->wndY = wndY;
 		this->wndWidth = wndWidth;
