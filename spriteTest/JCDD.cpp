@@ -230,4 +230,54 @@ namespace JCDD_NS
 	{
 		return hInstance;
 	}
+
+	BOOL JCDD::createOffscreenSurface(INT surfaceID, INT width, INT height, UINT colorKey)
+	{
+		if(containsTheOffscreenSurface(surfaceID))
+		{
+			return FALSE;
+		}
+
+		LPDIRECTDRAWSURFACE7 lpdds = NULL;
+		jcdd_createOffscreenSurface(lpdd, &lpdds, width, height, colorKey);
+		lpddsOffscreen.insert(std::pair<INT, LPDIRECTDRAWSURFACE7>(surfaceID, lpdds));
+
+		return TRUE;
+	}
+
+	VOID JCDD::deleteOffscreenSurface(INT surfaceID)
+	{
+		std::map<INT, LPDIRECTDRAWSURFACE7>::iterator it = lpddsOffscreen.find(surfaceID);
+		if(it != lpddsOffscreen.end())
+		{
+			jcdd_release(&(it->second));
+			lpddsOffscreen.erase(surfaceID);
+		}
+	}
+
+	BOOL JCDD::containsTheOffscreenSurface(INT surfaceID)
+	{
+		std::map<INT, LPDIRECTDRAWSURFACE7>::iterator it = lpddsOffscreen.find(surfaceID);
+		if(it == lpddsOffscreen.end())
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+
+	LPDIRECTDRAWSURFACE7 JCDD::getOffscreenSurface(INT surfaceID)
+	{
+		std::map<INT, LPDIRECTDRAWSURFACE7>::iterator it = lpddsOffscreen.find(surfaceID);
+		if(it == lpddsOffscreen.end())
+		{
+			return NULL;
+		}
+		else
+		{
+			return it->second;
+		}
+	}
 };

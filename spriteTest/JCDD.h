@@ -30,6 +30,11 @@ namespace JCDD_NS
 		HWND getWnd() const;
 		HINSTANCE getHInstance() const;
 
+		BOOL createOffscreenSurface(INT surfaceID, INT width, INT height, UINT colorKey);
+		VOID deleteOffscreenSurface(INT surfaceID);
+		BOOL containsTheOffscreenSurface(INT surfaceID);
+		LPDIRECTDRAWSURFACE7 getOffscreenSurface(INT surfaceID);
+
 	private:
 		INT wndWidth;
 		INT wndHeight;
