@@ -280,4 +280,9 @@ namespace JCDD_NS
 			return it->second;
 		}
 	}
+
+	LPDIRECTDRAWSURFACE7 JCDD::getBackBufferSurface()
+	{
+		return lpddsBackBuffer;
+	}
 };

@@ -35,6 +35,8 @@ namespace JCDD_NS
 		BOOL containsTheOffscreenSurface(INT surfaceID);
 		LPDIRECTDRAWSURFACE7 getOffscreenSurface(INT surfaceID);
 
+		LPDIRECTDRAWSURFACE7 getBackBufferSurface();
+
 	private:
 		INT wndWidth;
 		INT wndHeight;
