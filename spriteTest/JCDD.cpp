@@ -32,7 +32,7 @@ namespace JCDD_NS
 	enum JCDD_ERROR_ID JCDD::initialize(
 		INT wndX, INT wndY, INT wndWidth, INT wndHeight, 
 		INT nCmdshow, LPWCH wndClassName, LPWCH wndTitle, 
-		HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, UINT backColor, 
+		HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, UINT backColor, INT fps, 
 		WNDPROC wndProc, MAIN_LOOP_INVOKE_FUNC mainLoopInvokeFunc)
 	{
 		if(initialized)
@@ -52,6 +52,7 @@ namespace JCDD_NS
 		this->wndHeight = wndHeight;
 		this->colorKey = colorKey;
 		this->backColor = backColor;
+		this->fps = 1000 / fps;
 		this->wndClassName = wndClassName;
 		this->wndTitle = wndTitle;
 		this->wndProc = wndProc;
@@ -206,40 +207,48 @@ namespace JCDD_NS
 
 	VOID JCDD::mainLoop()
 	{
+		DWORD timePoint = GetTickCount();
 		while(running)
 		{
-			if (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
+			DWORD timePoint2 = GetTickCount();
+			if(timePoint2 - timePoint > fps)
 			{
-				if (msg.message == WM_QUIT)
-				{
-					break;
-				}
+				timePoint = timePoint2;
 
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-
-			mainLoopInvokeFunc();
-			if(jcdd_colorFillSurface(lpddsBackBuffer, wndWidth, wndHeight, backColor))
-			{
-				if(fullscreen)
+				if (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
 				{
-					if(FAILED(lpddsPrimary->Flip(NULL, DDFLIP_WAIT)))
+					if (msg.message == WM_QUIT)
 					{
-						OutputDebugString(L"Flip Error!!!");
+						break;
 					}
+
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
 				}
-				else
+
+				mainLoopInvokeFunc();
+
+				if(jcdd_colorFillSurface(lpddsBackBuffer, wndWidth, wndHeight, backColor))
 				{
-					RECT clientRect;
-					GetWindowRect(hWnd, &clientRect);
-					RECT srcRect = {0, 0, wndWidth, wndHeight};
-					INT destX = clientRect.left - wndRect.left;
-					INT destY = clientRect.top - wndRect.top;
-					RECT destRect = {destX, destY, destX + wndWidth, destY + wndHeight};
-					if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, DDBLT_WAIT | DDBLTFAST_SRCCOLORKEY, NULL)))
+					if(fullscreen)
 					{
-						OutputDebugString(L"Blt Error!!!");
+						if(FAILED(lpddsPrimary->Flip(NULL, DDFLIP_WAIT)))
+						{
+							OutputDebugString(L"Flip Error!!!");
+						}
+					}
+					else
+					{
+						RECT clientRect;
+						GetWindowRect(hWnd, &clientRect);
+						RECT srcRect = {0, 0, wndWidth, wndHeight};
+						INT destX = clientRect.left - wndRect.left;
+						INT destY = clientRect.top - wndRect.top;
+						RECT destRect = {destX, destY, destX + wndWidth, destY + wndHeight};
+						if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, DDBLT_WAIT | DDBLTFAST_SRCCOLORKEY, NULL)))
+						{
+							OutputDebugString(L"Blt Error!!!");
+						}
 					}
 				}
 			}
