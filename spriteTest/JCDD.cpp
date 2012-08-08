@@ -23,6 +23,7 @@ namespace JCDD_NS
 			jcdd_release(&(it->second));
 		}
 		
+		jcdd_release(&lpddcBackBuffer);
 		jcdd_release(&lpddsBackBuffer);
 		jcdd_release(&lpddsPrimary);
 		jcdd_release(&lpdd);
@@ -180,6 +181,12 @@ namespace JCDD_NS
 			}
 		}
 		screenBitCount = JCDD_SCREEN_BIT_COUNT_32;
+
+		RECT rectList[1] = {{0, 0, wndWidth, wndWidth}};
+		if(!jcdd_createClipper(lpdd, lpddsBackBuffer, &lpddcBackBuffer, 1, rectList))
+		{
+			return JCDD_ERROR_ID_BACKBUFFER_CLIPPER;
+		}
 
 		return JCDD_ERROR_ID_NO_ERROR;
 	}

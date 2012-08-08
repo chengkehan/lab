@@ -52,6 +52,7 @@ namespace JCDD_NS
 		LPDIRECTDRAW7 lpdd;
 		LPDIRECTDRAWSURFACE7 lpddsPrimary;
 		LPDIRECTDRAWSURFACE7 lpddsBackBuffer;
+		LPDIRECTDRAWCLIPPER lpddcBackBuffer;
 		std::map<INT, LPDIRECTDRAWSURFACE7> lpddsOffscreen;
 		DDSURFACEDESC2 ddsd;
 
