@@ -106,4 +106,22 @@ namespace JCDD_NS
 	{
 		jcdd_release(lplpddc);
 	}
+
+	BOOL jcdd_colorFillSurface(LPDIRECTDRAWSURFACE7 lpdds, INT width, INT height, UINT color)
+	{
+		if(lpdds == NULL)
+		{
+			return FALSE;
+		}
+		RECT destRect = {0, 0, width, height};
+		DDBLTFX ddbltfx;
+		jcdd_initStruct(&ddbltfx);
+		ddbltfx.dwFillColor = color;
+		if(FAILED(lpdds->Blt(&destRect, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx)))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
 };

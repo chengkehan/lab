@@ -32,7 +32,8 @@ namespace JCDD_NS
 	enum JCDD_ERROR_ID JCDD::initialize(
 		INT wndX, INT wndY, INT wndWidth, INT wndHeight, 
 		INT nCmdshow, LPWCH wndClassName, LPWCH wndTitle, 
-		HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, WNDPROC wndProc, MAIN_LOOP_INVOKE_FUNC mainLoopInvokeFunc)
+		HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, UINT backColor, 
+		WNDPROC wndProc, MAIN_LOOP_INVOKE_FUNC mainLoopInvokeFunc)
 	{
 		if(initialized)
 		{
@@ -50,6 +51,7 @@ namespace JCDD_NS
 		this->wndWidth = wndWidth;
 		this->wndHeight = wndHeight;
 		this->colorKey = colorKey;
+		this->backColor = backColor;
 		this->wndClassName = wndClassName;
 		this->wndTitle = wndTitle;
 		this->wndProc = wndProc;
@@ -92,7 +94,7 @@ namespace JCDD_NS
 			wndRect.right = wndWidth;
 			wndRect.top = 0;
 			wndRect.bottom = wndHeight;
-			if(!AdjustWindowRectEx(&wndRect, GetWindowExStyle(hWnd), GetMenu(hWnd) != NULL, GetWindowExStyle(hWnd)))
+			if(!AdjustWindowRectEx(&wndRect, GetWindowStyle(hWnd), GetMenu(hWnd) != NULL, GetWindowExStyle(hWnd)))
 			{
 				return JCDD_ERROR_ID_ADJUST_WND;
 			}
@@ -218,6 +220,29 @@ namespace JCDD_NS
 			}
 
 			mainLoopInvokeFunc();
+			if(jcdd_colorFillSurface(lpddsBackBuffer, wndWidth, wndHeight, backColor))
+			{
+				if(fullscreen)
+				{
+					if(FAILED(lpddsPrimary->Flip(NULL, DDFLIP_WAIT)))
+					{
+						OutputDebugString(L"Flip Error!!!");
+					}
+				}
+				else
+				{
+					RECT clientRect;
+					GetWindowRect(hWnd, &clientRect);
+					RECT srcRect = {0, 0, wndWidth, wndHeight};
+					INT destX = clientRect.left - wndRect.left;
+					INT destY = clientRect.top - wndRect.top;
+					RECT destRect = {destX, destY, destX + wndWidth, destY + wndHeight};
+					if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, DDBLT_WAIT | DDBLTFAST_SRCCOLORKEY, NULL)))
+					{
+						OutputDebugString(L"Blt Error!!!");
+					}
+				}
+			}
 		}
 	}
 

@@ -103,6 +103,8 @@ namespace JCDD_NS
 	BOOL jcdd_createClipper(
 		LPDIRECTDRAW7 lpdd, LPDIRECTDRAWSURFACE7 lpdds, LPDIRECTDRAWCLIPPER* lplpddc, INT numRect, LPRECT rectList);
 	VOID jcdd_deleteClipper(LPDIRECTDRAWCLIPPER* lplpddc);
+
+	BOOL jcdd_colorFillSurface(LPDIRECTDRAWSURFACE7 lpdds, INT width, INT height, UINT color);
 };
 
 #endif
