@@ -105,6 +105,23 @@ namespace JCDD_NS
 	VOID jcdd_deleteClipper(LPDIRECTDRAWCLIPPER* lplpddc);
 
 	BOOL jcdd_colorFillSurface(LPDIRECTDRAWSURFACE7 lpdds, INT width, INT height, UINT color);
+
+	typedef class JCDD_Surface
+	{
+	public:
+		JCDD_Surface(INT width, INT height, LPDIRECTDRAWSURFACE7 surface);
+		~JCDD_Surface();
+
+	public:
+		LPDIRECTDRAWSURFACE7 getSurface();
+		INT getWidth();
+		INT getHeight();
+
+	private:
+		LPDIRECTDRAWSURFACE7 surface;
+		INT width;
+		INT height;
+	} JCDD_Surface, *LPJCDD_Surface;
 };
 
 #endif

@@ -1,28 +1,52 @@
 #include "JCDD_IO.h"
+#include <fstream>
+#include "JCDD_Util.h"
 
 namespace JCDD_NS
 {
-	BOOL jcdd_loadFile(LPWCH filePath, LPJCDD_File lpjcddFile)
+	JCDD_File::JCDD_File():path(NULL), data(NULL)
 	{
-		if(filePath == NULL || lpjcddFile == NULL)
+
+	}
+
+	JCDD_File::~JCDD_File()
+	{
+		destroy();
+	}
+
+	LPWCH JCDD_File::getPath()
+	{
+		return path;
+	}
+
+	CHAR* JCDD_File::getData()
+	{
+		return data;
+	}
+
+	BOOL JCDD_File::loadData(LPWCH path)
+	{
+		if(path == NULL)
 		{
+			destroy();
 			return FALSE;
 		}
 
-		lpjcddFile->filePath = filePath;
-		lpjcddFile->fileData = NULL;
+		this->path = path;
+		this->data = NULL;
 
 		std::ifstream istream;
-		istream.open(filePath, std::ifstream::in | std::ifstream::binary);
+		istream.open(path, std::ifstream::in | std::ifstream::binary);
 		if(istream.good())
 		{
 			istream.seekg(0, std::ifstream::end);
 			UINT fileSize = (UINT)istream.tellg();
 			istream.seekg(0, std::ifstream::beg);
 
-			lpjcddFile->fileData = (CHAR*)malloc(sizeof(CHAR) * fileSize);
-			if(lpjcddFile->fileData == NULL)
+			data = (CHAR*)malloc(sizeof(CHAR) * fileSize);
+			if(data == NULL)
 			{
+				destroy();
 				return FALSE;
 			}
 		}
@@ -31,14 +55,9 @@ namespace JCDD_NS
 		return TRUE;
 	}
 
-	VOID jcdd_unloadFile(LPJCDD_File* lplpjcddFile)
+	VOID JCDD_File::destroy()
 	{
-		if(*lplpjcddFile != NULL)
-		{
-			(*lplpjcddFile)->filePath = NULL;
-			free((*lplpjcddFile)->fileData);
-			(*lplpjcddFile)->fileData = NULL;
-			*lplpjcddFile = NULL;
-		}
+		path = NULL;
+		jcdd_free(&data);
 	}
 };

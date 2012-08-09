@@ -2,18 +2,25 @@
 #define __JCDD_IO_H__
 
 #include <Windows.h>
-#include <fstream>
 
 namespace JCDD_NS
 {
-	typedef struct JCDD_File
+	class JCDD_File
 	{
-		LPWCH filePath;
-		CHAR* fileData;
-	} JCDD_File, *LPJCDD_File;
+	public:
+		JCDD_File();
+		~JCDD_File();
 
-	BOOL jcdd_loadFile(LPWCH filePath, LPJCDD_File lpjcddFile);
-	VOID jcdd_unloadFile(LPJCDD_File* lplpjcddFile);
+	public:
+		BOOL loadData(LPWCH filePath);
+		CHAR* getData();
+		LPWCH getPath();
+
+	private:
+		LPWCH path;
+		CHAR* data;
+		VOID destroy();
+	};
 };
 
 #endif

@@ -21,7 +21,7 @@ namespace JCDD_NS
 		enum JCDD_ERROR_ID initialize(
 			INT wndX, INT wndY, INT wndWidth, INT wndHeight, 
 			INT nCmdshow, LPWCH wndClassName, LPWCH wndTitle, 
-			HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, UINT backColor, INT fps, 
+			HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, UINT backColor, DWORD fps, 
 			WNDPROC wndProc, MAIN_LOOP_INVOKE_FUNC mainLoopInvokeFunc);
 
 		VOID run();
@@ -44,7 +44,7 @@ namespace JCDD_NS
 		INT wndY;
 		INT nCmdshow;
 		INT screenBitCount;
-		INT fps;
+		DWORD fps;
 		UINT colorKey;
 		UINT backColor;
 		BOOL fullscreen;

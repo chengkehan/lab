@@ -124,4 +124,32 @@ namespace JCDD_NS
 
 		return TRUE;
 	}
+
+	JCDD_Surface::JCDD_Surface(INT width, INT height, LPDIRECTDRAWSURFACE7 lpdds)
+	{
+		this->surface = lpdds;
+		this->width = width;
+		this->height = height;
+	}
+
+
+	JCDD_Surface::~JCDD_Surface()
+	{
+		surface = NULL;
+	}
+
+	LPDIRECTDRAWSURFACE7 JCDD_Surface::getSurface()
+	{
+		return surface;
+	}
+
+	INT JCDD_Surface::getWidth()
+	{
+		return width;
+	}
+
+	INT JCDD_Surface::getHeight()
+	{
+		return height;
+	}
 };
