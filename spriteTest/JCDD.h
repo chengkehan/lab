@@ -33,7 +33,7 @@ namespace JCDD_NS
 		BOOL createOffscreenSurface(INT surfaceID, INT width, INT height, UINT colorKey);
 		VOID deleteOffscreenSurface(INT surfaceID);
 		BOOL containsTheOffscreenSurface(INT surfaceID);
-		LPDIRECTDRAWSURFACE7 getOffscreenSurface(INT surfaceID);
+		LPJCDD_Surface getOffscreenSurface(INT surfaceID);
 
 		LPDIRECTDRAWSURFACE7 getBackBufferSurface();
 
@@ -62,7 +62,7 @@ namespace JCDD_NS
 		LPDIRECTDRAWSURFACE7 lpddsPrimary;
 		LPDIRECTDRAWSURFACE7 lpddsBackBuffer;
 		LPDIRECTDRAWCLIPPER lpddcBackBuffer;
-		std::map<INT, LPDIRECTDRAWSURFACE7> lpddsOffscreen;
+		std::map<INT, LPJCDD_Surface> lpddsOffscreen;
 		DDSURFACEDESC2 ddsd;
 
 	private:

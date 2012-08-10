@@ -18,9 +18,12 @@ namespace JCDD_NS
 		wndTitle = NULL;
 		mainLoopInvokeFunc = NULL;
 
-		for (std::map<INT, LPDIRECTDRAWSURFACE7>::iterator it = lpddsOffscreen.begin(); it != lpddsOffscreen.end(); ++it)
+		for (std::map<INT, LPJCDD_Surface>::iterator it = lpddsOffscreen.begin(); it != lpddsOffscreen.end(); ++it)
 		{
-			jcdd_release(&(it->second));
+			LPJCDD_Surface lpjcdds = it->second;
+			LPDIRECTDRAWSURFACE7 surface = lpjcdds->getSurface();
+			jcdd_release(&surface);
+			jcdd_delete(&lpjcdds);
 		}
 		
 		jcdd_release(&lpddcBackBuffer);
@@ -274,24 +277,27 @@ namespace JCDD_NS
 
 		LPDIRECTDRAWSURFACE7 lpdds = NULL;
 		jcdd_createOffscreenSurface(lpdd, &lpdds, width, height, colorKey);
-		lpddsOffscreen.insert(std::pair<INT, LPDIRECTDRAWSURFACE7>(surfaceID, lpdds));
+		lpddsOffscreen.insert(std::pair<INT, LPJCDD_Surface>(surfaceID, new JCDD_Surface(width, height, lpdds)));
 
 		return TRUE;
 	}
 
 	VOID JCDD::deleteOffscreenSurface(INT surfaceID)
 	{
-		std::map<INT, LPDIRECTDRAWSURFACE7>::iterator it = lpddsOffscreen.find(surfaceID);
+		std::map<INT, LPJCDD_Surface>::iterator it = lpddsOffscreen.find(surfaceID);
 		if(it != lpddsOffscreen.end())
 		{
-			jcdd_release(&(it->second));
+			LPJCDD_Surface lpjcdds = it->second;
+			LPDIRECTDRAWSURFACE7 surface = lpjcdds->getSurface();
+			jcdd_release(&surface);
+			jcdd_delete(&lpjcdds);
 			lpddsOffscreen.erase(surfaceID);
 		}
 	}
 
 	BOOL JCDD::containsTheOffscreenSurface(INT surfaceID)
 	{
-		std::map<INT, LPDIRECTDRAWSURFACE7>::iterator it = lpddsOffscreen.find(surfaceID);
+		std::map<INT, LPJCDD_Surface>::iterator it = lpddsOffscreen.find(surfaceID);
 		if(it == lpddsOffscreen.end())
 		{
 			return FALSE;
@@ -302,9 +308,9 @@ namespace JCDD_NS
 		}
 	}
 
-	LPDIRECTDRAWSURFACE7 JCDD::getOffscreenSurface(INT surfaceID)
+	LPJCDD_Surface JCDD::getOffscreenSurface(INT surfaceID)
 	{
-		std::map<INT, LPDIRECTDRAWSURFACE7>::iterator it = lpddsOffscreen.find(surfaceID);
+		std::map<INT, LPJCDD_Surface>::iterator it = lpddsOffscreen.find(surfaceID);
 		if(it == lpddsOffscreen.end())
 		{
 			return NULL;
