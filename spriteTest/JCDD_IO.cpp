@@ -39,16 +39,17 @@ namespace JCDD_NS
 		istream.open(path, std::ifstream::in | std::ifstream::binary);
 		if(istream.good())
 		{
-			istream.seekg(0, std::ifstream::end);
+			istream.seekg(0, std::ios::end);
 			UINT fileSize = (UINT)istream.tellg();
-			istream.seekg(0, std::ifstream::beg);
+			istream.seekg(0, std::ios::beg);
 
-			data = (CHAR*)malloc(sizeof(CHAR) * fileSize);
+			data = (CHAR*)malloc(fileSize);
 			if(data == NULL)
 			{
 				destroy();
 				return FALSE;
 			}
+			istream.read(data, fileSize);
 		}
 		istream.close();
 

@@ -5,7 +5,7 @@
 
 namespace JCDD_NS
 {
-	class JCDD_Wrapper
+	typedef class JCDD_Wrapper
 	{
 	public:
 		JCDD_Wrapper(LPJCDD lpjcdd);
@@ -19,7 +19,7 @@ namespace JCDD_NS
 
 	private:
 		LPJCDD lpjcdd;
-	};
+	} JCDD_Wrapper, *LPJCDD_Wrapper;
 };
 
 #endif

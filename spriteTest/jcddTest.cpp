@@ -1,8 +1,10 @@
 #include "JCDD.h"
+#include "JCDD_Wrapper.h"
 
 using namespace JCDD_NS;
 
-LPJCDD lpjcdd(NULL);
+LPJCDD lpjcdd = NULL;
+LPJCDD_Wrapper lpjcddw = NULL;
 
 LRESULT CALLBACK windowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -35,6 +37,23 @@ VOID mainLoopInvokeFunc()
 	}
 }
 
+BOOL gameInitialize()
+{
+	lpjcddw = new JCDD_Wrapper(lpjcdd);
+	if(!lpjcddw->loadBitmapDataFromFile(0, L"J:\\work\\lab_github\\spriteTest\\image.bmp", 0x000000))
+	{
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+VOID gameDestroy()
+{
+	jcdd_delete(&lpjcddw);
+	jcdd_delete(&lpjcdd);
+}
+
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd )
 {
 	lpjcdd = new JCDD();
@@ -42,8 +61,15 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	{
 		return 0;
 	}
+
+	if(!gameInitialize())
+	{
+		gameDestroy();
+		return 0;
+	}
+
 	lpjcdd->run();
-	jcdd_delete(&lpjcdd);
+	gameDestroy();
 
 	return 0;
 }
