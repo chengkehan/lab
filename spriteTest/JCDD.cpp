@@ -229,29 +229,32 @@ namespace JCDD_NS
 					DispatchMessage(&msg);
 				}
 
+				if(!jcdd_colorFillSurface(lpddsBackBuffer, wndWidth, wndHeight, backColor))
+				{
+					OutputDebugString(L"Fill canvas failed");
+					continue;
+				}
+
 				mainLoopInvokeFunc();
 
-				if(jcdd_colorFillSurface(lpddsBackBuffer, wndWidth, wndHeight, backColor))
+				if(fullscreen)
 				{
-					if(fullscreen)
+					if(FAILED(lpddsPrimary->Flip(NULL, DDFLIP_WAIT)))
 					{
-						if(FAILED(lpddsPrimary->Flip(NULL, DDFLIP_WAIT)))
-						{
-							OutputDebugString(L"Flip Error!!!");
-						}
+						OutputDebugString(L"Flip Error!!!");
 					}
-					else
+				}
+				else
+				{
+					RECT clientRect;
+					GetWindowRect(hWnd, &clientRect);
+					RECT srcRect = {0, 0, wndWidth, wndHeight};
+					INT destX = clientRect.left - wndRect.left;
+					INT destY = clientRect.top - wndRect.top;
+					RECT destRect = {destX, destY, destX + wndWidth, destY + wndHeight};
+					if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, DDBLT_WAIT | DDBLTFAST_SRCCOLORKEY, NULL)))
 					{
-						RECT clientRect;
-						GetWindowRect(hWnd, &clientRect);
-						RECT srcRect = {0, 0, wndWidth, wndHeight};
-						INT destX = clientRect.left - wndRect.left;
-						INT destY = clientRect.top - wndRect.top;
-						RECT destRect = {destX, destY, destX + wndWidth, destY + wndHeight};
-						if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, DDBLT_WAIT | DDBLTFAST_SRCCOLORKEY, NULL)))
-						{
-							OutputDebugString(L"Blt Error!!!");
-						}
+						OutputDebugString(L"Blt Error!!!");
 					}
 				}
 			}

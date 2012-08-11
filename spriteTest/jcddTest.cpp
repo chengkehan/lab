@@ -6,6 +6,8 @@ using namespace JCDD_NS;
 LPJCDD lpjcdd = NULL;
 LPJCDD_Wrapper lpjcddw = NULL;
 
+const INT SURFACE_ID = 0;
+
 LRESULT CALLBACK windowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	switch(msg)
@@ -35,12 +37,16 @@ VOID mainLoopInvokeFunc()
 		SendMessage(lpjcdd->getWnd(), WM_CLOSE, 0, 0);
 		return;
 	}
+
+	RECT src = {0, 0, 100, 100};
+	RECT dest = {0, 0, 100, 100};
+	lpjcddw->drawBitmapData(SURFACE_ID, &src, &dest);
 }
 
 BOOL gameInitialize()
 {
 	lpjcddw = new JCDD_Wrapper(lpjcdd);
-	if(!lpjcddw->loadBitmapDataFromFile(0, L"J:\\work\\lab_github\\spriteTest\\image.bmp", 0x000000))
+	if(!lpjcddw->loadBitmapDataFromFile(SURFACE_ID, L"G:\\work\\lab_github\\spriteTest\\image.bmp", 0x000000))
 	{
 		return FALSE;
 	}

@@ -14,8 +14,13 @@ namespace JCDD_NS
 		lpjcdd = NULL;
 	}
 
-	BOOL JCDD_Wrapper::loadBitmapDataFromFile(INT id, LPWCH filePath, UINT colorKey)
+	BOOL JCDD_Wrapper::loadBitmapDataFromFile(INT surfaceID, LPWCH filePath, UINT colorKey)
 	{
+		if(lpjcdd->containsTheOffscreenSurface(surfaceID))
+		{
+			return FALSE;
+		}
+
 		JCDD_File file;
 		if(!file.loadData(filePath))
 		{
@@ -35,18 +40,18 @@ namespace JCDD_NS
 			return FALSE;
 		}
 
-		if(!lpjcdd->createOffscreenSurface(id, bmpd.bmpInfoHeader.biWidth, bmpd.bmpInfoHeader.biHeight, colorKey))
+		if(!lpjcdd->createOffscreenSurface(surfaceID, bmpd.bmpInfoHeader.biWidth, bmpd.bmpInfoHeader.biHeight, colorKey))
 		{
 			return FALSE;
 		}
 
-		LPJCDD_Surface surface = lpjcdd->getOffscreenSurface(id);
+		LPJCDD_Surface surface = lpjcdd->getOffscreenSurface(surfaceID);
 		LPDIRECTDRAWSURFACE7 lpdds = surface->getSurface();
 		DDSURFACEDESC2 ddsd;
 		jcdd_initStruct(&ddsd);
 		if(FAILED(lpdds->Lock(NULL, &ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL)))
 		{
-			lpjcdd->deleteOffscreenSurface(id);
+			lpjcdd->deleteOffscreenSurface(surfaceID);
 			return FALSE;
 		}
 
@@ -102,7 +107,24 @@ namespace JCDD_NS
 
 		if(FAILED(lpdds->Unlock(NULL)))
 		{
-			lpjcdd->deleteOffscreenSurface(id);
+			lpjcdd->deleteOffscreenSurface(surfaceID);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	BOOL JCDD_Wrapper::drawBitmapData(INT surfaceID, LPRECT srcRect, LPRECT destRect)
+	{
+		if(!lpjcdd->containsTheOffscreenSurface(surfaceID))
+		{
+			return FALSE;
+		}
+
+		LPDIRECTDRAWSURFACE7 dest = lpjcdd->getBackBufferSurface();
+		LPDIRECTDRAWSURFACE7 src = lpjcdd->getOffscreenSurface(surfaceID)->getSurface();
+		if(FAILED(dest->Blt(destRect, src, srcRect, DDBLT_WAIT, NULL)))
+		{
 			return FALSE;
 		}
 
