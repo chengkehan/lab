@@ -46,7 +46,7 @@ VOID mainLoopInvokeFunc()
 BOOL gameInitialize()
 {
 	lpjcddw = new JCDD_Wrapper(lpjcdd);
-	if(!lpjcddw->loadBitmapDataFromFile(SURFACE_ID, L"G:\\work\\lab_github\\spriteTest\\image4.bmp"))
+	if(!lpjcddw->loadBitmapDataFromFile(SURFACE_ID, L"G:\\work\\lab_github\\spriteTest\\image6.bmp"))
 	{
 		return FALSE;
 	}
