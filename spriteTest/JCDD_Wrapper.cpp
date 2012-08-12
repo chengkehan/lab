@@ -14,7 +14,7 @@ namespace JCDD_NS
 		lpjcdd = NULL;
 	}
 
-	BOOL JCDD_Wrapper::loadBitmapDataFromFile(INT surfaceID, LPWCH filePath, UINT colorKey)
+	BOOL JCDD_Wrapper::loadBitmapDataFromFile(INT surfaceID, LPWCH filePath)
 	{
 		if(lpjcdd->containsTheOffscreenSurface(surfaceID))
 		{
@@ -43,7 +43,7 @@ namespace JCDD_NS
 			return FALSE;
 		}
 
-		if(!lpjcdd->createOffscreenSurface(surfaceID, bmpd.bmpInfoHeader.biWidth, biHeight, colorKey))
+		if(!lpjcdd->createOffscreenSurface(surfaceID, bmpd.bmpInfoHeader.biWidth, biHeight))
 		{
 			return FALSE;
 		}

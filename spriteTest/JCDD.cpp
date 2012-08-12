@@ -271,7 +271,12 @@ namespace JCDD_NS
 		return hInstance;
 	}
 
-	BOOL JCDD::createOffscreenSurface(INT surfaceID, INT width, INT height, UINT colorKey)
+	UINT JCDD::getColorKey() const
+	{
+		return colorKey;
+	}
+
+	BOOL JCDD::createOffscreenSurface(INT surfaceID, INT width, INT height)
 	{
 		if(containsTheOffscreenSurface(surfaceID))
 		{

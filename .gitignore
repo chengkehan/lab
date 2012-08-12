@@ -24,7 +24,5 @@ ddraw/*.jpg
 ddraw/*.bmp
 ddraw/BitmapData.cpp
 ddraw/BitmapData.h
-spriteTest/image.jpg
-spriteTest/image.bmp
-spriteTest/image2.bmp
-spriteTest/image3.bmp
+spriteTest/*.jpg
+spriteTest/*.bmp

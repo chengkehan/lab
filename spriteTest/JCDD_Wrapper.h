@@ -12,7 +12,7 @@ namespace JCDD_NS
 		~JCDD_Wrapper();
 
 	public:
-		BOOL loadBitmapDataFromFile(INT surfaceID, LPWCH filePath, UINT colorKey);
+		BOOL loadBitmapDataFromFile(INT surfaceID, LPWCH filePath);
 		BOOL drawBitmapData(INT surfaceID, LPRECT srcRect, LPRECT destRect);
 		LPJCDD getJCDD();
 

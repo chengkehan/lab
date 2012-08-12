@@ -29,8 +29,9 @@ namespace JCDD_NS
 
 		HWND getWnd() const;
 		HINSTANCE getHInstance() const;
+		UINT getColorKey() const;
 
-		BOOL createOffscreenSurface(INT surfaceID, INT width, INT height, UINT colorKey);
+		BOOL createOffscreenSurface(INT surfaceID, INT width, INT height);
 		VOID deleteOffscreenSurface(INT surfaceID);
 		BOOL containsTheOffscreenSurface(INT surfaceID);
 		LPJCDD_Surface getOffscreenSurface(INT surfaceID);
