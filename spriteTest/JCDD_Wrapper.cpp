@@ -32,6 +32,9 @@ namespace JCDD_NS
 		{
 			return FALSE;
 		}
+		BOOL reverseRow = bmpd.bmpInfoHeader.biHeight < 0;
+		INT biWidth = bmpd.bmpInfoHeader.biWidth;
+		INT biHeight = reverseRow ? -bmpd.bmpInfoHeader.biHeight : bmpd.bmpInfoHeader.biHeight;
 		
 		if(bmpd.bmpInfoHeader.biBitCount != BitmapDataBitCount_8 && 
 			bmpd.bmpInfoHeader.biBitCount != BitmapDataBitCount_24 && 
@@ -40,7 +43,7 @@ namespace JCDD_NS
 			return FALSE;
 		}
 
-		if(!lpjcdd->createOffscreenSurface(surfaceID, bmpd.bmpInfoHeader.biWidth, bmpd.bmpInfoHeader.biHeight, colorKey))
+		if(!lpjcdd->createOffscreenSurface(surfaceID, bmpd.bmpInfoHeader.biWidth, biHeight, colorKey))
 		{
 			return FALSE;
 		}
@@ -57,7 +60,7 @@ namespace JCDD_NS
 
 		UINT* buffer = (UINT*)ddsd.lpSurface;
 		INT pixelWidth = bmpd.bmpInfoHeader.biWidth;
-		INT pixelHeight = bmpd.bmpInfoHeader.biHeight;
+		INT pixelHeight = biHeight;
 		INT pixelWidthCount = 0;
 		INT pixelHeightCount = 0;
 		INT pitch = ddsd.lPitch >> 2;

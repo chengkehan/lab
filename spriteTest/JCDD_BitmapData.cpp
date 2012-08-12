@@ -96,7 +96,8 @@ namespace JCDD_NS
 		this->bmpd = bmpd;
 		if(bmpd != NULL)
 		{
-			numColors = bmpd->bmpInfoHeader.biWidth * bmpd->bmpInfoHeader.biHeight;
+			INT biHeight = bmpd->bmpInfoHeader.biHeight < 0 ? -bmpd->bmpInfoHeader.biHeight : bmpd->bmpInfoHeader.biHeight;
+			numColors = bmpd->bmpInfoHeader.biWidth * biHeight;
 			colors = (JCDD_BitmapDataXRGB*)bmpd->colors;
 		}
 	}
@@ -125,7 +126,8 @@ namespace JCDD_NS
 		this->bmpd = bmpd;
 		if(bmpd != NULL)
 		{
-			numColors = bmpd->bmpInfoHeader.biWidth * bmpd->bmpInfoHeader.biHeight;
+			INT biHeight = bmpd->bmpInfoHeader.biHeight < 0 ? -bmpd->bmpInfoHeader.biHeight : bmpd->bmpInfoHeader.biHeight;
+			numColors = bmpd->bmpInfoHeader.biWidth * biHeight;
 			colors = (JCDD_BitmapDataRGB*)bmpd->colors;
 		}
 	}
@@ -174,11 +176,12 @@ namespace JCDD_NS
 		this->bmpd = bmpd;
 		if(bmpd != NULL)
 		{
+			INT biHeight = bmpd->bmpInfoHeader.biHeight < 0 ? -bmpd->bmpInfoHeader.biHeight : bmpd->bmpInfoHeader.biHeight;
 			colors = bmpd->colors;
 			numColors = 
 				bmpd->bmpInfoHeader.biWidth % 4 == 0 ? 
-				bmpd->bmpInfoHeader.biWidth * bmpd->bmpInfoHeader.biHeight : 
-			(INT(bmpd->bmpInfoHeader.biWidth / 4) + 1) * 4 * bmpd->bmpInfoHeader.biHeight;
+				bmpd->bmpInfoHeader.biWidth * biHeight : 
+			(INT(bmpd->bmpInfoHeader.biWidth / 4) + 1) * 4 * biHeight;
 		}
 	}
 
