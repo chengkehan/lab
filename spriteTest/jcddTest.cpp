@@ -20,6 +20,18 @@ LRESULT CALLBACK windowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			break;
 		}
 
+		case WM_KILLFOCUS:
+			{
+				OutputDebugString(L"asdfasdfasdfasdfasdfasdfasdfa\n");
+				break;
+			}
+
+		case WM_SETFOCUS:
+			{
+				OutputDebugString(L"asdfasdfasfasfasdfasfdasdfasdfasfsdafsfasfasfasf\n");
+				break;
+			}
+
 		default:
 		{
 			break;
@@ -38,15 +50,15 @@ VOID mainLoopInvokeFunc()
 		return;
 	}
 
-	RECT src = {0, 0, 100, 100};
-	RECT dest = {0, 0, 100, 100};
+	RECT src = {0, 0, 200, 200};
+	RECT dest = {0, 0, 200, 200};
 	lpjcddw->drawBitmapData(SURFACE_ID, &src, &dest);
 }
 
 BOOL gameInitialize()
 {
 	lpjcddw = new JCDD_Wrapper(lpjcdd);
-	if(!lpjcddw->loadBitmapDataFromFile(SURFACE_ID, L"G:\\work\\lab_github\\spriteTest\\image.bmp", 0x000000))
+	if(!lpjcddw->loadBitmapDataFromFile(SURFACE_ID, L"G:\\work\\lab_github\\spriteTest\\image2.bmp", 0x000000))
 	{
 		return FALSE;
 	}

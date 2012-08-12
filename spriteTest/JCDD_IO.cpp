@@ -37,6 +37,18 @@ namespace JCDD_NS
 
 		std::ifstream istream;
 		istream.open(path, std::ifstream::in | std::ifstream::binary);
+		if(istream.eof())
+		{
+			OutputDebugString(L"");
+		}
+		if(istream.bad())
+		{
+			OutputDebugString(L"");
+		}
+		if(istream.fail())
+		{
+			OutputDebugString(L"");
+		}
 		if(istream.good())
 		{
 			istream.seekg(0, std::ios::end);
@@ -47,9 +59,16 @@ namespace JCDD_NS
 			if(data == NULL)
 			{
 				destroy();
+				istream.close();
 				return FALSE;
 			}
 			istream.read(data, fileSize);
+		}
+		else
+		{
+			destroy();
+			istream.close();
+			return FALSE;
 		}
 		istream.close();
 
