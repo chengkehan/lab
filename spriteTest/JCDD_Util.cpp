@@ -3,7 +3,7 @@
 namespace JCDD_NS
 {
 	BOOL jcdd_createOffscreenSurface(
-		LPDIRECTDRAW7 lpdd, LPDIRECTDRAWSURFACE7* lplpdds, INT width, INT height, UINT colorKey)
+		LPDIRECTDRAW7 lpdd, LPDIRECTDRAWSURFACE7* lplpdds, INT width, INT height, UINT colorKey, BOOL useColorKey)
 	{
 		if(lpdd == NULL)
 		{
@@ -21,12 +21,15 @@ namespace JCDD_NS
 			return FALSE;
 		}
 
-		DDCOLORKEY ck;
-		ck.dwColorSpaceHighValue = colorKey;
-		ck.dwColorSpaceLowValue = colorKey;
-		if(FAILED((*lplpdds)->SetColorKey(DDCKEY_SRCBLT, &ck)))
+		if(useColorKey)
 		{
-			return FALSE;
+			DDCOLORKEY ck;
+			ck.dwColorSpaceHighValue = colorKey;
+			ck.dwColorSpaceLowValue = colorKey;
+			if(FAILED((*lplpdds)->SetColorKey(DDCKEY_SRCBLT, &ck)))
+			{
+				return FALSE;
+			}
 		}
 
 		return TRUE;

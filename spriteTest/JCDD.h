@@ -21,7 +21,7 @@ namespace JCDD_NS
 		enum JCDD_ERROR_ID initialize(
 			INT wndX, INT wndY, INT wndWidth, INT wndHeight, 
 			INT nCmdshow, LPWCH wndClassName, LPWCH wndTitle, 
-			HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, UINT backColor, DWORD fps, 
+			HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, BOOL useColorKey, UINT backColor, DWORD fps, 
 			WNDPROC wndProc, MAIN_LOOP_INVOKE_FUNC mainLoopInvokeFunc);
 
 		VOID run();
@@ -30,6 +30,7 @@ namespace JCDD_NS
 		HWND getWnd() const;
 		HINSTANCE getHInstance() const;
 		UINT getColorKey() const;
+		BOOL getUseColorKey() const;
 
 		BOOL createOffscreenSurface(INT surfaceID, INT width, INT height);
 		VOID deleteOffscreenSurface(INT surfaceID);
@@ -47,6 +48,7 @@ namespace JCDD_NS
 		INT screenBitCount;
 		DWORD fps;
 		UINT colorKey;
+		BOOL useColorKey;
 		UINT backColor;
 		BOOL fullscreen;
 		BOOL initialized;

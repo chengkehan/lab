@@ -35,7 +35,7 @@ namespace JCDD_NS
 	enum JCDD_ERROR_ID JCDD::initialize(
 		INT wndX, INT wndY, INT wndWidth, INT wndHeight, 
 		INT nCmdshow, LPWCH wndClassName, LPWCH wndTitle, 
-		HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, UINT backColor, DWORD fps, 
+		HINSTANCE hInstance, BOOL fullscreen, UINT colorKey, BOOL useColorKey, UINT backColor, DWORD fps, 
 		WNDPROC wndProc, MAIN_LOOP_INVOKE_FUNC mainLoopInvokeFunc)
 	{
 		if(initialized)
@@ -54,6 +54,7 @@ namespace JCDD_NS
 		this->wndWidth = wndWidth;
 		this->wndHeight = wndHeight;
 		this->colorKey = colorKey;
+		this->useColorKey = useColorKey;
 		this->backColor = backColor;
 		this->fps = 1000 / fps;
 		this->wndClassName = wndClassName;
@@ -149,19 +150,21 @@ namespace JCDD_NS
 		jcdd_initStruct(&ddsd);
 		if(fullscreen)
 		{
-			DDCOLORKEY ck;
-			ck.dwColorSpaceHighValue = colorKey;
-			ck.dwColorSpaceLowValue = colorKey;
-
 			ddsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
 			if(FAILED(lpddsPrimary->GetAttachedSurface(&ddsd.ddsCaps, &lpddsBackBuffer)))
 			{
 				return JCDD_ERROR_ID_BACKBUFFER_SURFACE;
 			}
 
-			if(FAILED(lpddsBackBuffer->SetColorKey(DDCKEY_SRCBLT, &ck)))
+			if(useColorKey)
 			{
-				return JCDD_ERROR_ID_BACKBUFFER_SURFACE_COLOR_KEY;
+				DDCOLORKEY ck;
+				ck.dwColorSpaceHighValue = colorKey;
+				ck.dwColorSpaceLowValue = colorKey;
+				if(FAILED(lpddsBackBuffer->SetColorKey(DDCKEY_SRCBLT, &ck)))
+				{
+					return JCDD_ERROR_ID_BACKBUFFER_SURFACE_COLOR_KEY;
+				}
 			}
 		}
 		else
@@ -177,7 +180,7 @@ namespace JCDD_NS
 				return JCDD_ERROR_ID_ILLEGAL_PIXEL_FORMAT;
 			}
 
-			if(!jcdd_createOffscreenSurface(lpdd, &lpddsBackBuffer, wndWidth, wndHeight, colorKey))
+			if(!jcdd_createOffscreenSurface(lpdd, &lpddsBackBuffer, wndWidth, wndHeight, colorKey, useColorKey))
 			{
 				return JCDD_ERROR_ID_BACKBUFFER_SURFACE;
 			}
@@ -248,7 +251,8 @@ namespace JCDD_NS
 					INT destX = clientRect.left - wndRect.left;
 					INT destY = clientRect.top - wndRect.top;
 					RECT destRect = {destX, destY, destX + wndWidth, destY + wndHeight};
-					if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, DDBLT_WAIT | DDBLT_KEYSRC, NULL)))
+					DWORD bltFlags = useColorKey ? DDBLT_WAIT | DDBLT_KEYSRC : DDBLT_WAIT;
+					if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, bltFlags, NULL)))
 					{
 						OutputDebugString(L"Blt Error!!!");
 					}
@@ -272,6 +276,11 @@ namespace JCDD_NS
 		return colorKey;
 	}
 
+	BOOL JCDD::getUseColorKey() const
+	{
+		return useColorKey;
+	}
+
 	BOOL JCDD::createOffscreenSurface(INT surfaceID, INT width, INT height)
 	{
 		if(containsTheOffscreenSurface(surfaceID))
@@ -280,7 +289,7 @@ namespace JCDD_NS
 		}
 
 		LPDIRECTDRAWSURFACE7 lpdds = NULL;
-		jcdd_createOffscreenSurface(lpdd, &lpdds, width, height, colorKey);
+		jcdd_createOffscreenSurface(lpdd, &lpdds, width, height, colorKey, useColorKey);
 		lpddsOffscreen.insert(std::pair<INT, LPJCDD_Surface>(surfaceID, new JCDD_Surface(width, height, lpdds)));
 
 		return TRUE;

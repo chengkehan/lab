@@ -63,7 +63,7 @@ VOID gameDestroy()
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd )
 {
 	lpjcdd = new JCDD();
-	if(jcdd_failed(lpjcdd->initialize(10, 10, 800, 600, nShowCmd, L"MyWnd", L"MyWndTitle", hInstance, FALSE, 0x000000, 0x0099FF, 30, windowProc, mainLoopInvokeFunc)))
+	if(jcdd_failed(lpjcdd->initialize(10, 10, 800, 600, nShowCmd, L"MyWnd", L"MyWndTitle", hInstance, FALSE, 0x000000, FALSE, 0x0099FF, 30, windowProc, mainLoopInvokeFunc)))
 	{
 		return 0;
 	}
