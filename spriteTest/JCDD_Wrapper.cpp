@@ -62,7 +62,7 @@ namespace JCDD_NS
 		INT pixelWidth = bmpd.bmpInfoHeader.biWidth;
 		INT pixelHeight = biHeight;
 		INT pixelWidthCount = 0;
-		INT pixelHeightCount = 0;
+		INT pixelHeightCount = biHeight - 1;
 		INT pitch = ddsd.lPitch >> 2;
 
 		if(bmpd.bmpInfoHeader.biBitCount == BitmapDataBitCount_8)
@@ -75,7 +75,7 @@ namespace JCDD_NS
 				if(++pixelWidthCount == pixelWidth)
 				{
 					pixelWidthCount = 0;
-					++pixelHeightCount;
+					--pixelHeightCount;
 				}
 			}
 		}
@@ -89,7 +89,7 @@ namespace JCDD_NS
 				if(++pixelWidthCount == pixelWidth)
 				{
 					pixelWidthCount = 0;
-					++pixelHeightCount;
+					--pixelHeightCount;
 				}
 			}
 		}
@@ -103,7 +103,7 @@ namespace JCDD_NS
 				if(++pixelWidthCount == pixelWidth)
 				{
 					pixelWidthCount = 0;
-					++pixelHeightCount;
+					--pixelHeightCount;
 				}
 			}
 		}
