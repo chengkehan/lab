@@ -146,17 +146,13 @@ namespace JCDD_NS
 			return JCDD_ERROR_ID_PRIMARY_SURFACE;
 		}
 
-		DDCOLORKEY ck;
-		ck.dwColorSpaceHighValue = colorKey;
-		ck.dwColorSpaceLowValue = colorKey;
-		if(FAILED(lpddsPrimary->SetColorKey(DDCKEY_SRCBLT, &ck)))
-		{
-			return JCDD_ERROR_ID_PRIMARY_SURFACE_COLOR_KEY;
-		}
-
 		jcdd_initStruct(&ddsd);
 		if(fullscreen)
 		{
+			DDCOLORKEY ck;
+			ck.dwColorSpaceHighValue = colorKey;
+			ck.dwColorSpaceLowValue = colorKey;
+
 			ddsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
 			if(FAILED(lpddsPrimary->GetAttachedSurface(&ddsd.ddsCaps, &lpddsBackBuffer)))
 			{
@@ -252,7 +248,7 @@ namespace JCDD_NS
 					INT destX = clientRect.left - wndRect.left;
 					INT destY = clientRect.top - wndRect.top;
 					RECT destRect = {destX, destY, destX + wndWidth, destY + wndHeight};
-					if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, DDBLT_WAIT | DDBLTFAST_SRCCOLORKEY, NULL)))
+					if(FAILED(lpddsPrimary->Blt(&destRect, lpddsBackBuffer, &srcRect, DDBLT_WAIT | DDBLT_KEYSRC, NULL)))
 					{
 						OutputDebugString(L"Blt Error!!!");
 					}

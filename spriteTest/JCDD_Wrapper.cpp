@@ -126,7 +126,7 @@ namespace JCDD_NS
 
 		LPDIRECTDRAWSURFACE7 dest = lpjcdd->getBackBufferSurface();
 		LPDIRECTDRAWSURFACE7 src = lpjcdd->getOffscreenSurface(surfaceID)->getSurface();
-		if(FAILED(dest->Blt(destRect, src, srcRect, DDBLT_WAIT, NULL)))
+		if(FAILED(dest->Blt(destRect, src, srcRect, DDBLT_WAIT | DDBLT_KEYSRC, NULL)))
 		{
 			return FALSE;
 		}
