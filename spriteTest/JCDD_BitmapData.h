@@ -30,10 +30,10 @@ namespace JCDD_NS
 
 	struct JCDD_BitmapDataXRGB
 	{
+		BYTE x;
 		BYTE b;
 		BYTE g;
 		BYTE r;
-		BYTE x;
 	};
 
 	struct JCDD_BitmapDataRGB
