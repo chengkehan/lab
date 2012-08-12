@@ -20,18 +20,6 @@ LRESULT CALLBACK windowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			break;
 		}
 
-		case WM_KILLFOCUS:
-			{
-				OutputDebugString(L"asdfasdfasdfasdfasdfasdfasdfa\n");
-				break;
-			}
-
-		case WM_SETFOCUS:
-			{
-				OutputDebugString(L"asdfasdfasfasfasdfasfdasdfasdfasfsdafsfasfasfasf\n");
-				break;
-			}
-
 		default:
 		{
 			break;
