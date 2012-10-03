@@ -27,3 +27,4 @@ ddraw/BitmapData.h
 spriteTest/*.jpg
 spriteTest/*.bmp
 *.bmp
+*.jpg
