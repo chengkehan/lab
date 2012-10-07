@@ -92,7 +92,7 @@ BOOL jcd3d::jcd3d_setup()
 	D3DXVECTOR3 up(0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&view, &eye, &target, &up);
 	lpd3dd->SetTransform(D3DTS_VIEW, &view);
-
+	
 	// projection transform
 	D3DXMATRIX proj;
 	D3DXMatrixPerspectiveFovLH(&proj, D3DX_PI * 0.5f, (FLOAT)WIN_WIDTH / (FLOAT)WIN_HEIGHT, 1.0f, 1000.0f);
