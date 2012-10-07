@@ -113,6 +113,7 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 		lpd3dd->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 		lpd3dd->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		lpd3dd->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		lpd3dd->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 		drawRect(lpRect2VB, lpRect2IB);
 		drawRect(lpRect1VB, lpRect1IB);
 		lpd3dd->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
