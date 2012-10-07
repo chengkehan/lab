@@ -93,6 +93,12 @@ BOOL jcd3d::jcd3d_setup()
 	D3DXMatrixPerspectiveFovLH(&proj, D3DX_PI * 0.5f, (FLOAT)WIN_WIDTH / (FLOAT)WIN_HEIGHT, 1.0f, 1000.0f);
 	lpd3dd->SetTransform(D3DTS_PROJECTION, &proj);
 
+	// ÄæÊ±ÕëÌÞ³ý
+	lpd3dd->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	// Ë³Ê±ÕëÌÞ³ý
+	// lpd3dd->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	// ²»ÌÞ³ý
+	// lpd3dd->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	lpd3dd->SetRenderState(D3DRS_LIGHTING, FALSE);
 	lpd3dd->SetRenderState(D3DRS_ZENABLE, TRUE);
 	lpd3dd->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
