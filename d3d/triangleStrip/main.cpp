@@ -93,6 +93,11 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 		{
 			eyeY -= 0.1f;
 		}
+		if(!jcd3d_keyDown('W') && !jcd3d_keyDown('S'))
+		{
+			eyeY *= 0.9f;
+		}
+
 		if(jcd3d_keyDown('A'))
 		{
 			viewAngle += 0.02f;
@@ -100,6 +105,10 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 		if(jcd3d_keyDown('D'))
 		{
 			viewAngle -= 0.02f;
+		}
+		if(!jcd3d_keyDown('A') && !jcd3d_keyDown('D'))
+		{
+			viewAngle *= 0.9f;
 		}
 
 		D3DXMATRIX view;
