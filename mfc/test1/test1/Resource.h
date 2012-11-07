@@ -6,6 +6,7 @@
 #define IDP_OLE_INIT_FAILED			100
 #define IDR_MAINFRAME				128
 #define IDR_test1TYPE				130
+#define M_JCBUTTON_ID 1
 
 // 新对象的下一组默认值
 //

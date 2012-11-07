@@ -55,6 +55,21 @@ Ctest1App::Ctest1App()
 
 Ctest1App theApp;
 
+// thread
+UINT myThreadID = 0;
+BOOL myThreadRunning = TRUE;
+UINT __stdcall myThreadProcress(VOID* p)
+{
+	while(myThreadRunning)
+	{
+		if(!theApp.myRenderThreadPause)
+		{
+			jcd3d::jcd3d_display(0);
+		}
+	}
+
+	return 0;
+}
 
 // Ctest1App 初始化
 ID3DXMesh* lpMeshTeapot = NULL;
@@ -71,7 +86,6 @@ BOOL Ctest1App::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
-
 
 	// 初始化 OLE 库
 	if (!AfxOleInit())
@@ -138,6 +152,9 @@ BOOL Ctest1App::InitInstance()
 	jcd3d::jcd3d_initRenderState(jcd3d::jcd3d_lpd3dd, D3DCULL_CCW, FALSE, TRUE, D3DSHADE_GOURAUD, D3DFILL_WIREFRAME, FALSE);
 	D3DXCreateTeapot(jcd3d::jcd3d_lpd3dd, &lpMeshTeapot, NULL);
 
+	_beginthreadex(NULL, 0, myThreadProcress, NULL, 0, &myThreadID);
+	myRenderThreadPause = FALSE;
+
 	return TRUE;
 }
 
@@ -146,6 +163,7 @@ int Ctest1App::ExitInstance()
 	//TODO: 处理可能已添加的附加资源
 	AfxOleTerm(FALSE);
 	jcd3d::jcd3d_release();
+	myThreadRunning = FALSE;
 
 	return CWinApp::ExitInstance();
 }
@@ -219,12 +237,4 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 
 	jcd3d::jcd3d_lpd3dd->EndScene();
 	jcd3d::jcd3d_lpd3dd->Present(&refreshRect, &refreshRect, NULL, NULL);
-}
-
-BOOL Ctest1App::OnIdle(LONG lCount)
-{
-	// TODO: 在此添加专用代码和/或调用基类
-	jcd3d::jcd3d_display(0);
-
-	return CWinApp::OnIdle(lCount);
 }

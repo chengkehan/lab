@@ -44,6 +44,9 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 private:
 	CButton m_jcButton;
+	// m_jcbutton
+	VOID m_jcbuttonHandler(void);
+	BOOL m_jcbuttonState;
 };
 
 #ifndef _DEBUG  // test1View.cpp 中的调试版本

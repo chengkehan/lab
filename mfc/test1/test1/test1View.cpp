@@ -16,7 +16,6 @@
 #define new DEBUG_NEW
 #endif
 
-
 // Ctest1View
 
 IMPLEMENT_DYNCREATE(Ctest1View, CView)
@@ -27,6 +26,7 @@ BEGIN_MESSAGE_MAP(Ctest1View, CView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_WM_CREATE()
+	ON_BN_CLICKED(M_JCBUTTON_ID, &Ctest1View::m_jcbuttonHandler)
 END_MESSAGE_MAP()
 
 // Ctest1View 构造/析构
@@ -111,7 +111,25 @@ int Ctest1View::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// TODO:  在此添加您专用的创建代码
-	m_jcButton.Create(_T("JCButton"), BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE, CRect(0, 0, 100, 100), this, 0);
+	m_jcButton.Create(_T("STOP"), BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE, CRect(0, 0, 100, 100), this, M_JCBUTTON_ID);
+	m_jcbuttonState = TRUE;
 
 	return 0;
+}
+
+
+// m_jcbutton
+VOID Ctest1View::m_jcbuttonHandler(void)
+{
+	if(m_jcbuttonState)
+	{
+		m_jcButton.SetWindowTextW(_T("PLAY"));
+		theApp.myRenderThreadPause = TRUE;
+	}
+	else
+	{
+		m_jcButton.SetWindowTextW(_T("STOP"));
+		theApp.myRenderThreadPause = FALSE;
+	}
+	m_jcbuttonState = !m_jcbuttonState;
 }
