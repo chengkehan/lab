@@ -18,6 +18,7 @@ bin-release/
 *.filters
 *.user
 Debug/
+Release/
 ipch/
 readBitmap/*.bmp
 ddraw/*.jpg
