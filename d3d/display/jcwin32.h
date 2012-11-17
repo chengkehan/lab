@@ -11,6 +11,14 @@ namespace jcwin32
 
 	INT jcwin32_cursorShow();
 	INT jcwin32_cursorHide();
+
+	BOOL jcwin32_getWindowRect(HWND hwnd, RECT* lpRect);
+	BOOL jcwin32_getClientRect(HWND hwnd, RECT* lpRect);
+
+	BOOL jcwin32_clientToScreen(HWND hwnd, POINT* lpPoint);
+
+	BOOL jcwin32_clipCursor(RECT* lpRect);
+	BOOL jcwin32_getClipCursor(RECT* lpRect);
 }
 
 #endif

@@ -10,6 +10,8 @@
 
 namespace jcd3d
 {
+	typedef VOID (*JCCALLBACK)(VOID);
+
 	// Util
 	inline BOOL jcd3d_keyDown(INT vkCode)
 	{
@@ -25,12 +27,17 @@ namespace jcd3d
 	extern HWND jcd3d_hwnd;
 	extern HINSTANCE jcd3d_hInstance;
 	extern IDirect3DDevice9* jcd3d_lpd3dd;
-	BOOL jcd3d_init(HINSTANCE hInstance, INT width, INT height, BOOL windowed, D3DDEVTYPE deviceType, DWORD maxTextureBlendStages = 1);
+	extern INT jcd3d_windowX;
+	extern INT jcd3d_windowY;
+	extern INT jcd3d_windowWidth;
+	extern INT jcd3d_windowHeight;
+	extern JCCALLBACK jcd3d_windowMoveCallback;
+	BOOL jcd3d_init(HINSTANCE hInstance, INT windowX = 0, INT windowY = 0, INT windowWidth = 800, INT windowHeight = 600, BOOL windowed = TRUE, D3DDEVTYPE deviceType = D3DDEVTYPE_HAL, DWORD maxTextureBlendStages = 1);
 	BOOL jcd3d_setup();
 	VOID jcd3d_release();
 	VOID jcd3d_display(DWORD timeDelta);
-	LRESULT CALLBACK jcd3d_wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	VOID jcd3d_loop();
+	LRESULT CALLBACK jcd3d_wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	// D3D util
 	BOOL jcd3d_initRenderState(
@@ -66,6 +73,19 @@ namespace jcd3d
 	D3DLIGHT9 jcd3d_initSpotLight(D3DXVECTOR3* position, D3DXVECTOR3* direction, D3DXCOLOR* color);
 
 	// Vertex
+	struct JCD3D_Vertex_xyzrhw_texture
+	{
+		FLOAT x, y, z;
+		FLOAT rhw;
+		FLOAT u, v;
+		JCD3D_Vertex_xyzrhw_texture(FLOAT px, FLOAT py, FLOAT pz, FLOAT prhw, FLOAT pu, FLOAT pv)
+		{
+			x = px; y = py; z = pz;
+			rhw = prhw;
+			u = pu; v = pv;
+		}
+		static CONST DWORD FVF;
+	};
 	struct JCD3D_Vertex_xyz_diffuse
 	{
 		FLOAT x, y, z;

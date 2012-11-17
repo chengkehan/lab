@@ -4,10 +4,18 @@ HWND jcd3d::jcd3d_hwnd = NULL;
 IDirect3DDevice9* jcd3d::jcd3d_lpd3dd = NULL;
 HINSTANCE jcd3d::jcd3d_hInstance = NULL;
 
+CONST DWORD jcd3d::JCD3D_Vertex_xyzrhw_texture::FVF = D3DFVF_XYZRHW | D3DFVF_TEX1;
 CONST DWORD jcd3d::JCD3D_Vertex_xyz_diffuse::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 CONST DWORD jcd3d::JCD3D_Vertex_xyz_normal::FVF = D3DFVF_XYZ | D3DFVF_NORMAL;
 CONST DWORD jcd3d::JCD3D_Vertex_xyz_diffuse_texture::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 CONST DWORD jcd3d::JCD3D_Vertex_xyz_diffuse_texture2::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2;
+
+INT jcd3d::jcd3d_windowX = 0;
+INT jcd3d::jcd3d_windowY = 0;
+INT jcd3d::jcd3d_windowWidth = 0;
+INT jcd3d::jcd3d_windowHeight = 0;
+
+jcd3d::JCCALLBACK jcd3d::jcd3d_windowMoveCallback = NULL;
 
 BOOL jcd3d::jcd3d_initRenderState(LPDIRECT3DDEVICE9 lpd3dd, DWORD cullMode, BOOL lighting, BOOL zEnable, DWORD shadeMode , DWORD fillMode , BOOL alphaBlendEnable)
 {
@@ -111,9 +119,13 @@ BOOL jcd3d::jcd3d_setViewTransform(LPDIRECT3DDEVICE9 lpd3dd, FLOAT eyeX, FLOAT e
 	}
 }
 
-BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT width, INT height, BOOL windowed, D3DDEVTYPE deviceType, DWORD maxTextureBlendStages)
+BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth, INT windowHeight, BOOL windowed, D3DDEVTYPE deviceType, DWORD maxTextureBlendStages)
 {
 	jcd3d_hInstance = hInstance;
+	jcd3d_windowX = windowX;
+	jcd3d_windowY = windowY;
+	jcd3d_windowWidth = windowWidth;
+	jcd3d_windowHeight = windowHeight;
 
 	// ´´½¨´°¿Ú
 	WNDCLASS wc;
@@ -134,7 +146,7 @@ BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT width, INT height, BOOL windowed
 		return FALSE;
 	}
 
-	HWND hwnd = CreateWindow(L"jcd3dApp", L"JCD3D_APP", WS_EX_TOPMOST, 0, 0, width, height, NULL, NULL, hInstance, NULL);
+	HWND hwnd = CreateWindow(L"jcd3dApp", L"JCD3D_APP", WS_EX_TOPMOST, windowX, windowY, windowWidth, windowHeight, NULL, NULL, hInstance, NULL);
 	if(!hwnd)
 	{
 		jcwin32_messageBoxErrorM("CreateWindow Failed");
@@ -172,8 +184,8 @@ BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT width, INT height, BOOL windowed
 	}
 
 	D3DPRESENT_PARAMETERS d3dpp;
-	d3dpp.BackBufferWidth = width;
-	d3dpp.BackBufferHeight = height;
+	d3dpp.BackBufferWidth = windowWidth;
+	d3dpp.BackBufferHeight = windowHeight;
 	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
 	d3dpp.BackBufferCount = 1;
 	d3dpp.MultiSampleType = D3DMULTISAMPLE_NONMASKABLE;
@@ -238,6 +250,7 @@ VOID jcd3d::jcd3d_loop()
 	jccommon_releaseComM(jcd3d_lpd3dd);
 	jcd3d_hInstance = NULL;
 	jcd3d_hwnd = NULL;
+	jcd3d_windowMoveCallback = NULL;
 }
 
 LRESULT CALLBACK jcd3d::jcd3d_wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -247,6 +260,14 @@ LRESULT CALLBACK jcd3d::jcd3d_wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		case WM_DESTROY:
 		{
 			DestroyWindow(hwnd);
+			break;
+		}
+		case WM_MOVE:
+		{
+			if(jcd3d_windowMoveCallback != NULL)
+			{
+				jcd3d_windowMoveCallback();
+			}
 			break;
 		}
 	}

@@ -21,6 +21,9 @@ namespace jcdi
 	extern INT jcdi_mouseY;
 	extern INT jcdi_mouseClientWidth;
 	extern INT jcdi_mouseClientHeight;
+	extern BOOL jcdi_mouseLockedOnWindow;
+	extern RECT jcdi_mouseClipOriginal;
+	extern FLOAT jcdi_mouseSpeed;
 	extern DIMOUSESTATE jcdi_mouseState;
 	extern UCHAR jcdi_keyboardState[256];
 
@@ -35,7 +38,8 @@ namespace jcdi
 	BOOL jcdi_updateKeyboard();
 	BOOL jcdi_updateMouse();
 	BOOL jcdi_keyDown(INT diKeyCode);
-
+	BOOL jcdi_mouseLockOnWindow();
+	BOOL jcdi_mouseUnlockOnWindow();
 }
 
 #endif

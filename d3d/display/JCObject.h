@@ -16,11 +16,15 @@ public:
 	VOID setName(LPCWCHAR name);
 	LPCWCHAR getName();
 
+	VOID setExtraData(LPVOID data);
+	LPVOID getExtraData();
+
 private:
 	VOID destroyName();
 
 private:
 	LPWCH m_name;
+	LPVOID m_extraData;
 };
 
 #endif

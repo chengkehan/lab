@@ -33,6 +33,16 @@ LPCWCHAR JCObject::getName()
 	return m_name;
 }
 
+VOID JCObject::setExtraData(LPVOID data)
+{
+	m_extraData = data;
+}
+
+LPVOID JCObject::getExtraData()
+{
+	return m_extraData;
+}
+
 VOID JCObject::destroyName()
 {
 	jccommon_deleteM(m_name);
