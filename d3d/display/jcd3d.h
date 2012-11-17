@@ -46,6 +46,7 @@ namespace jcd3d
 	);
 
 	BOOL jcd3d_setProjectionPerspectiveTransform(LPDIRECT3DDEVICE9 lpd3dd, INT windowWidth, INT windowHeight);
+	BOOL jcd3d_setProjectionOrthoTransform(LPDIRECT3DDEVICE9 lpd3dd, INT windowWidth, INT windowHeight);
 	BOOL jcd3d_setViewTransform(LPDIRECT3DDEVICE9 lpd3dd, D3DXVECTOR3* eye, D3DXVECTOR3* target, D3DXVECTOR3* up);
 	BOOL jcd3d_setViewTransform(LPDIRECT3DDEVICE9 lpd3dd, FLOAT eyeX, FLOAT eyeY, FLOAT eyeZ, FLOAT targetX, FLOAT targetY, FLOAT targetZ, FLOAT upX, FLOAT upY, FLOAT upZ);
 
@@ -82,6 +83,21 @@ namespace jcd3d
 		{
 			x = px; y = py; z = pz;
 			rhw = prhw;
+			u = pu; v = pv;
+		}
+		static CONST DWORD FVF;
+	};
+	struct JCD3D_Vertex_xyzrhw_diffuse_texture
+	{
+		FLOAT x, y, z;
+		FLOAT rhw;
+		D3DCOLOR color;
+		FLOAT u, v;
+		JCD3D_Vertex_xyzrhw_diffuse_texture(FLOAT px, FLOAT py, FLOAT pz, FLOAT prhw, D3DCOLOR pcolor, FLOAT pu, FLOAT pv)
+		{
+			x = px; y = py; z = pz;
+			rhw = prhw;
+			color = pcolor;
 			u = pu; v = pv;
 		}
 		static CONST DWORD FVF;

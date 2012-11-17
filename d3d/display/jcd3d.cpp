@@ -4,6 +4,7 @@ HWND jcd3d::jcd3d_hwnd = NULL;
 IDirect3DDevice9* jcd3d::jcd3d_lpd3dd = NULL;
 HINSTANCE jcd3d::jcd3d_hInstance = NULL;
 
+CONST DWORD jcd3d::JCD3D_Vertex_xyzrhw_diffuse_texture::FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 CONST DWORD jcd3d::JCD3D_Vertex_xyzrhw_texture::FVF = D3DFVF_XYZRHW | D3DFVF_TEX1;
 CONST DWORD jcd3d::JCD3D_Vertex_xyz_diffuse::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 CONST DWORD jcd3d::JCD3D_Vertex_xyz_normal::FVF = D3DFVF_XYZ | D3DFVF_NORMAL;
@@ -63,7 +64,28 @@ BOOL jcd3d::jcd3d_setProjectionPerspectiveTransform(LPDIRECT3DDEVICE9 lpd3dd, IN
 	else
 	{
 		D3DXMATRIX out;
-		D3DXMatrixPerspectiveFovLH(&out, D3DX_PI * 0.5f, static_cast<FLOAT>(windowWidth) / static_cast<FLOAT>(windowHeight), 1.0f, 1000.0f);
+		D3DXMatrixPerspectiveFovLH(&out, D3DX_PI * 0.5f, (FLOAT)windowWidth / (FLOAT)windowHeight, 1.0f, 1000.0f);
+		if(FAILED(lpd3dd->SetTransform(D3DTS_PROJECTION, &out)))
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+}
+
+BOOL jcd3d::jcd3d_setProjectionOrthoTransform(LPDIRECT3DDEVICE9 lpd3dd, INT windowWidth, INT windowHeight)
+{
+	if(lpd3dd == NULL)
+	{
+		return NULL;
+	}
+	else
+	{
+		D3DXMATRIX out;
+		D3DXMatrixOrthoLH(&out, (FLOAT)windowWidth, (FLOAT)windowHeight, 1.0f, 1000.0f);
 		if(FAILED(lpd3dd->SetTransform(D3DTS_PROJECTION, &out)))
 		{
 			return FALSE;

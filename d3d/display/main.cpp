@@ -28,7 +28,7 @@ VOID windowMoveCallback()
 BOOL jcd3d::jcd3d_setup()
 {
 	ifstream reader;
-	reader.open(L"wall.bmp", ios::ios_base::in | ios::ios_base::binary);
+	reader.open(L"cursor.png", ios::ios_base::in | ios::ios_base::binary);
 	if(reader.good())
 	{
 		reader.seekg(0, ios::end);
@@ -52,20 +52,20 @@ BOOL jcd3d::jcd3d_setup()
 	}
 	reader.close();
 
-	jcd3d_lpd3dd->CreateVertexBuffer(4 * sizeof(JCD3D_Vertex_xyzrhw_texture), D3DUSAGE_WRITEONLY, JCD3D_Vertex_xyzrhw_texture::FVF, D3DPOOL_MANAGED, &lpvb, NULL);
-	JCD3D_Vertex_xyzrhw_texture* vb = NULL;
-	lpvb->Lock(0, 4 * sizeof(JCD3D_Vertex_xyzrhw_texture), (VOID**)&vb, 0);
-	vb[0] = JCD3D_Vertex_xyzrhw_texture(0.0f, g_imgHeight, 0.0f, 1.0f, 0.0f, 1.0f);
-	vb[1] = JCD3D_Vertex_xyzrhw_texture(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-	vb[2] = JCD3D_Vertex_xyzrhw_texture(g_imgWidth, g_imgHeight, 0.0f, 1.0f, 1.0f, 1.0f);
-	vb[3] = JCD3D_Vertex_xyzrhw_texture(g_imgWidth, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+	jcd3d_lpd3dd->CreateVertexBuffer(4 * sizeof(JCD3D_Vertex_xyzrhw_diffuse_texture), D3DUSAGE_WRITEONLY, JCD3D_Vertex_xyzrhw_diffuse_texture::FVF, D3DPOOL_MANAGED, &lpvb, NULL);
+	JCD3D_Vertex_xyzrhw_diffuse_texture* vb = NULL;
+	lpvb->Lock(0, 4 * sizeof(JCD3D_Vertex_xyzrhw_diffuse_texture), (VOID**)&vb, 0);
+	vb[0] = JCD3D_Vertex_xyzrhw_diffuse_texture(0.0f, g_imgHeight, 0.0f, 1.0f, 0xFF000000, 0.0f, 1.0f);
+	vb[1] = JCD3D_Vertex_xyzrhw_diffuse_texture(0.0f, 0.0f, 0.0f, 1.0f, 0xFF000000, 0.0f, 0.0f);
+	vb[2] = JCD3D_Vertex_xyzrhw_diffuse_texture(g_imgWidth, g_imgHeight, 0.0f, 1.0f, 0xFF000000, 1.0f, 1.0f);
+	vb[3] = JCD3D_Vertex_xyzrhw_diffuse_texture(g_imgWidth, 0.0f, 0.0f, 1.0f, 0xFF000000, 1.0f, 0.0f);
 	lpvb->Unlock();
 
 	if(!jcdi_initInput(jcd3d_hInstance, jcd3d_hwnd))
 	{
 		return FALSE;
 	}
-	jcdi_mouseSpeed = 1.5f;
+	jcdi_mouseSpeed = 2.0f;
 	jcwin32_cursorHide();
 
 	jcd3d_windowMoveCallback = windowMoveCallback;
@@ -73,7 +73,9 @@ BOOL jcd3d::jcd3d_setup()
 
 	jcd3d_setProjectionPerspectiveTransform(jcd3d_lpd3dd, jcd3d_windowWidth, jcd3d_windowHeight);
 	jcd3d_setViewTransform(jcd3d_lpd3dd, 0.0f, 0.0f, -5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	jcd3d_initRenderState(jcd3d_lpd3dd, D3DCULL_CCW, FALSE, TRUE, D3DSHADE_GOURAUD, D3DFILL_SOLID, FALSE);
+	jcd3d_initRenderState(jcd3d_lpd3dd, D3DCULL_CCW, FALSE, TRUE, D3DSHADE_GOURAUD, D3DFILL_SOLID, TRUE);
+	jcd3d_lpd3dd->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	jcd3d_lpd3dd->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 	return TRUE;
 }
@@ -87,21 +89,27 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 		return;
 	}
 
-	JCD3D_Vertex_xyzrhw_texture* vb = NULL;
-	lpvb->Lock(0, 4 * sizeof(JCD3D_Vertex_xyzrhw_texture), (VOID**)&vb, 0);
-	vb[0].x = (FLOAT)jcdi_mouseX;//JCD3D_Vertex_xyzrhw_texture(0.0f, g_imgHeight, 0.0f, 1.0f, 0.0f, 1.0f);
+	JCD3D_Vertex_xyzrhw_diffuse_texture* vb = NULL;
+	lpvb->Lock(0, 4 * sizeof(JCD3D_Vertex_xyzrhw_diffuse_texture), (VOID**)&vb, 0);
+	vb[0].x = (FLOAT)jcdi_mouseX;//JCD3D_Vertex_xyzrhw_diffuse_texture(0.0f, g_imgHeight, 0.0f, 1.0f, 0.0f, 1.0f);
 	vb[0].y = (FLOAT)jcdi_mouseY + g_imgHeight;
-	vb[1].x = (FLOAT)jcdi_mouseX;//JCD3D_Vertex_xyzrhw_texture(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+	vb[1].x = (FLOAT)jcdi_mouseX;//JCD3D_Vertex_xyzrhw_diffuse_texture(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
 	vb[1].y = (FLOAT)jcdi_mouseY;
-	vb[2].x = (FLOAT)jcdi_mouseX + g_imgWidth;//JCD3D_Vertex_xyzrhw_texture(g_imgWidth, g_imgHeight, 0.0f, 1.0f, 1.0f, 1.0f);
+	vb[2].x = (FLOAT)jcdi_mouseX + g_imgWidth;//JCD3D_Vertex_xyzrhw_diffuse_texture(g_imgWidth, g_imgHeight, 0.0f, 1.0f, 1.0f, 1.0f);
 	vb[2].y = (FLOAT)jcdi_mouseY + g_imgHeight;
-	vb[3].x = (FLOAT)jcdi_mouseX + g_imgWidth;//JCD3D_Vertex_xyzrhw_texture(g_imgWidth, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+	vb[3].x = (FLOAT)jcdi_mouseX + g_imgWidth;//JCD3D_Vertex_xyzrhw_diffuse_texture(g_imgWidth, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 	vb[3].y = (FLOAT)jcdi_mouseY;
 	lpvb->Unlock();
 
 	jcd3d_lpd3dd->SetTexture(0, lpTexture);
-	jcd3d_lpd3dd->SetStreamSource(0, lpvb, 0, sizeof(JCD3D_Vertex_xyzrhw_texture));
-	jcd3d_lpd3dd->SetFVF(JCD3D_Vertex_xyzrhw_texture::FVF);
+	jcd3d_lpd3dd->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	jcd3d_lpd3dd->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+	jcd3d_lpd3dd->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	jcd3d_lpd3dd->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	jcd3d_lpd3dd->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	jcd3d_lpd3dd->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_ADD);
+	jcd3d_lpd3dd->SetStreamSource(0, lpvb, 0, sizeof(JCD3D_Vertex_xyzrhw_diffuse_texture));
+	jcd3d_lpd3dd->SetFVF(JCD3D_Vertex_xyzrhw_diffuse_texture::FVF);
 	jcd3d_lpd3dd->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 }
 
