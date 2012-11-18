@@ -46,14 +46,16 @@ BOOL jcd3d::jcd3d_setup()
 
 	lpCursor = new JCDisplayObject(jcd3d_lpd3dd);
 	lpCursor->setTexture(lpTexture);
-	lpCursor->setAlphaEnabled(TRUE);
-	lpCursor->setAlpha(0.5f);
+	//lpCursor->setAlphaEnabled(TRUE);
+	lpCursor->setWidth(100);
+	lpCursor->setHeight(100);
+	lpCursor->setRefXY(lpCursor->getWidth() * 0.5f, lpCursor->getHeight() * 0.5f);
 
 	if(!jcdi_initInput(jcd3d_hInstance, jcd3d_hwnd))
 	{
 		return FALSE;
 	}
-	jcdi_mouseSpeed = 2.0f;
+	jcdi_mouseSpeed = 1.5f;
 	jcwin32_cursorHide();
 
 	jcd3d_windowMoveCallback = windowMoveCallback;
@@ -76,6 +78,8 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 	}
 
 	lpCursor->setXY((FLOAT)jcdi_mouseX, (FLOAT)jcdi_mouseY);
+	lpCursor->setRotation(lpCursor->getRotation() + 0.1f);
+	lpCursor->renderUpdate(FALSE, TRUE);
 	lpCursor->render();
 }
 

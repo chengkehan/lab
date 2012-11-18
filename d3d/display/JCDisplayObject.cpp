@@ -3,7 +3,7 @@
 CONST DWORD JCDisplayObject::Vertex::FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 CONST UINT JCDisplayObject::VB_SIZE = 4 * sizeof(JCDisplayObject::Vertex);
 
-JCDisplayObject::JCDisplayObject(IDirect3DDevice9* lpd3dd):m_refX(0), m_refY(0), m_x(0), m_y(0), m_width(0), m_height(0), m_rotation(0), m_lpTexture(NULL), m_lpParent(NULL), m_lpVB(NULL), m_alpha(1.0f), m_alphaEnabled(TRUE)
+JCDisplayObject::JCDisplayObject(IDirect3DDevice9* lpd3dd):m_refX(0.0f), m_refY(0.0f), m_x(0.0f), m_y(0.0f), m_width(0.0f), m_height(0.0f), m_widthOriginal(0.0f), m_heightOriginal(0.0f), m_rotation(0.0f), m_lpTexture(NULL), m_lpParent(NULL), m_lpVB(NULL), m_alpha(1.0f), m_alphaEnabled(TRUE)
 {
 	jccommon_assertM(lpd3dd != NULL);
 	m_lpd3dd = lpd3dd;
@@ -17,12 +17,15 @@ JCDisplayObject::~JCDisplayObject()
 	releaseVertexBuffer();
 }
 
-VOID JCDisplayObject::setX(FLOAT value)
+VOID JCDisplayObject::setX(FLOAT value, BOOL updateImmediate)
 {
 	m_x = value;
-	lockVertexBuffer();
-	updateVertexBufferXYWH();
-	unlockVertexBuffer();
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
 }
 
 FLOAT JCDisplayObject::getX()
@@ -30,12 +33,15 @@ FLOAT JCDisplayObject::getX()
 	return m_x;
 }
 
-VOID JCDisplayObject::setY(FLOAT value)
+VOID JCDisplayObject::setY(FLOAT value, BOOL updateImmediate)
 {
 	m_y = value;
-	lockVertexBuffer();
-	updateVertexBufferXYWH();
-	unlockVertexBuffer();
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
 }
 
 FLOAT JCDisplayObject::getY()
@@ -43,12 +49,27 @@ FLOAT JCDisplayObject::getY()
 	return m_y;
 }
 
-VOID JCDisplayObject::setRefX(FLOAT value)
+VOID JCDisplayObject::setXY(FLOAT x, FLOAT y, BOOL updateImmediate)
+{
+	m_x = x;
+	m_y = y;
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
+}
+
+VOID JCDisplayObject::setRefX(FLOAT value, BOOL updateImmediate)
 {
 	m_refX = value;
-	lockVertexBuffer();
-	updateVertexBufferXYWH();
-	unlockVertexBuffer();
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
 }
 
 FLOAT JCDisplayObject::getRefX()
@@ -56,12 +77,15 @@ FLOAT JCDisplayObject::getRefX()
 	return m_refX;
 }
 
-VOID JCDisplayObject::setRefY(FLOAT value)
+VOID JCDisplayObject::setRefY(FLOAT value, BOOL updateImmediate)
 {
 	m_refY = value;
-	lockVertexBuffer();
-	updateVertexBufferXYWH();
-	unlockVertexBuffer();
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
 }
 
 FLOAT JCDisplayObject::getRefY()
@@ -69,12 +93,27 @@ FLOAT JCDisplayObject::getRefY()
 	return m_refY;
 }
 
-VOID JCDisplayObject::setWidth(FLOAT value)
+VOID JCDisplayObject::setRefXY(FLOAT x, FLOAT y, BOOL updateImmediate)
+{
+	m_refX = x;
+	m_refY = y;
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
+}
+
+VOID JCDisplayObject::setWidth(FLOAT value, BOOL updateImmediate)
 {
 	m_width = value;
-	lockVertexBuffer();
-	updateVertexBufferXYWH();
-	unlockVertexBuffer();
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
 }
 
 FLOAT JCDisplayObject::getWidth()
@@ -82,12 +121,20 @@ FLOAT JCDisplayObject::getWidth()
 	return m_width;
 }
 
-VOID JCDisplayObject::setHeight(FLOAT value)
+FLOAT JCDisplayObject::getWidthOriginal()
+{
+	return m_widthOriginal;
+}
+
+VOID JCDisplayObject::setHeight(FLOAT value, BOOL updateImmediate)
 {
 	m_height = value;
-	lockVertexBuffer();
-	updateVertexBufferXYWH();
-	unlockVertexBuffer();
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
 }
 
 FLOAT JCDisplayObject::getHeight()
@@ -95,9 +142,32 @@ FLOAT JCDisplayObject::getHeight()
 	return m_height;
 }
 
-VOID JCDisplayObject::setRotation(FLOAT value)
+FLOAT JCDisplayObject::getHeightOriginal()
+{
+	return m_heightOriginal;
+}
+
+VOID JCDisplayObject::setWidthHeight(FLOAT width, FLOAT height, BOOL updateImmediate)
+{
+	m_width = width;
+	m_height = height;
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}	
+}
+
+VOID JCDisplayObject::setRotation(FLOAT value, BOOL updateImmediate)
 {
 	m_rotation = value;
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		unlockVertexBuffer();
+	}
 }
 
 FLOAT JCDisplayObject::getRotation()
@@ -105,7 +175,7 @@ FLOAT JCDisplayObject::getRotation()
 	return m_rotation;
 }
 
-VOID JCDisplayObject::setTexture(IDirect3DTexture9* texture)
+VOID JCDisplayObject::setTexture(IDirect3DTexture9* texture, BOOL updateImmediate)
 {
 	m_lpTexture = texture;
 	initVertexBuffer();
@@ -113,11 +183,15 @@ VOID JCDisplayObject::setTexture(IDirect3DTexture9* texture)
 	{
 		D3DSURFACE_DESC dest;
 		m_lpTexture->GetLevelDesc(0, &dest);
-		setWidthHeight((FLOAT)dest.Width, (FLOAT)dest.Height);
+		m_widthOriginal = (FLOAT)dest.Width;
+		m_heightOriginal = (FLOAT)dest.Height;
+		setWidthHeight((FLOAT)dest.Width, (FLOAT)dest.Height, updateImmediate);
 	}
 	else
 	{
-		setWidthHeight(0.0f, 0.0f);
+		m_widthOriginal = 0.0f;
+		m_heightOriginal = 0.0f;
+		setWidthHeight(0.0f, 0.0f, updateImmediate);
 	}
 }
 
@@ -136,12 +210,15 @@ JCDisplayObjectContainer* JCDisplayObject::getParent()
 	return m_lpParent;
 }
 
-VOID JCDisplayObject::setAlpha(FLOAT value)
+VOID JCDisplayObject::setAlpha(FLOAT value, BOOL updateImmediate)
 {
 	m_alpha = min(max(value, 0.0f), 1.0f);
-	lockVertexBuffer();
-	updateVertexBufferAlpha();
-	unlockVertexBuffer();
+	if(m_lpTexture != NULL && updateImmediate)
+	{
+		lockVertexBuffer();
+		updateVertexBufferAlpha();
+		unlockVertexBuffer();
+	}
 }
 
 FLOAT JCDisplayObject::getAlpha()
@@ -157,24 +234,6 @@ VOID JCDisplayObject::setAlphaEnabled(BOOL value)
 BOOL JCDisplayObject::getAlphaEnabled()
 {
 	return m_alphaEnabled;
-}
-
-VOID JCDisplayObject::setWidthHeight(FLOAT width, FLOAT height)
-{
-	m_width = width;
-	m_height = height;
-	lockVertexBuffer();
-	updateVertexBufferXYWH();
-	unlockVertexBuffer();
-}
-
-VOID JCDisplayObject::setXY(FLOAT x, FLOAT y)
-{
-	m_x = x;
-	m_y = y;
-	lockVertexBuffer();
-	updateVertexBufferXYWH();
-	unlockVertexBuffer();
 }
 
 VOID JCDisplayObject::render()
@@ -202,6 +261,20 @@ VOID JCDisplayObject::render()
 		m_lpd3dd->SetFVF(Vertex::FVF);
 		m_lpd3dd->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 	}
+}
+
+VOID JCDisplayObject::renderUpdate(BOOL alpha, BOOL xywh)
+{
+	lockVertexBuffer();
+	if(alpha)
+	{
+		updateVertexBufferAlpha();
+	}
+	if(xywh)
+	{
+		updateVertexBufferXYWH();
+	}
+	unlockVertexBuffer();
 }
 
 VOID JCDisplayObject::initVertexBuffer()
@@ -236,14 +309,20 @@ inline VOID JCDisplayObject::lockVertexBuffer()
 
 inline VOID JCDisplayObject::updateVertexBufferXYWH()
 {
-	m_lpVBData[0].x = m_x - m_refX;
-	m_lpVBData[0].y = m_y - m_refY + m_height;
-	m_lpVBData[1].x = m_x - m_refX;
-	m_lpVBData[1].y = m_y - m_refY;
-	m_lpVBData[2].x = m_x - m_refX + m_width;
-	m_lpVBData[2].y = m_y - m_refY + m_height;
-	m_lpVBData[3].x = m_x - m_refX + m_width;
-	m_lpVBData[3].y = m_y - m_refY;
+	// x1=cos(angle)*x-sin(angle)*y;
+	// y1=cos(angle)*y+sin(angle)*x;
+
+	m_lpVBData[0].x = m_x + cosf(m_rotation) * (-m_refX) - sinf(m_rotation) * (m_height - m_refY);
+	m_lpVBData[0].y = m_y + cosf(m_rotation) * (m_height - m_refY) + sinf(m_rotation) * (-m_refX);
+
+	m_lpVBData[1].x = m_x + cosf(m_rotation) * (-m_refX) - sinf(m_rotation) * (-m_refY);
+	m_lpVBData[1].y = m_y + cosf(m_rotation) * (-m_refY) + sinf(m_rotation) * (-m_refX);
+
+	m_lpVBData[2].x = m_x + cosf(m_rotation) * (m_width - m_refX) - sinf(m_rotation) * (m_height - m_refY);
+	m_lpVBData[2].y = m_y + cosf(m_rotation) * (m_height - m_refY) + sinf(m_rotation) * (m_width - m_refX);
+
+	m_lpVBData[3].x = m_x + cosf(m_rotation) * (m_width - m_refX) - sinf(m_rotation) * (-m_refY);
+	m_lpVBData[3].y = m_y + cosf(m_rotation) * (-m_refY) + sinf(m_rotation) * (m_width - m_refX);
 }
 
 inline VOID JCDisplayObject::updateVertexBufferAlpha()
