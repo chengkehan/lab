@@ -47,6 +47,7 @@ BOOL jcd3d::jcd3d_setup()
 	lpCursor = new JCDisplayObject(jcd3d_lpd3dd);
 	lpCursor->setTexture(lpTexture);
 	//lpCursor->setAlphaEnabled(TRUE);
+	//lpCursor->setAlpha(0.5f);
 	lpCursor->setWidth(100);
 	lpCursor->setHeight(100);
 	lpCursor->setRefXY(lpCursor->getWidth() * 0.5f, lpCursor->getHeight() * 0.5f);
@@ -78,7 +79,10 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 	}
 
 	lpCursor->setXY((FLOAT)jcdi_mouseX, (FLOAT)jcdi_mouseY);
-	lpCursor->setRotation(lpCursor->getRotation() + 0.1f);
+	if(jcdi_mouseLeftButtonDown)
+	{
+		lpCursor->setRotation(lpCursor->getRotation() + 0.1f);
+	}
 	lpCursor->renderUpdate(FALSE, TRUE);
 	lpCursor->render();
 }

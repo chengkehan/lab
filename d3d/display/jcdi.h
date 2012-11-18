@@ -25,6 +25,9 @@ namespace jcdi
 	extern RECT jcdi_mouseClipOriginal;
 	extern FLOAT jcdi_mouseSpeed;
 	extern DIMOUSESTATE jcdi_mouseState;
+	extern BOOL jcdi_mouseLeftButtonDown;
+	extern BOOL jcdi_mouseRightButtonDown;
+	extern BOOL jcdi_mouseMiddleButtonDown;
 	extern UCHAR jcdi_keyboardState[256];
 
 	BOOL jcdi_initInput(HINSTANCE hInstance, HWND hwnd);

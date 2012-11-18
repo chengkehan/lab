@@ -14,6 +14,9 @@ RECT jcdi::jcdi_mouseClipOriginal;
 BOOL jcdi::jcdi_mouseLockedOnWindow = FALSE;
 FLOAT jcdi::jcdi_mouseSpeed = 1.0f;
 DIMOUSESTATE jcdi::jcdi_mouseState;
+BOOL jcdi::jcdi_mouseLeftButtonDown = FALSE;
+BOOL jcdi::jcdi_mouseRightButtonDown = FALSE;
+BOOL jcdi::jcdi_mouseMiddleButtonDown = FALSE;
 UCHAR jcdi::jcdi_keyboardState[256];
 
 using namespace jcwin32;
@@ -239,6 +242,9 @@ BOOL jcdi::jcdi_updateMouse()
 	{
 		jcdi_mouseX = max(min(jcdi_mouseX + (INT)((FLOAT)jcdi_mouseState.lX * jcdi_mouseSpeed), jcdi_mouseClientWidth), 0);
 		jcdi_mouseY = max(min(jcdi_mouseY + (INT)((FLOAT)jcdi_mouseState.lY * jcdi_mouseSpeed), jcdi_mouseClientHeight), 0);
+		jcdi_mouseLeftButtonDown = jcdi_mouseState.rgbButtons[0];
+		jcdi_mouseRightButtonDown = jcdi_mouseState.rgbButtons[1];
+		jcdi_mouseMiddleButtonDown = jcdi_mouseState.rgbButtons[2];
 	}
 
 	return TRUE;
