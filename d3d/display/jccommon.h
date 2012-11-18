@@ -16,5 +16,8 @@
 #define jccommon_memsetM(lpDest, value, destBytes) { assert(lpDest != NULL); memset(lpDest, value, destBytes); }
 #define jccommon_memcpyM(lpDest, lpSrc, srcBytes) { assert(lpDest != NULL); assert(lpSrc != NULL); memcpy(lpDest, lpSrc, srcBytes); }
 #define jccommon_zeromem(lpDest, destBytes) { assert(lpDest != NULL) ; memset(lpDest, 0, destBytes); }
+#define jccommon_memcpyM(lpDest, lpSrc, srcBytes) { assert(lpDest != NULL); assert(lpSrc != NULL); memcpy(lpDest, lpSrc, srcBytes); }
+
+#define jccommon_hResultVerifyM(hResult) { if(FAILED(hResult)) { assert(FALSE); } }
 
 #endif
