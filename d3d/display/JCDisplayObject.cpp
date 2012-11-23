@@ -239,20 +239,41 @@ inline VOID JCDisplayObject::updateVertexBufferXYWH()
 	// x1=cos(angle)*x-sin(angle)*y;
 	// y1=cos(angle)*y+sin(angle)*x;
 
-	FLOAT width = m_widthOriginal * m_scaleX;
-	FLOAT height = m_heightOriginal * m_scaleY;
+	FLOAT global_x = 0.0f;
+	FLOAT global_y = 0.0f;
+	FLOAT global_scaleX = 1.0f;
+	FLOAT global_scaleY = 1.0f;
+	FLOAT global_Rotation = 0.0f;
+	JCDisplayObject* target = this;
+	while(target->getParent() != NULL)
+	{
+		global_x += target->getX() + target->getRefX();
+		global_y += target->getY() + target->getRefY();
+		global_scaleX *= target->getScaleX();
+		global_scaleY *= target->getScaleY();
+		global_Rotation += target->getRotation();
+		target = (JCDisplayObject*)target->getParent();
+	}
 
-	m_lpVBData[0].x = m_x + cosf(m_rotation) * (-m_refX) - sinf(m_rotation) * (height - m_refY);
-	m_lpVBData[0].y = m_y + cosf(m_rotation) * (height - m_refY) + sinf(m_rotation) * (-m_refX);
+	FLOAT x = global_x + m_x;
+	FLOAT y = global_y + m_y;
+	FLOAT width = m_widthOriginal * m_scaleX * global_scaleX;
+	FLOAT height = m_heightOriginal * m_scaleY * global_scaleY;
+	FLOAT rotation = m_rotation + global_Rotation;
+	FLOAT refX = m_refX * m_scaleX * global_scaleX;
+	FLOAT refY = m_refY * m_scaleY * global_scaleY;
 
-	m_lpVBData[1].x = m_x + cosf(m_rotation) * (-m_refX) - sinf(m_rotation) * (-m_refY);
-	m_lpVBData[1].y = m_y + cosf(m_rotation) * (-m_refY) + sinf(m_rotation) * (-m_refX);
+	m_lpVBData[0].x = x + cosf(rotation) * (-refX) - sinf(rotation) * (height - refY);
+	m_lpVBData[0].y = y + cosf(rotation) * (height - refY) + sinf(rotation) * (-refX);
 
-	m_lpVBData[2].x = m_x + cosf(m_rotation) * (width - m_refX) - sinf(m_rotation) * (height - m_refY);
-	m_lpVBData[2].y = m_y + cosf(m_rotation) * (height - m_refY) + sinf(m_rotation) * (width - m_refX);
+	m_lpVBData[1].x = x + cosf(rotation) * (-refX) - sinf(rotation) * (-refY);
+	m_lpVBData[1].y = y + cosf(rotation) * (-refY) + sinf(rotation) * (-refX);
 
-	m_lpVBData[3].x = m_x + cosf(m_rotation) * (width - m_refX) - sinf(m_rotation) * (-m_refY);
-	m_lpVBData[3].y = m_y + cosf(m_rotation) * (-m_refY) + sinf(m_rotation) * (width - m_refX);
+	m_lpVBData[2].x = x + cosf(rotation) * (width - refX) - sinf(rotation) * (height - refY);
+	m_lpVBData[2].y = y + cosf(rotation) * (height - refY) + sinf(rotation) * (width - refX);
+
+	m_lpVBData[3].x = x + cosf(rotation) * (width - refX) - sinf(rotation) * (-refY);
+	m_lpVBData[3].y = y + cosf(rotation) * (-refY) + sinf(rotation) * (width - refX);
 }
 
 inline VOID JCDisplayObject::updateVertexBufferAlpha()
