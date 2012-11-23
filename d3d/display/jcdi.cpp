@@ -23,7 +23,6 @@ using namespace jcwin32;
 
 BOOL jcdi::jcdi_initInputDevice(HINSTANCE hInstance)
 {
-	jccommon_assertM(hInstance != NULL);
 	if(hInstance == NULL)
 	{
 		return FALSE;
@@ -42,8 +41,6 @@ BOOL jcdi::jcdi_initInputDevice(HINSTANCE hInstance)
 
 BOOL jcdi::jcdi_initKeyboard(HINSTANCE hInstance, HWND hwnd)
 {
-	jccommon_assertM(hInstance != NULL);
-	jccommon_assertM(hwnd != NULL);
 	if(hInstance == NULL || hwnd == NULL)
 	{
 		return FALSE;
@@ -88,8 +85,6 @@ BOOL jcdi::jcdi_initKeyboard(HINSTANCE hInstance, HWND hwnd)
 
 BOOL jcdi::jcdi_initMouse(HINSTANCE hInstance, HWND hwnd)
 {
-	jccommon_assertM(hInstance != NULL);
-	jccommon_assertM(hwnd != NULL);
 	if(hInstance == NULL || hwnd == NULL)
 	{
 		return FALSE;

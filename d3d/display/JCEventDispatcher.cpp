@@ -9,7 +9,7 @@ JCEventDispatcher::JCEventDispatcher()
 
 JCEventDispatcher::~JCEventDispatcher()
 {
-	for(HandlersMap::iterator iterMap = m_eventHandlers.begin(); iterMap != m_eventHandlers.end(); iterMap++)
+	for(HandlersMap::iterator iterMap = m_eventHandlers.begin(); iterMap != m_eventHandlers.end(); ++iterMap)
 	{
 		HandlerList* list = iterMap->second;
 		jccommon_deleteM(list);
@@ -26,16 +26,8 @@ BOOL JCEventDispatcher::addEventListener(INT eventID, EventHandler handler)
 	HandlersMap::iterator iter = m_eventHandlers.find(eventID);
 	if(iter != m_eventHandlers.end())
 	{
-		HandlerList::iterator iterList = find((*iter->second).begin(), (*iter->second).end(), handler);
-		if(iterList == (*iter->second).end())
-		{
-			(*iter->second).push_back(handler);
-			return TRUE;
-		}
-		else
-		{
-			return FALSE;
-		}
+		iter->second->push_back(handler);
+		return TRUE;
 	}
 	else
 	{
@@ -54,13 +46,18 @@ BOOL JCEventDispatcher::removeEventListener(INT eventID, EventHandler handler)
 		return FALSE;
 	}
 
-	for(HandlersMap::iterator iterMap = m_eventHandlers.begin(); iterMap != m_eventHandlers.end(); iterMap++)
+	for(HandlersMap::iterator iterMap = m_eventHandlers.begin(); iterMap != m_eventHandlers.end(); ++iterMap)
 	{
 		if(iterMap->first == eventID)
 		{
-			HandlerList* list = iterMap->second;
-			list->remove(handler);
-			break;
+			for(HandlerList::iterator iterList = iterMap->second->begin(); iterList != iterMap->second->end(); ++iterList)
+			{
+				if(*iterList == handler)
+				{
+					iterMap->second->erase(iterList);
+					break;
+				}
+			}
 		}
 	}
 	return TRUE;
@@ -79,11 +76,11 @@ BOOL JCEventDispatcher::dispatchEvent(JCEvent* lpEvent)
 		return FALSE;
 	}
 
-	for(HandlersMap::iterator iterMap = m_eventHandlers.begin(); iterMap != m_eventHandlers.end(); iterMap++)
+	for(HandlersMap::iterator iterMap = m_eventHandlers.begin(); iterMap != m_eventHandlers.end(); ++iterMap)
 	{
 		if(iterMap->first == lpEvent->eventID)
 		{
-			for (HandlerList::iterator iterList = (*iterMap->second).begin(); iterList != (*iterMap->second).end(); iterList++)
+			for (HandlerList::iterator iterList = iterMap->second->begin(); iterList != iterMap->second->end(); ++iterList)
 			{
 				((EventHandler)*iterList)(lpEvent);
 			}

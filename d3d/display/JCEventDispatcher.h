@@ -26,6 +26,9 @@ public:
 	BOOL dispatchEvent(JCEvent* lpEvent);
 
 private:
+	JCEventDispatcher(CONST JCEventDispatcher& eventDispatcher);
+
+private:
 	typedef std::list<EventHandler> HandlerList;
 	typedef std::map<INT, HandlerList*> HandlersMap;
 

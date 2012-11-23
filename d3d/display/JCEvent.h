@@ -8,11 +8,14 @@
 class JCEvent : public JCObject
 {
 public:
-	JCEvent();
+	JCEvent(INT pEventID);
 	virtual ~JCEvent();
 
 public:
 	INT eventID;
+
+private:
+	JCEvent(CONST JCEvent& jcEvent);
 };
 
 #endif

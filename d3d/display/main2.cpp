@@ -48,9 +48,8 @@ BOOL jcd3d::jcd3d_setup()
 	lpCursor->setTexture(lpTexture);
 	//lpCursor->setAlphaEnabled(TRUE);
 	//lpCursor->setAlpha(0.5f);
-	lpCursor->setWidth(100);
-	lpCursor->setHeight(100);
-	lpCursor->setRefXY(lpCursor->getWidth() * 0.5f, lpCursor->getHeight() * 0.5f);
+	lpCursor->setRefX(lpCursor->getWidth() * 0.5f);
+	lpCursor->setRefY(lpCursor->getHeight() * 0.5f);
 
 	if(!jcdi_initInput(jcd3d_hInstance, jcd3d_hwnd))
 	{
@@ -78,12 +77,20 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 		return;
 	}
 
-	lpCursor->setXY((FLOAT)jcdi_mouseX, (FLOAT)jcdi_mouseY);
+	lpCursor->setX((FLOAT)jcdi_mouseX);
+	lpCursor->setY((FLOAT)jcdi_mouseY);
 	if(jcdi_mouseLeftButtonDown)
 	{
 		lpCursor->setRotation(lpCursor->getRotation() + 0.1f);
+
+		static FLOAT scaleA = 1.0f;
+		if(lpCursor->getScaleX() < 1.0f || lpCursor->getScaleX() > 3.0f)
+		{
+			scaleA *= -1.0f;
+		}
+		lpCursor->setScaleX(lpCursor->getScaleX() + 0.05f * scaleA);
+		lpCursor->setScaleY(lpCursor->getScaleY() + 0.05f * scaleA);
 	}
-	lpCursor->renderUpdate(FALSE, TRUE);
 	lpCursor->render();
 }
 

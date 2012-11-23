@@ -14,6 +14,7 @@ class JCDisplayObjectContainer;
 class JCDisplayObject : public JCEventDispatcher
 {
 public:
+	friend class JCDisplayObjectContainer;
 	struct Vertex
 	{
 		FLOAT x, y, z;
@@ -35,62 +36,61 @@ public:
 	virtual ~JCDisplayObject();
 
 public:
-	VOID setX(FLOAT value, BOOL updateImmediate = FALSE);
-	FLOAT getX();
+	VOID setX(FLOAT value);
+	FLOAT getX() CONST;
 
-	VOID setY(FLOAT value, BOOL updateImmediate = FALSE);
-	FLOAT getY();
+	VOID setY(FLOAT value);
+	FLOAT getY() CONST;
 
-	VOID setXY(FLOAT x, FLOAT y, BOOL updateImmediate = FALSE);
+	VOID setRefX(FLOAT value);
+	FLOAT getRefX() CONST;
 
-	VOID setRefX(FLOAT value, BOOL updateImmediate = FALSE);
-	FLOAT getRefX();
+	VOID setRefY(FLOAT value);
+	FLOAT getRefY() CONST;
 
-	VOID setRefY(FLOAT value, BOOL updateImmediate = FALSE);
-	FLOAT getRefY();
+	VOID setWidth(FLOAT value);
+	FLOAT getWidth() CONST;
+	FLOAT getWidthOriginal() CONST;
 
-	VOID setRefXY(FLOAT x, FLOAT y, BOOL updateImmediate = FALSE);
+	VOID setHeight(FLOAT value);
+	FLOAT getHeight() CONST;
+	FLOAT getHeightOriginal() CONST;
 
-	VOID setWidth(FLOAT value, BOOL updateImmediate = FALSE);
-	FLOAT getWidth();
-	FLOAT getWidthOriginal();
+	VOID setScaleX(FLOAT value);
+	FLOAT getScaleX();
 
-	VOID setHeight(FLOAT value, BOOL updateImmediate = FALSE);
-	FLOAT getHeight();
-	FLOAT getHeightOriginal();
-	
-	VOID setWidthHeight(FLOAT width, FLOAT height, BOOL updateImmediate = FALSE);
+	VOID setScaleY(FLOAT value);
+	FLOAT getScaleY();
 
-	VOID setRotation(FLOAT value, BOOL updateImmediate = FALSE);
-	FLOAT getRotation();
+	VOID setRotation(FLOAT value);
+	FLOAT getRotation() CONST;
 
-	VOID setTexture(IDirect3DTexture9* texture, BOOL updateImmediate = FALSE);
-	IDirect3DTexture9* getTexture();
+	VOID setTexture(IDirect3DTexture9* texture);
+	IDirect3DTexture9* getTexture() CONST;
 
-	VOID setParent(JCDisplayObjectContainer* parent);
-	JCDisplayObjectContainer* getParent();
+	JCDisplayObjectContainer* getParent() CONST;
 
-	VOID setAlpha(FLOAT value, BOOL updateImmediate = FALSE);
-	FLOAT getAlpha();
+	VOID setAlpha(FLOAT value);
+	FLOAT getAlpha() CONST;
 
 	VOID setAlphaEnabled(BOOL value);
-	BOOL getAlphaEnabled();
+	BOOL getAlphaEnabled() CONST;
 
-	VOID renderUpdate(BOOL alpha = TRUE, BOOL xywh = TRUE);
-	VOID render();
+	virtual VOID render();
 
 private:
 	JCDisplayObject();
+	JCDisplayObject(CONST JCDisplayObject& value);
 
 private:
 	FLOAT m_refX;
 	FLOAT m_refY;
 	FLOAT m_x;
 	FLOAT m_y;
-	FLOAT m_width;
 	FLOAT m_widthOriginal;
-	FLOAT m_height;
 	FLOAT m_heightOriginal;
+	FLOAT m_scaleX;
+	FLOAT m_scaleY;
 	FLOAT m_rotation;
 	IDirect3DTexture9* m_lpTexture;
 	JCDisplayObjectContainer* m_lpParent;
@@ -110,6 +110,7 @@ private:
 	inline VOID updateVertexBufferXYWH();
 	inline VOID updateVertexBufferAlpha();
 	inline VOID unlockVertexBuffer();
+	VOID setParent(JCDisplayObjectContainer* parent);
 };
 
 #endif
