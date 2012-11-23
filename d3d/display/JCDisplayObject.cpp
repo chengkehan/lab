@@ -244,8 +244,8 @@ inline VOID JCDisplayObject::updateVertexBufferXYWH()
 	FLOAT global_scaleX = 1.0f;
 	FLOAT global_scaleY = 1.0f;
 	FLOAT global_Rotation = 0.0f;
-	JCDisplayObject* target = this;
-	while(target->getParent() != NULL)
+	JCDisplayObject* target = (JCDisplayObject*)getParent();
+	while(target != NULL)
 	{
 		global_x += target->getX() + target->getRefX();
 		global_y += target->getY() + target->getRefY();
