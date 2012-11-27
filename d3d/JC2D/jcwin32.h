@@ -19,6 +19,9 @@ namespace jcwin32
 
 	BOOL jcwin32_clipCursor(RECT* lpRect);
 	BOOL jcwin32_getClipCursor(RECT* lpRect);
+
+	inline BOOL jcwin32_keyDown(INT vkCode);
+	inline BOOL jcwin32_keyUp(INT vkCode);
 }
 
 #endif

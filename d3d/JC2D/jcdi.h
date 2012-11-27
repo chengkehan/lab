@@ -1,5 +1,5 @@
-#ifndef __JCDI_H__
-#define __JCDI_H__
+#ifndef __JC_DI_H__
+#define __JC_DI_H__
 
 #define DIRECTINPUT_VERSION 0x0800
 
@@ -9,40 +9,54 @@
 #include "jccommon.h"
 #include "jcwin32.h"
 
-namespace jcdi
+class JCDI
 {
-	extern HINSTANCE jcdi_hInstance;
-	extern HWND jcdi_hwnd;
-	extern IDirectInput8* jcdi_lpInputDevice;
-	extern IDirectInputDevice8* jcdi_lpKeyboard;
-	extern IDirectInputDevice8* jcdi_lpMouse;
+public:
+	JCDI();
+	~JCDI();
 
-	extern INT jcdi_mouseX;
-	extern INT jcdi_mouseY;
-	extern INT jcdi_mouseClientWidth;
-	extern INT jcdi_mouseClientHeight;
-	extern BOOL jcdi_mouseLockedOnWindow;
-	extern RECT jcdi_mouseClipOriginal;
-	extern FLOAT jcdi_mouseSpeed;
-	extern DIMOUSESTATE jcdi_mouseState;
-	extern BOOL jcdi_mouseLeftButtonDown;
-	extern BOOL jcdi_mouseRightButtonDown;
-	extern BOOL jcdi_mouseMiddleButtonDown;
-	extern UCHAR jcdi_keyboardState[256];
+	BOOL initInput(HINSTANCE hInstance, HWND hWnd);
+	BOOL initKeyboard(HINSTANCE hInstance, HWND hWnd);
+	BOOL initMouse(HINSTANCE hInstance, HWND hWnd);
+	BOOL updateInput();
+	BOOL updateKeyboard();
+	BOOL updateMouse();
+	BOOL keyDown(INT diKeyCode);
+	BOOL mouseLockOnWindow();
+	BOOL mouseUnlockOnWindow();
+	HWND getHWnd();
+	HINSTANCE getHInstance();
+	INT getMouseX();
+	INT getMouseY();
+	BOOL getMouseLockedOnWindow();
+	VOID setMouseSpeed(FLOAT speed);
+	FLOAT getMouseSpeed();
+	BOOL getMouseLeftButtonDown();
+	BOOL getMouseRightButtonDown();
+	BOOL getMouseMiddleButtonDown();
 
-	BOOL jcdi_initInput(HINSTANCE hInstance, HWND hwnd);
-	BOOL jcdi_initInputDevice(HINSTANCE hInstance);
-	BOOL jcdi_initKeyboard(HINSTANCE hInstance, HWND hwnd);
-	BOOL jcdi_initMouse(HINSTANCE hInstance, HWND hwnd);
-	VOID jcdi_releaseInput();
-	VOID jcdi_releaseKeyboard();
-	VOID jcdi_releaseMouse();
-	BOOL jcdi_updateInput();
-	BOOL jcdi_updateKeyboard();
-	BOOL jcdi_updateMouse();
-	BOOL jcdi_keyDown(INT diKeyCode);
-	BOOL jcdi_mouseLockOnWindow();
-	BOOL jcdi_mouseUnlockOnWindow();
-}
+private:
+	JCDI(CONST JCDI& di);
+
+	HWND m_hWnd;
+	HINSTANCE m_hInstance;
+	IDirectInput8* m_lpInput;
+	IDirectInputDevice8* m_lpKeyboard;
+	IDirectInputDevice8* m_lpMouse;
+	INT m_mouseX;
+	INT m_mouseY;
+	INT m_mouseClientWidth;
+	INT m_mouseClientHeight;
+	BOOL m_mouseLockedOnWindow;
+	RECT m_mouseClipOriginal;
+	FLOAT m_mouseSpeed;
+	DIMOUSESTATE m_mouseState;
+	BOOL m_mouseLeftButtonDown;
+	BOOL m_mouseRightButtonDown;
+	BOOL m_mouseMiddleButtonDown;
+	UCHAR m_keyboardState[256];
+
+	BOOL initInputDevice(HINSTANCE hInstance);
+};
 
 #endif

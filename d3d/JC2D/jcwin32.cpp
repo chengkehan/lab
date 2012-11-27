@@ -39,3 +39,13 @@ BOOL jcwin32::jcwin32_getClipCursor(RECT* lpRect)
 {
 	return GetClipCursor(lpRect);
 }
+
+inline BOOL jcwin32::jcwin32_keyDown(INT vkCode)
+{
+	return GetAsyncKeyState(vkCode) & 0x8000 ? TRUE : FALSE;
+}
+
+inline BOOL jcwin32::jcwin32_keyUp(INT vkCode)
+{
+	return GetAsyncKeyState(vkCode) & 0x8000 ? FALSE : TRUE;
+}

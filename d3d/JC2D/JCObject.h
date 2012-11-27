@@ -14,10 +14,10 @@ public:
 
 public:
 	VOID setName(LPCWCHAR name);
-	LPCWCHAR getName() CONST;
+	LPCWCHAR getName();
 
 	VOID setExtraData(LPVOID data);
-	LPVOID getExtraData() CONST;
+	LPVOID getExtraData();
 
 private:
 	JCObject(CONST JCObject& object);

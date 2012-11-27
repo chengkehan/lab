@@ -2,15 +2,18 @@
 
 using namespace std;
 
-JCTextureManager::JCTextureManager(IDirect3DDevice9* lpd3dd)
+JCTextureManager::JCTextureManager()
 {
-	jccommon_assertM(lpd3dd != NULL);
-	m_lpd3dd = lpd3dd;
+
 }
 
 JCTextureManager::~JCTextureManager()
 {
-
+	for (TEXTUREMAP::iterator iter = m_textureMap.begin(); iter != m_textureMap.end(); ++iter)
+	{
+		IDirect3DTexture9* lpTexture = iter->second;
+		jccommon_releaseComM(lpTexture);
+	}
 }
 
 IDirect3DTexture9* JCTextureManager::addTexture(INT id, IDirect3DTexture9* lpTexture)
@@ -22,7 +25,7 @@ IDirect3DTexture9* JCTextureManager::addTexture(INT id, IDirect3DTexture9* lpTex
 
 	if(containsTexture(id))
 	{
-		return NULL;
+		return getTexture(id);
 	}
 	else
 	{
@@ -31,18 +34,19 @@ IDirect3DTexture9* JCTextureManager::addTexture(INT id, IDirect3DTexture9* lpTex
 	}
 }
 
-IDirect3DTexture9* JCTextureManager::removeTexture(INT id)
+BOOL JCTextureManager::removeTexture(INT id)
 {
-	for (map<INT, IDirect3DTexture9*>::iterator iter = m_textureMap.begin(); iter != m_textureMap.end(); ++iter)
+	for (TEXTUREMAP::iterator iter = m_textureMap.begin(); iter != m_textureMap.end(); ++iter)
 	{
 		if(iter->first == id)
 		{
 			IDirect3DTexture9* lpTexture = iter->second;
 			m_textureMap.erase(iter);
-			return lpTexture;
+			jccommon_releaseComM(lpTexture);
+			return TRUE;
 		}
 	}
-	return NULL;
+	return FALSE;
 }
 
 IDirect3DTexture9* JCTextureManager::getTexture(INT id)
@@ -57,21 +61,22 @@ IDirect3DTexture9* JCTextureManager::getTexture(INT id)
 	}
 }
 
-IDirect3DTexture9* JCTextureManager::loadFileTexture(INT id, LPCWSTR path)
+IDirect3DTexture9* JCTextureManager::loadFileTexture(INT id, LPCWSTR path, IDirect3DDevice9* lpd3dd)
 {
 	if(containsTexture(id))
 	{
-		return NULL;
+		return getTexture(id);
 	}
 	else
 	{
 		IDirect3DTexture9* lpTexture = NULL;
-		if(FAILED(D3DXCreateTextureFromFile(m_lpd3dd, path, &lpTexture)))
+		if(FAILED(D3DXCreateTextureFromFile(lpd3dd, path, &lpTexture)))
 		{
 			return NULL;
 		}
 		else
 		{
+			m_textureMap[id] = lpTexture;
 			return lpTexture;
 		}
 	}

@@ -28,7 +28,7 @@ VOID JCObject::setName(LPCWCHAR name)
 	}
 }
 
-LPCWCHAR JCObject::getName() CONST
+LPCWCHAR JCObject::getName()
 {
 	return m_name;
 }
@@ -38,7 +38,7 @@ VOID JCObject::setExtraData(LPVOID data)
 	m_extraData = data;
 }
 
-LPVOID JCObject::getExtraData() CONST
+LPVOID JCObject::getExtraData()
 {
 	return m_extraData;
 }

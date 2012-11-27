@@ -1,160 +1,47 @@
-#include "jcd3d.h"
+#include "JCD3D.h"
 
-HWND jcd3d::jcd3d_hwnd = NULL;
-IDirect3DDevice9* jcd3d::jcd3d_lpd3dd = NULL;
-HINSTANCE jcd3d::jcd3d_hInstance = NULL;
+using namespace jcd3d;
 
-CONST DWORD jcd3d::JCD3D_Vertex_xyzrhw_diffuse_texture::FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-CONST DWORD jcd3d::JCD3D_Vertex_xyzrhw_texture::FVF = D3DFVF_XYZRHW | D3DFVF_TEX1;
-CONST DWORD jcd3d::JCD3D_Vertex_xyz_diffuse::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE;
-CONST DWORD jcd3d::JCD3D_Vertex_xyz_normal::FVF = D3DFVF_XYZ | D3DFVF_NORMAL;
-CONST DWORD jcd3d::JCD3D_Vertex_xyz_diffuse_texture::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-CONST DWORD jcd3d::JCD3D_Vertex_xyz_diffuse_texture2::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2;
+MSGMAP jcd3d::jcd3d_msgMap;
 
-INT jcd3d::jcd3d_windowX = 0;
-INT jcd3d::jcd3d_windowY = 0;
-INT jcd3d::jcd3d_windowWidth = 0;
-INT jcd3d::jcd3d_windowHeight = 0;
-
-jcd3d::JCCALLBACK jcd3d::jcd3d_windowMoveCallback = NULL;
-
-BOOL jcd3d::jcd3d_initRenderState(LPDIRECT3DDEVICE9 lpd3dd, DWORD cullMode, BOOL lighting, BOOL zEnable, DWORD shadeMode , DWORD fillMode , BOOL alphaBlendEnable)
+JCD3D::JCD3D():
+m_hWnd(NULL), m_hInstance(NULL), m_lpd3dd(NULL), 
+m_windowX(0), m_windowY(0), m_windowWidth(0), m_windowHeight(0), m_windowd(FALSE), 
+m_init(FALSE), m_running(FALSE)
 {
-	if(lpd3dd == NULL)
-	{
-		return FALSE;
-	}
-	else
-	{
-		if(FAILED(lpd3dd->SetRenderState(D3DRS_CULLMODE, cullMode)))
-		{
-			return FALSE;
-		}
-		if(FAILED(lpd3dd->SetRenderState(D3DRS_LIGHTING, lighting)))
-		{
-			return FALSE;
-		}
-		if(FAILED(lpd3dd->SetRenderState(D3DRS_ZENABLE, zEnable)))
-		{
-			return FALSE;
-		}
-		if(FAILED(lpd3dd->SetRenderState(D3DRS_SHADEMODE, shadeMode)))
-		{
-			return FALSE;
-		}
-		if(FAILED(lpd3dd->SetRenderState(D3DRS_FILLMODE, fillMode)))
-		{
-			return FALSE;
-		}
-		if(FAILED(lpd3dd->SetRenderState(D3DRS_ALPHABLENDENABLE, alphaBlendEnable)))
-		{
-			return FALSE;
-		}
+	setMessageCallback(WM_DESTROY, jcd3d_winDestroyProc);
+	setMessageCallback(WM_KEYDOWN, jcd3d_winCloseProc);
+}
 
+JCD3D::~JCD3D()
+{
+	if(release != NULL)
+	{
+		release();
+	}
+	jccommon_releaseComM(m_lpd3dd);
+}
+
+BOOL JCD3D::init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth, INT windowHeight, BOOL windowed, D3DDEVTYPE deviceType, DWORD maxTextureBlendStages)
+{
+	if(m_init)
+	{
 		return TRUE;
 	}
-}
+	m_init = TRUE;
 
-BOOL jcd3d::jcd3d_setProjectionPerspectiveTransform(LPDIRECT3DDEVICE9 lpd3dd, INT windowWidth, INT windowHeight)
-{
-	if(lpd3dd == NULL)
-	{
-		return NULL;
-	}
-	else
-	{
-		D3DXMATRIX out;
-		D3DXMatrixPerspectiveFovLH(&out, D3DX_PI * 0.5f, (FLOAT)windowWidth / (FLOAT)windowHeight, 1.0f, 1000.0f);
-		if(FAILED(lpd3dd->SetTransform(D3DTS_PROJECTION, &out)))
-		{
-			return FALSE;
-		}
-		else
-		{
-			return TRUE;
-		}
-	}
-}
+	m_hInstance = hInstance;
+	m_windowX = windowX;
+	m_windowY = windowY;
+	m_windowWidth = windowWidth;
+	m_windowHeight = windowHeight;
 
-BOOL jcd3d::jcd3d_setProjectionOrthoTransform(LPDIRECT3DDEVICE9 lpd3dd, INT windowWidth, INT windowHeight)
-{
-	if(lpd3dd == NULL)
-	{
-		return NULL;
-	}
-	else
-	{
-		D3DXMATRIX out;
-		D3DXMatrixOrthoLH(&out, (FLOAT)windowWidth, (FLOAT)windowHeight, 1.0f, 1000.0f);
-		if(FAILED(lpd3dd->SetTransform(D3DTS_PROJECTION, &out)))
-		{
-			return FALSE;
-		}
-		else
-		{
-			return TRUE;
-		}
-	}
-}
-
-BOOL jcd3d::jcd3d_setViewTransform(LPDIRECT3DDEVICE9 lpd3dd, D3DXVECTOR3* lpeye, D3DXVECTOR3* lptarget, D3DXVECTOR3* lpup)
-{
-	if(lpd3dd == NULL || lpeye == NULL || lptarget == NULL || lpup == NULL)
-	{
-		return FALSE;
-	}
-	else
-	{
-		D3DXMATRIX out;
-		D3DXMatrixLookAtLH(&out, lpeye, lptarget, lpup);
-		if(FAILED(lpd3dd->SetTransform(D3DTS_VIEW, &out)))
-		{
-			return FALSE;
-		}
-		else
-		{
-			return TRUE;
-		}
-	}
-}
-BOOL jcd3d::jcd3d_setViewTransform(LPDIRECT3DDEVICE9 lpd3dd, FLOAT eyeX, FLOAT eyeY, FLOAT eyeZ, FLOAT targetX, FLOAT targetY, FLOAT targetZ, FLOAT upX, FLOAT upY, FLOAT upZ)
-{
-	if(lpd3dd == NULL)
-	{
-		return FALSE;
-	}
-	else
-	{
-		D3DXMATRIX out;
-		D3DXVECTOR3 eye(eyeX, eyeY, eyeZ);
-		D3DXVECTOR3 target(targetX, targetY, targetZ);
-		D3DXVECTOR3 up(upX, upY, upZ);
-		D3DXMatrixLookAtLH(&out, &eye, &target, &up);
-		if(FAILED(lpd3dd->SetTransform(D3DTS_VIEW, &out)))
-		{
-			return FALSE;
-		}
-		else
-		{
-			return TRUE;
-		}
-	}
-}
-
-BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth, INT windowHeight, BOOL windowed, D3DDEVTYPE deviceType, DWORD maxTextureBlendStages)
-{
-	jcd3d_hInstance = hInstance;
-	jcd3d_windowX = windowX;
-	jcd3d_windowY = windowY;
-	jcd3d_windowWidth = windowWidth;
-	jcd3d_windowHeight = windowHeight;
-
-	// 创建窗口
+	// Create window
 	WNDCLASS wc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = jcd3d_wndProc;
+	wc.lpfnWndProc = jcd3d_winProc;
 	wc.hInstance = hInstance;
 	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -168,18 +55,18 @@ BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT windowX, INT windowY, INT window
 		return FALSE;
 	}
 
-	HWND hwnd = CreateWindow(L"jcd3dApp", L"JCD3D_APP", WS_EX_TOPMOST, windowX, windowY, windowWidth, windowHeight, NULL, NULL, hInstance, NULL);
+	HWND hwnd = CreateWindow(L"jcd3dApp", L"jcd3dApp", WS_EX_TOPMOST, windowX, windowY, windowWidth, windowHeight, NULL, NULL, hInstance, NULL);
 	if(!hwnd)
 	{
 		jcwin32_messageBoxErrorM("CreateWindow Failed");
 		return FALSE;
 	}
 
-	jcd3d_hwnd = hwnd;
+	m_hWnd = hwnd;
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 
-	// 初始化D3D
+	// init D3D
 	LPDIRECT3D9 d3d9 = Direct3DCreate9(D3D_SDK_VERSION);
 	if(!d3d9)
 	{
@@ -221,7 +108,7 @@ BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT windowX, INT windowY, INT window
 	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT; // D3DPRESENT_INTERVAL_IMMEDIATE
 
-	HRESULT hr = d3d9->CreateDevice(D3DADAPTER_DEFAULT, deviceType, hwnd, vp, &d3dpp, &jcd3d_lpd3dd);
+	HRESULT hr = d3d9->CreateDevice(D3DADAPTER_DEFAULT, deviceType, hwnd, vp, &d3dpp, &m_lpd3dd);
 	if(FAILED(hr))
 	{
 		d3d9->Release();
@@ -229,12 +116,18 @@ BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT windowX, INT windowY, INT window
 		return FALSE;
 	}
 
-	if(!jcd3d_setup())
+	if(setup != NULL)
 	{
-		d3d9->Release();
-		jcd3d_release();
-		jcwin32_messageBoxErrorM("jcd3d_setup Failed");
-		return FALSE;
+		if(!setup())
+		{
+			d3d9->Release();
+			if(release != NULL)
+			{
+				release();
+			}
+			jcwin32_messageBoxErrorM("jcd3d_setup Failed");
+			return FALSE;
+		}
 	}
 
 	d3d9->Release();
@@ -242,10 +135,16 @@ BOOL jcd3d::jcd3d_init(HINSTANCE hInstance, INT windowX, INT windowY, INT window
 	return TRUE;
 }
 
-VOID jcd3d::jcd3d_loop()
+VOID JCD3D::run()
 {
+	if(m_running)
+	{
+		return;
+	}
+	m_running = TRUE;
+
 	MSG msg;
-	ZeroMemory(&msg, sizeof(MSG));
+	jccommon_zeromem(&msg, sizeof(MSG));
 
 	DWORD lastTime = timeGetTime();
 	while(msg.message != WM_QUIT)
@@ -259,45 +158,242 @@ VOID jcd3d::jcd3d_loop()
 		{
 			DWORD currTime = timeGetTime();
 			DWORD timeDelta = currTime - lastTime;
-			jcd3d_lpd3dd->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0);
-			jcd3d_lpd3dd->BeginScene();
-			jcd3d_display(currTime - lastTime);
-			jcd3d_lpd3dd->EndScene();
-			jcd3d_lpd3dd->Present(NULL, NULL, NULL, NULL);
+			m_lpd3dd->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0);
+			m_lpd3dd->BeginScene();
+			if(frame != NULL)
+			{
+				frame(currTime - lastTime);
+			}
+			m_lpd3dd->EndScene();
+			m_lpd3dd->Present(NULL, NULL, NULL, NULL);
 			lastTime = currTime;
 		}
 	}
-
-	jcd3d_release();
-	jccommon_releaseComM(jcd3d_lpd3dd);
-	jcd3d_hInstance = NULL;
-	jcd3d_hwnd = NULL;
-	jcd3d_windowMoveCallback = NULL;
 }
 
-LRESULT CALLBACK jcd3d::jcd3d_wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+HWND JCD3D::getHWnd()
 {
-	switch(msg)
+	return m_hWnd;
+}
+
+HINSTANCE JCD3D::getHInstance()
+{
+	return m_hInstance;
+}
+
+IDirect3DDevice9* JCD3D::getDirect3DDevice()
+{
+	return m_lpd3dd;
+}
+
+INT JCD3D::getWindowX()
+{
+	return m_windowX;
+}
+
+INT JCD3D::getWindowY()
+{
+	return m_windowY;
+}
+
+INT JCD3D::getWindowWidth()
+{
+	return m_windowWidth;
+}
+
+INT JCD3D::getWindowHeight()
+{
+	return m_windowHeight;
+}
+
+BOOL JCD3D::getWindowd()
+{
+	return m_windowd;
+}
+
+BOOL JCD3D::setMessageCallback(UINT msg, JCD3D_MessageCallback callback)
+{
+	if(callback == NULL)
 	{
-		case WM_DESTROY:
+		return FALSE;
+	}
+	else
+	{
+		jcd3d_msgMap[msg] = callback;
+		return TRUE;
+	}
+}
+
+BOOL JCD3D::clearMessageCallback(UINT msg)
+{
+	if(containsMesageCallback(msg))
+	{
+		jcd3d_msgMap.erase(msg);
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+BOOL JCD3D::containsMesageCallback(UINT msg)
+{
+	return jcd3d_msgMap.find(msg) != jcd3d_msgMap.end();
+}
+
+JCD3D_MessageCallback JCD3D::getMessageCallback(UINT msg)
+{
+	if(containsMesageCallback(msg))
+	{
+		return jcd3d_msgMap[msg];
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+CONST D3DXCOLOR JCD3D::COLOR_WHITE(D3DCOLOR_XRGB(0xFF, 0xFF, 0xFF));
+CONST D3DXCOLOR JCD3D::COLOR_BLACK(D3DCOLOR_XRGB(0x00, 0x00, 0x00));
+CONST D3DXCOLOR JCD3D::COLOR_RED(D3DCOLOR_XRGB(0xFF, 0x00, 0x00));
+CONST D3DXCOLOR JCD3D::COLOR_GREEN(D3DCOLOR_XRGB(0x00, 0xFF, 0x00));
+CONST D3DXCOLOR JCD3D::COLOR_BLUE(D3DCOLOR_XRGB(0x00, 0x00, 0xFF));
+CONST D3DXCOLOR JCD3D::COLOR_YELLOW(D3DCOLOR_XRGB(0xFF, 0xFF, 0x00));
+CONST D3DXCOLOR JCD3D::COLOR_CYAN(D3DCOLOR_XRGB(0x00, 0xFF, 0xFF));
+CONST D3DXCOLOR JCD3D::COLOR_MAGENTA(D3DCOLOR_XRGB(0xFF, 0x00, 0xFF));
+
+CONST D3DMATERIAL9 JCD3D::MATERIAL_WHITE = JCD3D::createMaterial(JCD3D::COLOR_WHITE, JCD3D::COLOR_WHITE, JCD3D::COLOR_WHITE, JCD3D::COLOR_BLACK, 2.0f);
+CONST D3DMATERIAL9 JCD3D::MATERIAL_RED = JCD3D::createMaterial(JCD3D::COLOR_RED, JCD3D::COLOR_RED, JCD3D::COLOR_RED, JCD3D::COLOR_BLACK, 2.0f);
+CONST D3DMATERIAL9 JCD3D::MATERIAL_GREEN = JCD3D::createMaterial(JCD3D::COLOR_GREEN, JCD3D::COLOR_GREEN, JCD3D::COLOR_GREEN, JCD3D::COLOR_BLACK, 2.0f);
+CONST D3DMATERIAL9 JCD3D::MATERIAL_BLUE = JCD3D::createMaterial(JCD3D::COLOR_BLUE, JCD3D::COLOR_BLUE, JCD3D::COLOR_BLUE, JCD3D::COLOR_BLACK, 2.0f);
+CONST D3DMATERIAL9 JCD3D::MATERIAL_YELLOW = JCD3D::createMaterial(JCD3D::COLOR_YELLOW, JCD3D::COLOR_YELLOW, JCD3D::COLOR_YELLOW, JCD3D::COLOR_YELLOW, 2.0f);
+
+BOOL JCD3D::setRenderState( LPDIRECT3DDEVICE9 lpd3dd, DWORD cullMode, BOOL lighting, BOOL zEnable, DWORD shadeMode, DWORD fillMode, BOOL alphaBlendEnable)
+{
+	if(lpd3dd == NULL)
+	{
+		return FALSE;
+	}
+	else
+	{
+		if(FAILED(lpd3dd->SetRenderState(D3DRS_CULLMODE, cullMode)))
 		{
-			DestroyWindow(hwnd);
-			break;
+			return FALSE;
 		}
-		case WM_MOVE:
+		if(FAILED(lpd3dd->SetRenderState(D3DRS_LIGHTING, lighting)))
 		{
-			if(jcd3d_windowMoveCallback != NULL)
-			{
-				jcd3d_windowMoveCallback();
-			}
-			break;
+			return FALSE;
+		}
+		if(FAILED(lpd3dd->SetRenderState(D3DRS_ZENABLE, zEnable)))
+		{
+			return FALSE;
+		}
+		if(FAILED(lpd3dd->SetRenderState(D3DRS_SHADEMODE, shadeMode)))
+		{
+			return FALSE;
+		}
+		if(FAILED(lpd3dd->SetRenderState(D3DRS_FILLMODE, fillMode)))
+		{
+			return FALSE;
+		}
+		if(FAILED(lpd3dd->SetRenderState(D3DRS_ALPHABLENDENABLE, alphaBlendEnable)))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+}
+
+BOOL JCD3D::setProjectionPerspectiveTransform(LPDIRECT3DDEVICE9 lpd3dd, INT windowWidth, INT windowHeight)
+{
+	if(lpd3dd == NULL)
+	{
+		return NULL;
+	}
+	else
+	{
+		D3DXMATRIX out;
+		D3DXMatrixPerspectiveFovLH(&out, D3DX_PI * 0.5f, (FLOAT)windowWidth / (FLOAT)windowHeight, 1.0f, 1000.0f);
+		if(FAILED(lpd3dd->SetTransform(D3DTS_PROJECTION, &out)))
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
 		}
 	}
-
-	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-D3DMATERIAL9 jcd3d::jcd3d_initMaterial(D3DXCOLOR ambient, D3DXCOLOR diffuse, D3DXCOLOR specular, D3DXCOLOR emissive, FLOAT power)
+BOOL JCD3D::setProjectionOrthoTransform(LPDIRECT3DDEVICE9 lpd3dd, INT windowWidth, INT windowHeight)
+{
+	if(lpd3dd == NULL)
+	{
+		return NULL;
+	}
+	else
+	{
+		D3DXMATRIX out;
+		D3DXMatrixOrthoLH(&out, (FLOAT)windowWidth, (FLOAT)windowHeight, 1.0f, 1000.0f);
+		if(FAILED(lpd3dd->SetTransform(D3DTS_PROJECTION, &out)))
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+}
+
+BOOL JCD3D::setViewTransform(LPDIRECT3DDEVICE9 lpd3dd, D3DXVECTOR3* lpeye, D3DXVECTOR3* lptarget, D3DXVECTOR3* lpup)
+{
+	if(lpd3dd == NULL || lpeye == NULL || lptarget == NULL || lpup == NULL)
+	{
+		return FALSE;
+	}
+	else
+	{
+		D3DXMATRIX out;
+		D3DXMatrixLookAtLH(&out, lpeye, lptarget, lpup);
+		if(FAILED(lpd3dd->SetTransform(D3DTS_VIEW, &out)))
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+}
+
+BOOL JCD3D::setViewTransform(LPDIRECT3DDEVICE9 lpd3dd, FLOAT eyeX, FLOAT eyeY, FLOAT eyeZ, FLOAT targetX, FLOAT targetY, FLOAT targetZ, FLOAT upX, FLOAT upY, FLOAT upZ)
+{
+	if(lpd3dd == NULL)
+	{
+		return FALSE;
+	}
+	else
+	{
+		D3DXMATRIX out;
+		D3DXVECTOR3 eye(eyeX, eyeY, eyeZ);
+		D3DXVECTOR3 target(targetX, targetY, targetZ);
+		D3DXVECTOR3 up(upX, upY, upZ);
+		D3DXMatrixLookAtLH(&out, &eye, &target, &up);
+		if(FAILED(lpd3dd->SetTransform(D3DTS_VIEW, &out)))
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+}
+
+D3DMATERIAL9 JCD3D::createMaterial(D3DXCOLOR ambient, D3DXCOLOR diffuse, D3DXCOLOR specular, D3DXCOLOR emissive, FLOAT power)
 {
 	D3DMATERIAL9 mtrl;
 	mtrl.Ambient = ambient;
@@ -309,23 +405,23 @@ D3DMATERIAL9 jcd3d::jcd3d_initMaterial(D3DXCOLOR ambient, D3DXCOLOR diffuse, D3D
 	return mtrl;
 }
 
-D3DLIGHT9 jcd3d::jcd3d_initDirectionalLight(D3DXVECTOR3* direction, D3DXCOLOR* color)
+D3DLIGHT9 JCD3D::createDirectionalLight(D3DXVECTOR3* direction, D3DXCOLOR* color)
 {
 	D3DLIGHT9 light;
-	ZeroMemory(&light, sizeof(D3DLIGHT9));
+	jccommon_zeromem(&light, sizeof(D3DLIGHT9));
 	light.Type = D3DLIGHT_DIRECTIONAL;
 	light.Ambient = (*color) * 0.4f;
 	light.Diffuse = *color;
 	light.Specular = (*color) * 0.6f;
 	light.Direction = *direction;
-
+	
 	return light;
 }
 
-D3DLIGHT9 jcd3d::jcd3d_initPointLight(D3DXVECTOR3* position, D3DXCOLOR* color)
+D3DLIGHT9 JCD3D::createPointLight(D3DXVECTOR3* position, D3DXCOLOR* color)
 {
 	D3DLIGHT9 light;
-	ZeroMemory(&light, sizeof(D3DLIGHT9));
+	jccommon_zeromem(&light, sizeof(D3DLIGHT9));
 	light.Type = D3DLIGHT_POINT;
 	light.Ambient = (*color) * 0.4f;
 	light.Diffuse = *color;
@@ -340,10 +436,10 @@ D3DLIGHT9 jcd3d::jcd3d_initPointLight(D3DXVECTOR3* position, D3DXCOLOR* color)
 	return light;
 }
 
-D3DLIGHT9 jcd3d::jcd3d_initSpotLight(D3DXVECTOR3* position, D3DXVECTOR3* direction, D3DXCOLOR* color)
+D3DLIGHT9 JCD3D::createSpotLight(D3DXVECTOR3* position, D3DXVECTOR3* direction, D3DXCOLOR* color)
 {
 	D3DLIGHT9 light;
-	ZeroMemory(&light, sizeof(D3DLIGHT9));
+	jccommon_zeromem(&light, sizeof(D3DLIGHT9));
 	light.Type = D3DLIGHT_SPOT;
 	light.Ambient = *color * 0.4f;
 	light.Diffuse = *color;
@@ -359,4 +455,30 @@ D3DLIGHT9 jcd3d::jcd3d_initSpotLight(D3DXVECTOR3* position, D3DXVECTOR3* directi
 	light.Phi = 0.7f;
 
 	return light;
+}
+
+LRESULT CALLBACK jcd3d::jcd3d_winProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	for (MSGMAP::iterator iter = jcd3d_msgMap.begin(); iter != jcd3d_msgMap.end(); ++iter)
+	{
+		if(iter->first == msg && iter->second != NULL)
+		{
+			iter->second(hWnd, msg, wparam, lparam);
+			break;
+		}
+	}
+	return DefWindowProc(hWnd, msg, wparam, lparam);
+}
+
+VOID jcd3d::jcd3d_winDestroyProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	PostQuitMessage(0);
+}
+
+VOID jcd3d::jcd3d_winCloseProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	if(wparam == VK_ESCAPE)
+	{
+		DestroyWindow(hWnd);
+	}
 }
