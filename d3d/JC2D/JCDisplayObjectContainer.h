@@ -15,7 +15,6 @@ public:
 	JCDisplayObjectContainer(IDirect3DDevice9* lpd3dd);
 	virtual ~JCDisplayObjectContainer();
 
-public:
 	INT getNumChildren() CONST;
 	JCDisplayObject* addChild(JCDisplayObject* child);
 	JCDisplayObject* addChildAt(JCDisplayObject* child, INT index);
@@ -31,7 +30,6 @@ public:
 private:
 	JCDisplayObjectContainer();
 
-protected:
 	std::list<JCDisplayObject*> m_childrenList;
 };
 

@@ -9,6 +9,9 @@
 class JCMovieClip : public JCDisplayObject
 {
 public:
+	JCMovieClip(IDirect3DDevice9* lpd3dd);
+	virtual ~JCMovieClip();
+
 	struct Frame
 	{
 		IDirect3DTexture9* lpTexture;
@@ -16,11 +19,6 @@ public:
 		FLOAT refY;
 	};
 
-public:
-	JCMovieClip(IDirect3DDevice9* lpd3dd);
-	virtual ~JCMovieClip();
-
-public:
 	VOID setFrames(Frame* lpFrames, INT numFrames);
 	Frame* getFrames();
 	Frame* gotoFrame(INT index);
@@ -29,7 +27,6 @@ private:
 	JCMovieClip();
 	JCMovieClip(CONST JCMovieClip& mc);
 
-private:
 	Frame* m_lpFrames;
 	INT m_numFrames;
 };

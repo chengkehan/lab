@@ -12,7 +12,6 @@ public:
 	JCObject();
 	virtual ~JCObject();
 
-public:
 	VOID setName(LPCWCHAR name);
 	LPCWCHAR getName();
 
@@ -22,10 +21,8 @@ public:
 private:
 	JCObject(CONST JCObject& object);
 
-private:
 	VOID destroyName();
 
-private:
 	LPWCH m_name;
 	LPVOID m_extraData;
 };

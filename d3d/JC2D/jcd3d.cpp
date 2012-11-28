@@ -28,7 +28,6 @@ BOOL JCD3D::init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth,
 	{
 		return TRUE;
 	}
-	m_init = TRUE;
 
 	m_hInstance = hInstance;
 	m_windowX = windowX;
@@ -131,12 +130,17 @@ BOOL JCD3D::init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth,
 	}
 
 	d3d9->Release();
+	m_init = TRUE;
 
 	return TRUE;
 }
 
 VOID JCD3D::run()
 {
+	if(!m_init)
+	{
+		return;
+	}
 	if(m_running)
 	{
 		return;

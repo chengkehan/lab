@@ -14,28 +14,11 @@ class JCDisplayObjectContainer;
 class JCDisplayObject : public JCEventDispatcher
 {
 public:
-	friend class JCDisplayObjectContainer;
-	struct Vertex
-	{
-		FLOAT x, y, z;
-		FLOAT rhw;
-		D3DCOLOR diffuse;
-		FLOAT u, v;
-		Vertex(FLOAT px, FLOAT py, D3DCOLOR pdiffuse, FLOAT pu, FLOAT pv)
-		{
-			x = px; y = py; z = 0.0f;
-			rhw = 0.0f;
-			diffuse = pdiffuse;
-			u = pu; v = pv;
-		}
-		static CONST DWORD FVF;
-	};
-
-public:
 	JCDisplayObject(IDirect3DDevice9* lpd3dd);
 	virtual ~JCDisplayObject();
 
-public:
+	friend class JCDisplayObjectContainer;
+
 	VOID setX(FLOAT value);
 	FLOAT getX() CONST;
 
@@ -78,11 +61,26 @@ public:
 
 	virtual VOID render();
 
+	struct Vertex
+	{
+		FLOAT x, y, z;
+		FLOAT rhw;
+		D3DCOLOR diffuse;
+		FLOAT u, v;
+		Vertex(FLOAT px, FLOAT py, D3DCOLOR pdiffuse, FLOAT pu, FLOAT pv)
+		{
+			x = px; y = py; z = 0.0f;
+			rhw = 0.0f;
+			diffuse = pdiffuse;
+			u = pu; v = pv;
+		}
+		static CONST DWORD FVF;
+	};
+
 private:
 	JCDisplayObject();
 	JCDisplayObject(CONST JCDisplayObject& value);
 
-private:
 	FLOAT m_refX;
 	FLOAT m_refY;
 	FLOAT m_x;
@@ -100,10 +98,8 @@ private:
 	FLOAT m_alpha;
 	BOOL m_alphaEnabled;
 
-private:
 	static CONST UINT VB_SIZE;
 
-private:
 	VOID initVertexBuffer();
 	VOID releaseVertexBuffer();
 	inline VOID lockVertexBuffer();

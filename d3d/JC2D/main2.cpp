@@ -59,7 +59,7 @@ VOID gameFrame(DWORD timeDelta)
 
 	if(jcdi.keyDown(DIK_ESCAPE))
 	{
-		PostQuitMessage(0);
+		jcwin32_postQuitMessage(0);
 		return;
 	}
 

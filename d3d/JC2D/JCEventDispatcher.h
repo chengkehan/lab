@@ -13,13 +13,11 @@
 class JCEventDispatcher : public JCObject
 {
 public:
-	typedef VOID(*EventHandler)(JCEvent* lpEvent);
-
-public:
 	JCEventDispatcher();
 	virtual ~JCEventDispatcher();
 
-public:
+	typedef VOID(*EventHandler)(JCEvent* lpEvent);
+
 	BOOL addEventListener(INT eventID, EventHandler handler);
 	BOOL removeEventListener(INT eventID, EventHandler handler);
 	BOOL hasEventListener(INT eventID);
@@ -28,11 +26,9 @@ public:
 private:
 	JCEventDispatcher(CONST JCEventDispatcher& eventDispatcher);
 
-private:
 	typedef std::list<EventHandler> HandlerList;
 	typedef std::map<INT, HandlerList*> HandlersMap;
 
-private:
 	// key eventID, value handlers
 	HandlersMap m_eventHandlers;
 };

@@ -49,3 +49,8 @@ inline BOOL jcwin32::jcwin32_keyUp(INT vkCode)
 {
 	return GetAsyncKeyState(vkCode) & 0x8000 ? FALSE : TRUE;
 }
+
+VOID jcwin32::jcwin32_postQuitMessage(INT exitCode)
+{
+	PostQuitMessage(exitCode);
+}

@@ -11,7 +11,6 @@ public:
 	JCEvent(INT pEventID);
 	virtual ~JCEvent();
 
-public:
 	INT eventID;
 
 private:

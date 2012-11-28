@@ -1,89 +1,144 @@
 #include "JC2D.h"
 
-using namespace jcd3d;
-using namespace jcdi;
+using namespace jcwin32;
 
-JC2D* JC2D::lpJC2D = NULL;
+JC_SINGLETON_IMPLEMENTS(JC2D)
 
-JC2D* JC2D::getInstance()
-{
-	return JC2D::lpJC2D;
-}
-
-VOID JC2D::mouseLockOnWindow()
-{
-	if(JC2D::getInstance() != NULL)
-	{
-		//jcdi_mouseLockedOnWindow();
-	}
-}
-
-JC2D::JC2D():m_init(FALSE), m_running(FALSE), setup(NULL), release(NULL)
+JC2D::JC2D():m_stage(NULL), m_exitWhileEscapeDown(TRUE), m_mouseVisible(TRUE), m_frameCallback(NULL), m_setupCallback(NULL), m_releaseCallback(NULL)
 {
 
 }
 
 JC2D::~JC2D()
 {
-	
+	if(m_releaseCallback != NULL)
+	{
+		m_releaseCallback();
+	}
 }
 
-BOOL JC2D::init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth, INT windowHeight, BOOL windowed)
+BOOL JC2D::init(HINSTANCE hInstance, JCD3D::SETUPCALLBACK setupCallback, JCD3D::RELEASECALLBACK releaseCallback, JCD3D::FRAMECALLBACK frameCallback, 
+	INT windowX, INT windowY, INT windowWidth, INT windowHeight, BOOL windowd)
 {
-	if(m_init)
+	m_jc3d.setup = NULL;
+	m_jc3d.release = NULL;
+	m_jc3d.frame = jc2dFrameCallback;
+	m_frameCallback = frameCallback;
+	m_setupCallback = setupCallback;
+	m_releaseCallback = releaseCallback;
+
+	if(!m_jc3d.init(hInstance, windowX, windowY, windowWidth, windowHeight, windowd))
+	{
+		return FALSE;
+	}
+	
+	if(!m_jcdi.initInput(hInstance, m_jc3d.getHWnd()))
 	{
 		return FALSE;
 	}
 
-	m_init = TRUE;
-	JC2D::lpJC2D = this;
-	if(!jcd3d_init(hInstance, windowX, windowY, windowWidth, windowHeight, windowed, D3DDEVTYPE_HAL, 1))
+	m_stage = new JCDisplayObjectContainer(m_jc3d.getDirect3DDevice());
+
+	if(m_setupCallback != NULL)
 	{
-		return FALSE;
+		if(!m_setupCallback())
+		{
+			return FALSE;
+		}
 	}
 
 	return TRUE;
+}
+
+JCD3D* JC2D::getJCD3D()
+{
+	return &m_jc3d;
+}
+
+JCDI* JC2D::getJCDI()
+{
+	return &m_jcdi;
+}
+
+JCTextureManager* JC2D::getTextureManager()
+{
+	return &m_textureManager;
+}
+
+JCDisplayObjectContainer* JC2D::getStage()
+{
+	return m_stage;
 }
 
 VOID JC2D::run()
 {
-	if(m_running)
+	m_jc3d.run();
+}
+
+VOID JC2D::setExitWhileEscapeDown(BOOL value)
+{
+	m_exitWhileEscapeDown = value;
+}
+
+BOOL JC2D::getExitWhileEscapeDown()
+{
+	return m_exitWhileEscapeDown;
+}
+
+VOID JC2D::setMouseVisible(BOOL value)
+{
+	m_mouseVisible = value;
+	if(m_mouseVisible)
 	{
+		jcwin32_cursorShow();
+	}
+	else
+	{
+		jcwin32_cursorHide();
+	}
+}
+
+VOID JC2D::setMouseLockOnWindow(BOOL value)
+{
+	if(value)
+	{
+		m_jc3d.setMessageCallback(WM_MOVE, jc2dMouseLockOnWindowProc);
+		jc2dMouseLockOnWindowProc(NULL, 0, 0, 0);
+	}
+	else
+	{
+		m_jc3d.clearMessageCallback(WM_MOVE);
+		m_jcdi.mouseUnlockOnWindow();
+	}
+}
+
+BOOL JC2D::getMouseLockOnWindow()
+{
+	return m_jcdi.getMouseLockedOnWindow();
+}
+
+BOOL JC2D::getMouseVisible()
+{
+	return m_mouseVisible;
+}
+
+VOID JC2D::jc2dFrameCallback(DWORD timeDelta)
+{
+	JC2D::getInstance()->getJCDI()->updateInput();
+	if(JC2D::getInstance()->m_exitWhileEscapeDown && JC2D::getInstance()->getJCDI()->keyDown(DIK_ESCAPE))
+	{
+		jcwin32_postQuitMessage(0);
 		return;
 	}
 
-	m_running = TRUE;
-	jcd3d_loop();
+	if(JC2D::getInstance()->m_frameCallback != NULL)
+	{
+		JC2D::getInstance()->m_frameCallback(timeDelta);
+	}
+	JC2D::getInstance()->getStage()->render();
 }
 
-BOOL jcd3d::jcd3d_setup()
+VOID JC2D::jc2dMouseLockOnWindowProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	if(JC2D::getInstance()->setup != NULL && !JC2D::getInstance()->setup())
-	{
-		return FALSE;
-	}
-	jcd3d_windowMoveCallback = JC2D::mouseLockOnWindow;
-	
-	if(!jcdi_initInput(jcd3d_hInstance, jcd3d_hwnd))
-	{
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-VOID jcd3d::jcd3d_release()
-{
-	if(JC2D::getInstance()->release != NULL)
-	{
-		JC2D::getInstance()->release();
-	}
-}
-
-VOID jcd3d::jcd3d_display(DWORD timeDelta)
-{
-	if(JC2D::getInstance()->frame != NULL)
-	{
-		JC2D::getInstance()->frame(timeDelta);
-	}
+	JC2D::getInstance()->getJCDI()->mouseLockOnWindow();
 }

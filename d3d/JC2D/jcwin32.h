@@ -22,6 +22,8 @@ namespace jcwin32
 
 	inline BOOL jcwin32_keyDown(INT vkCode);
 	inline BOOL jcwin32_keyUp(INT vkCode);
+
+	VOID jcwin32_postQuitMessage(INT exitCode);
 }
 
 #endif
