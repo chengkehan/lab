@@ -1,4 +1,5 @@
 #include "JC2D.h"
+#include "jc2dGame.h"
 
 using namespace std;
 
