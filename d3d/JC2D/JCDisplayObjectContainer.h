@@ -9,8 +9,12 @@
 #include "jcstring.h"
 #include "jccommon.h"
 
+class JC2D;
+
 class JCDisplayObjectContainer : public JCDisplayObject
 {
+friend class JC2D;
+
 public:
 	JCDisplayObjectContainer(IDirect3DDevice9* lpd3dd);
 	virtual ~JCDisplayObjectContainer();

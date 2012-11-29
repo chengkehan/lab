@@ -59,6 +59,8 @@ public:
 	VOID setAlphaEnabled(BOOL value);
 	BOOL getAlphaEnabled() CONST;
 
+	BOOL isContainer();
+
 	virtual VOID render();
 
 	struct Vertex
@@ -76,6 +78,9 @@ public:
 		}
 		static CONST DWORD FVF;
 	};
+
+protected:
+	BOOL m_isContainer;
 
 private:
 	JCDisplayObject();

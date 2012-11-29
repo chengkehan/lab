@@ -3,7 +3,10 @@
 CONST DWORD JCDisplayObject::Vertex::FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 CONST UINT JCDisplayObject::VB_SIZE = 4 * sizeof(JCDisplayObject::Vertex);
 
-JCDisplayObject::JCDisplayObject(IDirect3DDevice9* lpd3dd):m_refX(0.0f), m_refY(0.0f), m_x(0.0f), m_y(0.0f), m_scaleX(1.0f), m_scaleY(1.0f), m_widthOriginal(0.0f), m_heightOriginal(0.0f), m_rotation(0.0f), m_lpTexture(NULL), m_lpParent(NULL), m_lpVB(NULL), m_alpha(1.0f), m_alphaEnabled(TRUE)
+JCDisplayObject::JCDisplayObject(IDirect3DDevice9* lpd3dd):
+m_refX(0.0f), m_refY(0.0f), m_x(0.0f), m_y(0.0f), m_scaleX(1.0f), m_scaleY(1.0f), 
+m_widthOriginal(0.0f), m_heightOriginal(0.0f), m_rotation(0.0f), m_lpTexture(NULL), 
+m_lpParent(NULL), m_lpVB(NULL), m_alpha(1.0f), m_alphaEnabled(TRUE), m_isContainer(FALSE)
 {
 	jccommon_assertM(lpd3dd != NULL);
 	m_lpd3dd = lpd3dd;
@@ -168,6 +171,11 @@ VOID JCDisplayObject::setAlphaEnabled(BOOL value)
 BOOL JCDisplayObject::getAlphaEnabled() CONST
 {
 	return m_alphaEnabled;
+}
+
+BOOL JCDisplayObject::isContainer()
+{
+	return m_isContainer;
 }
 
 VOID JCDisplayObject::render()

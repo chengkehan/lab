@@ -22,7 +22,8 @@ JCD3D::~JCD3D()
 	jccommon_releaseComM(m_lpd3dd);
 }
 
-BOOL JCD3D::init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth, INT windowHeight, BOOL windowed, D3DDEVTYPE deviceType, DWORD maxTextureBlendStages)
+BOOL JCD3D::init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth, INT windowHeight, BOOL windowed, 
+	D3DDEVTYPE deviceType, DWORD maxTextureBlendStages, UINT fps)
 {
 	if(m_init)
 	{
@@ -34,6 +35,8 @@ BOOL JCD3D::init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth,
 	m_windowY = windowY;
 	m_windowWidth = windowWidth;
 	m_windowHeight = windowHeight;
+
+	setFPS(fps);
 
 	// Create window
 	WNDCLASS wc;
@@ -161,16 +164,19 @@ VOID JCD3D::run()
 		else
 		{
 			DWORD currTime = timeGetTime();
-			DWORD timeDelta = currTime - lastTime;
-			m_lpd3dd->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0);
-			m_lpd3dd->BeginScene();
-			if(frame != NULL)
+			if(currTime - lastTime >= m_fpsTime)
 			{
-				frame(currTime - lastTime);
+				DWORD timeDelta = currTime - lastTime;
+				m_lpd3dd->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0);
+				m_lpd3dd->BeginScene();
+				if(frame != NULL)
+				{
+					frame(currTime - lastTime);
+				}
+				m_lpd3dd->EndScene();
+				m_lpd3dd->Present(NULL, NULL, NULL, NULL);
+				lastTime = currTime;
 			}
-			m_lpd3dd->EndScene();
-			m_lpd3dd->Present(NULL, NULL, NULL, NULL);
-			lastTime = currTime;
 		}
 	}
 }
@@ -208,6 +214,17 @@ INT JCD3D::getWindowWidth()
 INT JCD3D::getWindowHeight()
 {
 	return m_windowHeight;
+}
+
+UINT JCD3D::getFPS()
+{
+	return m_fps;
+}
+
+VOID JCD3D::setFPS(UINT value)
+{
+	m_fps = value;
+	m_fpsTime = 1000 / m_fps;
 }
 
 BOOL JCD3D::getWindowd()

@@ -20,4 +20,6 @@
 
 #define jccommon_hResultVerifyM(hResult) { if(FAILED(hResult)) { assert(FALSE); } }
 
+#define jccommon_stdIterForEachM(collectionType, collection, iter) for(collectionType::iterator iter = collection.begin(); iter != collection.end(); ++iter)
+
 #endif

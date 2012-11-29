@@ -5,7 +5,7 @@ using namespace jcstring;
 
 JCDisplayObjectContainer::JCDisplayObjectContainer(IDirect3DDevice9* lpd3dd):JCDisplayObject(lpd3dd)
 {
-
+	m_isContainer = TRUE;
 }
 
 JCDisplayObjectContainer::~JCDisplayObjectContainer()

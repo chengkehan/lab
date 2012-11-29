@@ -41,9 +41,6 @@ private:
 	JC2D();
 	~JC2D();
 
-	static VOID jc2dFrameCallback(DWORD timeDelta);
-	static VOID jc2dMouseLockOnWindowProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
 	JCD3D m_jc3d;
 	JCDI m_jcdi;
 	JCTextureManager m_textureManager;
@@ -54,6 +51,9 @@ private:
 	BOOL m_exitWhileEscapeDown;
 	BOOL m_mouseVisible;
 
+	static VOID jc2dFrameCallback(DWORD timeDelta);
+	static VOID jc2dMouseLockOnWindowProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	static VOID jc2dUpdateMouseEvent(JCDisplayObjectContainer* lpContainer);
 };
 
 #endif

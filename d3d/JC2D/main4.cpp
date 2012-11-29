@@ -18,6 +18,7 @@ BOOL gameSetup()
 	theGame_mouseVisible(FALSE);
 	theGame_mouseLockOnWindow(TRUE);
 
+
 	return TRUE;
 }
 
@@ -25,6 +26,10 @@ VOID gameFrame(DWORD timeDelta)
 {
 	lpCursor->setX((FLOAT)theGame_mouseX());
 	lpCursor->setY((FLOAT)theGame_mouseY());
+
+	char buffer[256];
+	sprintf(buffer, "%d\n", timeDelta);
+	OutputDebugStringA(buffer);
 }
 
 VOID gameRelease()

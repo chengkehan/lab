@@ -131,6 +131,8 @@ VOID JC2D::jc2dFrameCallback(DWORD timeDelta)
 		return;
 	}
 
+	//jc2dUpdateMouseEvent(JC2D::getInstance()->getStage());
+
 	if(JC2D::getInstance()->m_frameCallback != NULL)
 	{
 		JC2D::getInstance()->m_frameCallback(timeDelta);
@@ -141,4 +143,21 @@ VOID JC2D::jc2dFrameCallback(DWORD timeDelta)
 VOID JC2D::jc2dMouseLockOnWindowProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	JC2D::getInstance()->getJCDI()->mouseLockOnWindow();
+}
+
+VOID JC2D::jc2dUpdateMouseEvent(JCDisplayObjectContainer* lpContainer)
+{
+	std::list<JCDisplayObject*> children = lpContainer->m_childrenList;
+	jccommon_stdIterForEachM(std::list<JCDisplayObject*>, lpContainer->m_childrenList, iter)
+	{
+		JCDisplayObject* child = *iter;
+		if(child->isContainer())
+		{
+			jc2dUpdateMouseEvent((JCDisplayObjectContainer*)child);
+		}
+		else
+		{
+
+		}
+	}
 }

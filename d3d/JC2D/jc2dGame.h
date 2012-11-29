@@ -98,6 +98,16 @@ namespace jc2dGame
 	{
 		jccommon_deleteM(value);
 	}
+
+	inline INT theGame_getFPS()
+	{
+		return theGame->getJCD3D()->getFPS();
+	}
+
+	inline VOID theGame_setFPS(INT value)
+	{
+		theGame->getJCD3D()->setFPS(value);
+	}
 }
 
 #endif

@@ -37,7 +37,8 @@ public:
 	RELEASECALLBACK release;
 	FRAMECALLBACK frame;
 
-	BOOL init(HINSTANCE hInstance, INT windowX = 0, INT windowY = 0, INT windowWidth = 800, INT windowHeight = 600, BOOL windowed = TRUE, D3DDEVTYPE deviceType = D3DDEVTYPE_HAL, DWORD maxTextureBlendStages = 1);
+	BOOL init(HINSTANCE hInstance, INT windowX = 0, INT windowY = 0, INT windowWidth = 800, INT windowHeight = 600, 
+		BOOL windowed = TRUE, D3DDEVTYPE deviceType = D3DDEVTYPE_HAL, DWORD maxTextureBlendStages = 1, UINT fps = 30);
 	VOID run();
 	HWND getHWnd();
 	HINSTANCE getHInstance();
@@ -46,6 +47,8 @@ public:
 	INT getWindowY();
 	INT getWindowWidth();
 	INT getWindowHeight();
+	UINT getFPS();
+	VOID setFPS(UINT value);
 	BOOL getWindowd();
 	BOOL setMessageCallback(UINT msg, jcd3d::JCD3D_MessageCallback callback);
 	BOOL clearMessageCallback(UINT msg);
@@ -172,6 +175,8 @@ private:
 	BOOL m_windowd;
 	BOOL m_init;
 	BOOL m_running;
+	UINT m_fps;
+	UINT m_fpsTime;
 };
 
 #endif
