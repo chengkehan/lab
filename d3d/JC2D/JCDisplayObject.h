@@ -5,9 +5,11 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <d3dx9math.h>
+#include <climits>
 
 #include "JCEventDispatcher.h"
 #include "jccommon.h"
+#include "JCRect.h"
 
 class JCDisplayObjectContainer;
 
@@ -20,24 +22,28 @@ public:
 	friend class JCDisplayObjectContainer;
 
 	VOID setX(FLOAT value);
-	FLOAT getX() CONST;
+	FLOAT getX();
 
 	VOID setY(FLOAT value);
-	FLOAT getY() CONST;
+	FLOAT getY();
 
 	VOID setRefX(FLOAT value);
-	FLOAT getRefX() CONST;
+	FLOAT getRefX();
 
 	VOID setRefY(FLOAT value);
-	FLOAT getRefY() CONST;
+	FLOAT getRefY();
 
 	VOID setWidth(FLOAT value);
-	FLOAT getWidth() CONST;
-	FLOAT getWidthOriginal() CONST;
+	FLOAT getWidth();
+	FLOAT getWidthOriginal();
+	FLOAT getWidthReal();
 
 	VOID setHeight(FLOAT value);
-	FLOAT getHeight() CONST;
-	FLOAT getHeightOriginal() CONST;
+	FLOAT getHeight();
+	FLOAT getHeightOriginal();
+	FLOAT getHeightReal();
+
+	CONST JCRect* getBounds();
 
 	VOID setScaleX(FLOAT value);
 	FLOAT getScaleX();
@@ -46,18 +52,18 @@ public:
 	FLOAT getScaleY();
 
 	VOID setRotation(FLOAT value);
-	FLOAT getRotation() CONST;
+	FLOAT getRotation();
 
 	VOID setTexture(IDirect3DTexture9* texture);
-	IDirect3DTexture9* getTexture() CONST;
+	IDirect3DTexture9* getTexture();
 
-	JCDisplayObjectContainer* getParent() CONST;
+	JCDisplayObjectContainer* getParent();
 
 	VOID setAlpha(FLOAT value);
-	FLOAT getAlpha() CONST;
+	FLOAT getAlpha();
 
 	VOID setAlphaEnabled(BOOL value);
-	BOOL getAlphaEnabled() CONST;
+	BOOL getAlphaEnabled();
 
 	BOOL isContainer();
 
@@ -82,6 +88,8 @@ public:
 protected:
 	BOOL m_isContainer;
 
+	inline virtual VOID updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY);
+
 private:
 	JCDisplayObject();
 	JCDisplayObject(CONST JCDisplayObject& value);
@@ -92,6 +100,8 @@ private:
 	FLOAT m_y;
 	FLOAT m_widthOriginal;
 	FLOAT m_heightOriginal;
+	FLOAT m_widthReal;
+	FLOAT m_heightReal;
 	FLOAT m_scaleX;
 	FLOAT m_scaleY;
 	FLOAT m_rotation;
@@ -102,6 +112,7 @@ private:
 	IDirect3DDevice9* m_lpd3dd;
 	FLOAT m_alpha;
 	BOOL m_alphaEnabled;
+	JCRect m_bounds;
 
 	static CONST UINT VB_SIZE;
 

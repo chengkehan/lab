@@ -99,7 +99,7 @@ BOOL JCD3D::init(HINSTANCE hInstance, INT windowX, INT windowY, INT windowWidth,
 	d3dpp.BackBufferHeight = windowHeight;
 	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
 	d3dpp.BackBufferCount = 1;
-	d3dpp.MultiSampleType = D3DMULTISAMPLE_NONMASKABLE;
+	d3dpp.MultiSampleType = D3DMULTISAMPLE_4_SAMPLES;
 	d3dpp.MultiSampleQuality = 0;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	d3dpp.hDeviceWindow = hwnd;

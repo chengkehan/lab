@@ -219,3 +219,22 @@ VOID JCDisplayObjectContainer::render()
 		(*iter)->render();
 	}
 }
+
+inline VOID JCDisplayObjectContainer::updateRealWHAndBounds()
+{
+	/*if(m_childrenList.size() == 0)
+	{
+		JCDisplayObject::updateVertextBufferWHReal();
+	}
+	else
+	{
+		FLOAT xMin = FLT_MAX;
+		FLOAT xMax = FLT_MIN;
+		FLOAT yMin = FLT_MAX;
+		FLOAT yMax = FLT_MIN;
+		jccommon_stdIterForEachM(list<JCDisplayObject*>, m_childrenList, iter)
+		{
+
+		}
+	}*/
+}

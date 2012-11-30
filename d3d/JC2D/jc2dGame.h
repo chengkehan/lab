@@ -99,12 +99,12 @@ namespace jc2dGame
 		jccommon_deleteM(value);
 	}
 
-	inline INT theGame_getFPS()
+	inline UINT theGame_getFPS()
 	{
 		return theGame->getJCD3D()->getFPS();
 	}
 
-	inline VOID theGame_setFPS(INT value)
+	inline VOID theGame_setFPS(UINT value)
 	{
 		theGame->getJCD3D()->setFPS(value);
 	}

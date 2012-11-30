@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <list>
 #include <d3d9.h>
+#include <climits>
 
 #include "JCDisplayObject.h"
 #include "jcstring.h"
@@ -30,6 +31,9 @@ public:
 	JCDisplayObject* getChildByName(LPCWCHAR name);
 	JCDisplayObject* setChildIndex(JCDisplayObject* child, INT index);
 	virtual VOID render();
+
+protected:
+	inline VOID updateRealWHAndBounds();
 
 private:
 	JCDisplayObjectContainer();

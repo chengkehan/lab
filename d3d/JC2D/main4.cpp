@@ -6,18 +6,20 @@ JCDisplayObject* lpCursor;
 
 BOOL gameSetup()
 {
-	if(!theGame_loadFileTexture(0, L"cursor.png"))
+	if(!theGame_loadFileTexture(0, L"rect.png"))
 	{
 		return FALSE;
 	}
 
 	lpCursor = theGame_newDisplayObject();
 	lpCursor->setTexture(theGame_getTexture(0));
+	//lpCursor->setRefX(lpCursor->getWidthOriginal() * 0.5f);
+	//lpCursor->setRefY(lpCursor->getHeightOriginal() * 0.5f);
 	theGame_stage()->addChild(lpCursor);
 
 	theGame_mouseVisible(FALSE);
 	theGame_mouseLockOnWindow(TRUE);
-
+	theGame_setFPS(60);
 
 	return TRUE;
 }
@@ -26,9 +28,11 @@ VOID gameFrame(DWORD timeDelta)
 {
 	lpCursor->setX((FLOAT)theGame_mouseX());
 	lpCursor->setY((FLOAT)theGame_mouseY());
+	//lpCursor->setRotation(lpCursor->getRotation() + 0.01f);
 
 	char buffer[256];
-	sprintf(buffer, "%d\n", timeDelta);
+	//sprintf(buffer, "%d\n", timeDelta);
+	sprintf(buffer, "x=%f, y=%f, w=%f, h=%f\n", lpCursor->getBounds()->x, lpCursor->getBounds()->y, lpCursor->getBounds()->width, lpCursor->getBounds()->height);
 	OutputDebugStringA(buffer);
 }
 
