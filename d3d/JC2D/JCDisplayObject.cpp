@@ -11,6 +11,7 @@ m_widthReal(0.0f), m_heightReal(0.0f)
 {
 	jccommon_assertM(lpd3dd != NULL);
 	m_lpd3dd = lpd3dd;
+	initVertexBuffer();
 }
 
 JCDisplayObject::~JCDisplayObject()
@@ -139,11 +140,14 @@ FLOAT JCDisplayObject::getRotation()
 VOID JCDisplayObject::setTexture(JCTexture* texture)
 {
 	m_lpTexture = texture;
-	initVertexBuffer();
 	if(m_lpTexture != NULL)
 	{
 		m_widthOriginal = (FLOAT)texture->getInfo()->Width;
 		m_heightOriginal = (FLOAT)texture->getInfo()->Height;
+		lockVertexBuffer();
+		updateVertexBufferXYWH();
+		updateVertexBufferAlpha();
+		unlockVertexBuffer();
 	}
 	else
 	{
@@ -196,13 +200,13 @@ BOOL JCDisplayObject::isContainer()
 
 VOID JCDisplayObject::render()
 {
+	lockVertexBuffer();
+	updateVertexBufferAlpha();
+	updateVertexBufferXYWH();
+	unlockVertexBuffer();
+
 	if(m_lpTexture != NULL)
 	{
-		lockVertexBuffer();
-		updateVertexBufferAlpha();
-		updateVertexBufferXYWH();
-		unlockVertexBuffer();
-
 		m_lpd3dd->SetTexture(0, m_lpTexture->getTexture());
 		if(m_alphaEnabled)
 		{
@@ -239,8 +243,6 @@ VOID JCDisplayObject::initVertexBuffer()
 			Vertex(0.0f, 0.0f, 0xFF000000, 1.0f, 0.0f)
 		};
 		jccommon_memcpyM(m_lpVBData, &vbData, VB_SIZE);
-		updateVertexBufferXYWH();
-		updateVertexBufferAlpha();
 		unlockVertexBuffer();
 	}
 }

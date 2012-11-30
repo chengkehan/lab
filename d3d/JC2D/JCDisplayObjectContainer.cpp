@@ -220,21 +220,33 @@ VOID JCDisplayObjectContainer::render()
 	}
 }
 
-inline VOID JCDisplayObjectContainer::updateRealWHAndBounds()
+inline VOID JCDisplayObjectContainer::updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY)
 {
-	/*if(m_childrenList.size() == 0)
+	if(m_childrenList.size() == 0)
 	{
-		JCDisplayObject::updateVertextBufferWHReal();
+		JCDisplayObject::updateRealWHAndBounds(parentGlobalX, parentGlobalY);
 	}
 	else
 	{
-		FLOAT xMin = FLT_MAX;
-		FLOAT xMax = FLT_MIN;
-		FLOAT yMin = FLT_MAX;
-		FLOAT yMax = FLT_MIN;
+		FLOAT minX = FLT_MAX;
+		FLOAT maxX = FLT_MIN;
+		FLOAT minY = FLT_MAX;
+		FLOAT maxY = FLT_MIN;
 		jccommon_stdIterForEachM(list<JCDisplayObject*>, m_childrenList, iter)
 		{
-
+			JCDisplayObject* displayObject = *iter;
+			CONST JCRect* bounds = displayObject->getBounds();
+			minX = min(minX, bounds->x);
+			minY = min(minY, bounds->y);
+			maxX = max(maxX, bounds->x + bounds->width);
+			maxY = max(maxY, bounds->y + bounds->height);
 		}
-	}*/
+		m_widthReal = maxX - minX;
+		m_heightReal = maxY - minY;
+
+		m_bounds.width = m_widthReal;
+		m_bounds.height = m_heightReal;
+		m_bounds.x = parentGlobalX + minX;
+		m_bounds.y = parentGlobalY + minY;
+	}
 }

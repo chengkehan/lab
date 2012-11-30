@@ -33,7 +33,7 @@ public:
 	virtual VOID render();
 
 protected:
-	inline VOID updateRealWHAndBounds();
+	inline VOID updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY);
 
 private:
 	JCDisplayObjectContainer();

@@ -88,6 +88,9 @@ public:
 
 protected:
 	BOOL m_isContainer;
+	JCRect m_bounds;
+	FLOAT m_widthReal;
+	FLOAT m_heightReal;
 
 	inline virtual VOID updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY);
 
@@ -101,8 +104,6 @@ private:
 	FLOAT m_y;
 	FLOAT m_widthOriginal;
 	FLOAT m_heightOriginal;
-	FLOAT m_widthReal;
-	FLOAT m_heightReal;
 	FLOAT m_scaleX;
 	FLOAT m_scaleY;
 	FLOAT m_rotation;
@@ -113,7 +114,6 @@ private:
 	IDirect3DDevice9* m_lpd3dd;
 	FLOAT m_alpha;
 	BOOL m_alphaEnabled;
-	JCRect m_bounds;
 
 	static CONST UINT VB_SIZE;
 

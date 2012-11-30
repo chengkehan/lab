@@ -28,11 +28,11 @@ VOID gameFrame(DWORD timeDelta)
 {
 	lpCursor->setX((FLOAT)theGame_mouseX());
 	lpCursor->setY((FLOAT)theGame_mouseY());
-	//lpCursor->setRotation(lpCursor->getRotation() + 0.01f);
+	lpCursor->setRotation(lpCursor->getRotation() + 0.005f);
 
 	char buffer[256];
 	//sprintf(buffer, "%d\n", timeDelta);
-	sprintf(buffer, "x=%f, y=%f, w=%f, h=%f\n", lpCursor->getBounds()->x, lpCursor->getBounds()->y, lpCursor->getBounds()->width, lpCursor->getBounds()->height);
+	sprintf(buffer, "x=%f, y=%f, w=%f, h=%f\n", theGame_stage()->getBounds()->x, theGame_stage()->getBounds()->y, theGame_stage()->getBounds()->width, theGame_stage()->getBounds()->height);
 	OutputDebugStringA(buffer);
 }
 
