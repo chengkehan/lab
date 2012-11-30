@@ -120,8 +120,7 @@ private:
 	VOID initVertexBuffer();
 	VOID releaseVertexBuffer();
 	inline VOID lockVertexBuffer();
-	inline VOID updateVertexBufferXYWH();
-	inline VOID updateVertexBufferAlpha();
+	inline VOID updateVertexBuffer();
 	inline VOID unlockVertexBuffer();
 	VOID setParent(JCDisplayObjectContainer* parent);
 };

@@ -145,8 +145,7 @@ VOID JCDisplayObject::setTexture(JCTexture* texture)
 		m_widthOriginal = (FLOAT)texture->getInfo()->Width;
 		m_heightOriginal = (FLOAT)texture->getInfo()->Height;
 		lockVertexBuffer();
-		updateVertexBufferXYWH();
-		updateVertexBufferAlpha();
+		updateVertexBuffer();
 		unlockVertexBuffer();
 	}
 	else
@@ -201,8 +200,7 @@ BOOL JCDisplayObject::isContainer()
 VOID JCDisplayObject::render()
 {
 	lockVertexBuffer();
-	updateVertexBufferAlpha();
-	updateVertexBufferXYWH();
+	updateVertexBuffer();
 	unlockVertexBuffer();
 
 	if(m_lpTexture != NULL)
@@ -258,7 +256,7 @@ inline VOID JCDisplayObject::lockVertexBuffer()
 	jccommon_hResultVerifyM(m_lpVB->Lock(0, VB_SIZE, (VOID**)&m_lpVBData, 0));
 }
 
-inline VOID JCDisplayObject::updateVertexBufferXYWH()
+inline VOID JCDisplayObject::updateVertexBuffer()
 {
 	// x1=cos(angle)*x-sin(angle)*y;
 	// y1=cos(angle)*y+sin(angle)*x;
@@ -268,6 +266,7 @@ inline VOID JCDisplayObject::updateVertexBufferXYWH()
 	FLOAT global_scaleX = 1.0f;
 	FLOAT global_scaleY = 1.0f;
 	FLOAT global_Rotation = 0.0f;
+	FLOAT global_alpha = 1.0f;
 	JCDisplayObject* target = (JCDisplayObject*)getParent();
 	while(target != NULL)
 	{
@@ -276,6 +275,7 @@ inline VOID JCDisplayObject::updateVertexBufferXYWH()
 		global_scaleX *= target->getScaleX();
 		global_scaleY *= target->getScaleY();
 		global_Rotation += target->getRotation();
+		global_alpha *= target->getAlpha();
 		target = (JCDisplayObject*)target->getParent();
 	}
 
@@ -300,6 +300,11 @@ inline VOID JCDisplayObject::updateVertexBufferXYWH()
 	m_lpVBData[3].y = y + cosf(rotation) * (-refY) + sinf(rotation) * (width - refX);
 
 	updateRealWHAndBounds(global_x, global_y);
+
+	m_lpVBData[0].diffuse = (((INT)(global_alpha * m_alpha * 255.0f) & 0xFF) << 24) + (m_lpVBData[0].diffuse & 0xFFFFFF);
+	m_lpVBData[1].diffuse = m_lpVBData[0].diffuse;
+	m_lpVBData[2].diffuse = m_lpVBData[0].diffuse;
+	m_lpVBData[3].diffuse = m_lpVBData[0].diffuse;
 }
 
 inline VOID JCDisplayObject::updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY)
@@ -323,14 +328,6 @@ inline VOID JCDisplayObject::updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT pa
 	}
 	m_bounds.width = m_widthReal;
 	m_bounds.height = m_heightReal;
-}
-
-inline VOID JCDisplayObject::updateVertexBufferAlpha()
-{
-	m_lpVBData[0].diffuse = (((INT)(m_alpha * 255.0f) & 0xFF) << 24) + (m_lpVBData[0].diffuse & 0xFFFFFF);
-	m_lpVBData[1].diffuse = m_lpVBData[0].diffuse;
-	m_lpVBData[2].diffuse = m_lpVBData[0].diffuse;
-	m_lpVBData[3].diffuse = m_lpVBData[0].diffuse;
 }
 
 inline VOID JCDisplayObject::unlockVertexBuffer()
