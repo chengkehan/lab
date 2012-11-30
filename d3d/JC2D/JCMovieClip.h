@@ -5,6 +5,7 @@
 #include <d3d9.h>
 
 #include "JCDisplayObject.h"
+#include "JCTexture.h"
 
 class JCMovieClip : public JCDisplayObject
 {
@@ -14,7 +15,7 @@ public:
 
 	struct Frame
 	{
-		IDirect3DTexture9* lpTexture;
+		JCTexture* lpTexture;
 		FLOAT refX;
 		FLOAT refY;
 	};

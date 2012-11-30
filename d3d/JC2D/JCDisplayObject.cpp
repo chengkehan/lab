@@ -136,16 +136,14 @@ FLOAT JCDisplayObject::getRotation()
 	return m_rotation;
 }
 
-VOID JCDisplayObject::setTexture(IDirect3DTexture9* texture)
+VOID JCDisplayObject::setTexture(JCTexture* texture)
 {
 	m_lpTexture = texture;
 	initVertexBuffer();
 	if(m_lpTexture != NULL)
 	{
-		D3DSURFACE_DESC dest;
-		m_lpTexture->GetLevelDesc(0, &dest);
-		m_widthOriginal = (FLOAT)dest.Width;
-		m_heightOriginal = (FLOAT)dest.Height;
+		m_widthOriginal = (FLOAT)texture->getInfo()->Width;
+		m_heightOriginal = (FLOAT)texture->getInfo()->Height;
 	}
 	else
 	{
@@ -156,7 +154,7 @@ VOID JCDisplayObject::setTexture(IDirect3DTexture9* texture)
 	}
 }
 
-IDirect3DTexture9* JCDisplayObject::getTexture()
+JCTexture* JCDisplayObject::getTexture()
 {
 	return m_lpTexture;
 }
@@ -205,7 +203,7 @@ VOID JCDisplayObject::render()
 		updateVertexBufferXYWH();
 		unlockVertexBuffer();
 
-		m_lpd3dd->SetTexture(0, m_lpTexture);
+		m_lpd3dd->SetTexture(0, m_lpTexture->getTexture());
 		if(m_alphaEnabled)
 		{
 			m_lpd3dd->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);

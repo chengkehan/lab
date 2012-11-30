@@ -7,7 +7,7 @@
 #define jccommon_assertM(c) { assert(c); }
 
 #define jccommon_releaseComM(lp) { if(lp != NULL){ lp->Release(); lp = NULL; } }
-#define jccommon_newM(lp, NewType) { assert(lp == NULL); lp = new NewType(); }
+#define jccommon_newM(lp, NewType) { assert(lp == NULL); lp = new NewType(); assert(lp != NULL); }
 #define jccommon_deleteM(lp) { if(lp != NULL){ delete lp; lp = NULL; } }
 #define jccommon_deleteArrayM(lp) { if(lp != NULL){ delete[] lp; lp = NULL; } }
 

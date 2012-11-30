@@ -11,12 +11,12 @@ JCTextureManager::~JCTextureManager()
 {
 	for (TEXTUREMAP::iterator iter = m_textureMap.begin(); iter != m_textureMap.end(); ++iter)
 	{
-		IDirect3DTexture9* lpTexture = iter->second;
-		jccommon_releaseComM(lpTexture);
+		JCTexture* data = iter->second;
+		jccommon_deleteM(data);
 	}
 }
 
-IDirect3DTexture9* JCTextureManager::addTexture(INT id, IDirect3DTexture9* lpTexture)
+JCTexture* JCTextureManager::addTexture(INT id, IDirect3DTexture9* lpTexture, D3DXIMAGE_INFO* lpInfo)
 {
 	if(lpTexture == NULL)
 	{
@@ -29,8 +29,10 @@ IDirect3DTexture9* JCTextureManager::addTexture(INT id, IDirect3DTexture9* lpTex
 	}
 	else
 	{
-		m_textureMap[id] = lpTexture;
-		return lpTexture;
+		JCTexture* data = new JCTexture(lpTexture, lpInfo);
+		jccommon_assertM(data != NULL);
+		m_textureMap[id] = data;
+		return data;
 	}
 }
 
@@ -40,16 +42,16 @@ BOOL JCTextureManager::removeTexture(INT id)
 	{
 		if(iter->first == id)
 		{
-			IDirect3DTexture9* lpTexture = iter->second;
+			JCTexture* data = iter->second;
 			m_textureMap.erase(iter);
-			jccommon_releaseComM(lpTexture);
+			jccommon_deleteM(data);
 			return TRUE;
 		}
 	}
 	return FALSE;
 }
 
-IDirect3DTexture9* JCTextureManager::getTexture(INT id)
+JCTexture* JCTextureManager::getTexture(INT id)
 {
 	if(containsTexture(id))
 	{
@@ -61,7 +63,7 @@ IDirect3DTexture9* JCTextureManager::getTexture(INT id)
 	}
 }
 
-IDirect3DTexture9* JCTextureManager::loadFileTexture(INT id, LPCWSTR path, IDirect3DDevice9* lpd3dd)
+JCTexture* JCTextureManager::loadFileTexture(INT id, LPCWSTR path, IDirect3DDevice9* lpd3dd)
 {
 	if(containsTexture(id))
 	{
@@ -70,14 +72,19 @@ IDirect3DTexture9* JCTextureManager::loadFileTexture(INT id, LPCWSTR path, IDire
 	else
 	{
 		IDirect3DTexture9* lpTexture = NULL;
-		if(FAILED(D3DXCreateTextureFromFile(lpd3dd, path, &lpTexture)))
+		D3DXIMAGE_INFO imgInfo;
+		if(FAILED(D3DXCreateTextureFromFileEx(
+				lpd3dd, path, D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, &imgInfo, NULL, &lpTexture
+		)))
 		{
 			return NULL;
 		}
 		else
 		{
-			m_textureMap[id] = lpTexture;
-			return lpTexture;
+			JCTexture* data = new JCTexture(lpTexture, &imgInfo);
+			jccommon_assertM(data != NULL);
+			m_textureMap[id] = data;
+			return data;
 		}
 	}
 }

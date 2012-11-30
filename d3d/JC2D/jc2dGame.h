@@ -19,12 +19,12 @@ namespace jc2dGame
 		theGame->run();
 	}
 
-	inline IDirect3DTexture9* theGame_loadFileTexture(INT id, LPCWSTR path)
+	inline JCTexture* theGame_loadFileTexture(INT id, LPCWSTR path)
 	{
 		return theGame->getTextureManager()->loadFileTexture(id, path, theGame->getJCD3D()->getDirect3DDevice());
 	}
 
-	inline IDirect3DTexture9* theGame_getTexture(INT id)
+	inline JCTexture* theGame_getTexture(INT id)
 	{
 		return theGame->getTextureManager()->getTexture(id);
 	}

@@ -8,8 +8,9 @@
 #include <climits>
 
 #include "JCEventDispatcher.h"
-#include "jccommon.h"
 #include "JCRect.h"
+#include "JCTexture.h"
+#include "jccommon.h"
 
 class JCDisplayObjectContainer;
 
@@ -54,8 +55,8 @@ public:
 	VOID setRotation(FLOAT value);
 	FLOAT getRotation();
 
-	VOID setTexture(IDirect3DTexture9* texture);
-	IDirect3DTexture9* getTexture();
+	VOID setTexture(JCTexture* texture);
+	JCTexture* getTexture();
 
 	JCDisplayObjectContainer* getParent();
 
@@ -105,7 +106,7 @@ private:
 	FLOAT m_scaleX;
 	FLOAT m_scaleY;
 	FLOAT m_rotation;
-	IDirect3DTexture9* m_lpTexture;
+	JCTexture* m_lpTexture;
 	JCDisplayObjectContainer* m_lpParent;
 	IDirect3DVertexBuffer9* m_lpVB;
 	Vertex* m_lpVBData;
