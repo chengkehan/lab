@@ -21,5 +21,6 @@
 #define jccommon_hResultVerifyM(hResult) { if(FAILED(hResult)) { assert(FALSE); } }
 
 #define jccommon_stdIterForEachM(collectionType, collection, iter) for(collectionType::iterator iter = collection.begin(); iter != collection.end(); ++iter)
+#define jccommon_stdRIterForEachM(collectionType, collection, iter) for(collectionType::reverse_iterator iter = collection.rbegin(); iter != collection.rend(); ++iter)
 
 #endif

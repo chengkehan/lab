@@ -34,6 +34,16 @@ namespace jc2dGame
 		return theGame->getStage();
 	}
 
+	inline INT theGame_stageWidth()
+	{
+		return theGame->getJCD3D()->getWindowWidth();
+	}
+
+	inline INT theGame_stageHeight()
+	{
+		return theGame->getJCD3D()->getWindowHeight();
+	}
+
 	inline INT theGame_mouseX()
 	{
 		return theGame->getJCDI()->getMouseX();

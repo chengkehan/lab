@@ -1,6 +1,7 @@
 #include "JC2D.h"
 
 using namespace jcwin32;
+using namespace std;
 
 JC_SINGLETON_IMPLEMENTS(JC2D)
 
@@ -147,17 +148,16 @@ VOID JC2D::jc2dMouseLockOnWindowProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM 
 
 VOID JC2D::jc2dUpdateMouseEvent(JCDisplayObjectContainer* lpContainer)
 {
-	std::list<JCDisplayObject*> children = lpContainer->m_childrenList;
-	jccommon_stdIterForEachM(std::list<JCDisplayObject*>, lpContainer->m_childrenList, iter)
-	{
-		JCDisplayObject* child = *iter;
-		if(child->isContainer())
-		{
-			jc2dUpdateMouseEvent((JCDisplayObjectContainer*)child);
-		}
-		else
-		{
+	//jccommon_stdRIterForEachM(std::list<JCDisplayObject*>, lpContainer->m_childrenList, iter)
+	//{
+	//	JCDisplayObject* child = *iter;
+	//	if(child->isContainer())
+	//	{
+	//		jc2dUpdateMouseEvent((JCDisplayObjectContainer*)child);
+	//	}
+	//	else
+	//	{
 
-		}
-	}
+	//	}
+	//}
 }
