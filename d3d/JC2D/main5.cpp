@@ -57,9 +57,10 @@ VOID gameFrame(DWORD timeDelta)
 		lpBoxes[i]->setRotation((FLOAT)lpBoxes[i]->getRotation() + speed);
 	}
 
+	//CONST JCRect* bounds = theGame_stage()->getBoundsGlobal();
 	//char buffer[256];
 	//sprintf(buffer, "%d\n", timeDelta);
-	//sprintf(buffer, "%f, %f, %f, %f\n", theGame_stage()->getBounds()->x, theGame_stage()->getBounds()->y, theGame_stage()->getBounds()->width, theGame_stage()->getBounds()->height);
+	//sprintf(buffer, "%f, %f, %f, %f\n", bounds->left, bounds->top, bounds->right, bounds->bottom);
 	//OutputDebugStringA(buffer);
 }
 

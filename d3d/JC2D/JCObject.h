@@ -23,7 +23,7 @@ private:
 
 	VOID destroyName();
 
-	LPWCH m_name;
+	LPWSTR m_name;
 	LPVOID m_extraData;
 };
 

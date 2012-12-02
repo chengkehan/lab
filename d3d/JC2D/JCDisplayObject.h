@@ -9,6 +9,7 @@
 
 #include "JCEventDispatcher.h"
 #include "JCRect.h"
+#include "JCPoint.h"
 #include "JCTexture.h"
 #include "jccommon.h"
 
@@ -16,11 +17,11 @@ class JCDisplayObjectContainer;
 
 class JCDisplayObject : public JCEventDispatcher
 {
+friend class JCDisplayObjectContainer;
+
 public:
 	JCDisplayObject(IDirect3DDevice9* lpd3dd);
 	virtual ~JCDisplayObject();
-
-	friend class JCDisplayObjectContainer;
 
 	VOID setX(FLOAT value);
 	FLOAT getX();
@@ -37,14 +38,12 @@ public:
 	VOID setWidth(FLOAT value);
 	FLOAT getWidth();
 	FLOAT getWidthOriginal();
-	FLOAT getWidthReal();
 
 	VOID setHeight(FLOAT value);
 	FLOAT getHeight();
 	FLOAT getHeightOriginal();
-	FLOAT getHeightReal();
 
-	CONST JCRect* getBounds();
+	virtual CONST JCRect* getBoundsGlobal();
 
 	VOID setScaleX(FLOAT value);
 	FLOAT getScaleX();
@@ -66,8 +65,6 @@ public:
 	VOID setAlphaEnabled(BOOL value);
 	BOOL getAlphaEnabled();
 
-	BOOL isContainer();
-
 	virtual VOID render();
 
 	struct Vertex
@@ -87,12 +84,7 @@ public:
 	};
 
 protected:
-	BOOL m_isContainer;
-	JCRect m_bounds;
-	FLOAT m_widthReal;
-	FLOAT m_heightReal;
-
-	inline virtual VOID updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY);
+	JCRect m_boundsGlobal;
 
 private:
 	JCDisplayObject();
@@ -111,6 +103,7 @@ private:
 	JCDisplayObjectContainer* m_lpParent;
 	IDirect3DVertexBuffer9* m_lpVB;
 	Vertex* m_lpVBData;
+	JCPoint m_vbXyData[4];
 	IDirect3DDevice9* m_lpd3dd;
 	FLOAT m_alpha;
 	BOOL m_alphaEnabled;

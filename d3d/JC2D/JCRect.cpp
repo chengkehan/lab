@@ -1,8 +1,21 @@
 #include "JCRect.h"
 
-JCRect::JCRect():x(0.0f), y(0.0f), width(0.0f), height(0.0f)
+JCRect::JCRect():left(0.0f), top(0.0f), right(0.0f), bottom(0.0f)
 {
 
+}
+
+JCRect::JCRect(FLOAT pLeft, FLOAT pTop, FLOAT pRight, FLOAT pBottom):left(pLeft), top(pTop), right(pRight), bottom(pBottom)
+{
+
+}
+
+JCRect::JCRect(CONST JCRect& rect)
+{
+	left = rect.left;
+	top = rect.top;
+	right = rect.right;
+	bottom = rect.bottom;
 }
 
 JCRect::~JCRect()
@@ -10,41 +23,36 @@ JCRect::~JCRect()
 
 }
 
-JCRect::JCRect(FLOAT px, FLOAT py, FLOAT pwidth, FLOAT pheight):x(px), y(py), width(pwidth), height(pheight)
-{
-
-}
-
-JCRect::JCRect(CONST JCRect& rect)
-{
-	x = rect.x;
-	y = rect.y;
-	width = rect.width;
-	height = rect.height;
-}
-
 BOOL JCRect::contains(FLOAT px, FLOAT py)
 {
 	return containsPoint(px, py);
 }
 
-BOOL JCRect::contains(JCRect* lpRect)
+BOOL JCRect::contains(CONST JCRect* lpRect) CONST
 {
 	if(lpRect == NULL)
 	{
 		return FALSE;
+	}
+	else if(lpRect == this)
+	{
+		return TRUE;
 	}
 	else
 	{
-		return containsPoint(lpRect->x, lpRect->y) && containsPoint(lpRect->x + lpRect->width, lpRect->y + lpRect->height);
+		return containsPoint(lpRect->left, lpRect->top) && containsPoint(lpRect->right, lpRect->bottom);
 	}
 }
 
-BOOL JCRect::intersects(JCRect* lpRect)
+BOOL JCRect::intersects(CONST JCRect* lpRect) CONST
 {
 	if(lpRect == NULL)
 	{
 		return FALSE;
+	}
+	else if(lpRect == this)
+	{
+		return TRUE;
 	}
 	else
 	{
@@ -53,11 +61,15 @@ BOOL JCRect::intersects(JCRect* lpRect)
 	}
 }
 
-JCRect* JCRect::intersection(JCRect* lpDestRect, JCRect* lpIntersectionResult)
+JCRect* JCRect::intersection(CONST JCRect* lpDestRect, JCRect* lpIntersectionResult) CONST
 {
 	if(lpIntersectionResult == NULL)
 	{
 		return NULL;
+	}
+	else if(lpDestRect == this)
+	{
+		return clone(lpIntersectionResult);
 	}
 	else
 	{
@@ -69,42 +81,92 @@ JCRect* JCRect::intersection(JCRect* lpDestRect, JCRect* lpIntersectionResult)
 		}
 		else
 		{
-			lpIntersectionResult->x = x1;
-			lpIntersectionResult->width = x2 - x1;
-			lpIntersectionResult->y = y1;
-			lpIntersectionResult->height = y2 - y1;
+			lpIntersectionResult->left = x1;
+			lpIntersectionResult->right = x2;
+			lpIntersectionResult->top = y1;
+			lpIntersectionResult->bottom = y2;
 			return lpIntersectionResult;
 		}
 	}
 }
 
-JCRect* JCRect::combine(JCRect* lpDestRect, JCRect* lpCombineResult)
+JCRect* JCRect::combine(CONST JCRect* lpDestRect, JCRect* lpCombineResult) CONST
 {
 	if(lpDestRect == NULL || lpCombineResult == NULL)
 	{
 		return NULL;
 	}
+	else if(lpCombineResult == this)
+	{
+		return NULL;
+	}
+	else if(lpDestRect == this)
+	{
+		return clone(lpCombineResult);
+	}
 	else
 	{
-		lpCombineResult->x = min(min(x, x + width), min(lpDestRect->x, lpDestRect->x + lpDestRect->width));
-		lpCombineResult->width = max(max(x, x + width), max(lpDestRect->x, lpDestRect->x + lpDestRect->width)) - lpCombineResult->x;
-		lpCombineResult->y = min(min(y, y + height), min(lpDestRect->y, lpDestRect->y + lpDestRect->height));
-		lpCombineResult->height = max(max(y, y + height), max(lpDestRect->y, lpDestRect->y + lpDestRect->height)) - lpCombineResult->y;
+		lpCombineResult->left = min(min(left, right), min(lpDestRect->left, lpDestRect->right));
+		lpCombineResult->right = max(max(left, right), max(lpDestRect->left, lpDestRect->right));
+		lpCombineResult->top = min(min(top, bottom), min(lpDestRect->top, lpDestRect->bottom));
+		lpCombineResult->bottom = max(max(top, bottom), max(lpDestRect->top, lpDestRect->bottom));
 		return lpCombineResult;
 	}
 }
 
-inline BOOL JCRect::containsPoint(FLOAT px, FLOAT py)
+JCRect* JCRect::clone(JCRect* lpDestRect) CONST
 {
-	return px >= x && px <= x + width && py >= y && py <= y + height;
+	if(lpDestRect == NULL)
+	{
+		return lpDestRect;
+	}
+	else if(lpDestRect == this)
+	{
+		return lpDestRect;
+	}
+	else
+	{
+		lpDestRect->left = left;
+		lpDestRect->top = top;
+		lpDestRect->right = right;
+		lpDestRect->bottom = bottom;
+
+		return lpDestRect;
+	}
 }
 
-inline BOOL JCRect::intersectoinInternal(JCRect* lpRect, FLOAT* x1, FLOAT* x2, FLOAT* y1 ,FLOAT* y2)
+CONST JCRect* JCRect::copy(CONST JCRect* lpSrcRect)
 {
-	*x1 = max(min(x, x + width), min(lpRect->x, lpRect->x + lpRect->width));
-	*x2 = min(min(x, x + width), min(lpRect->x, lpRect->x + lpRect->width));
-	*y1 = max(min(y, y + height), min(lpRect->y, lpRect->y + lpRect->height));
-	*y2 = min(min(y, y + height), min(lpRect->y, lpRect->y + lpRect->height));
+	if(lpSrcRect == NULL)
+	{
+		return NULL;
+	}
+	else if(lpSrcRect == this)
+	{
+		return lpSrcRect;
+	}
+	else
+	{
+		left = lpSrcRect->left;
+		top = lpSrcRect->top;
+		right = lpSrcRect->right;
+		bottom = lpSrcRect->bottom;
+
+		return lpSrcRect;
+	}
+}
+
+inline BOOL JCRect::containsPoint(FLOAT px, FLOAT py) CONST
+{
+	return px >= left && px <= right && py >= top && py <= bottom;
+}
+
+inline BOOL JCRect::intersectoinInternal(CONST JCRect* lpRect, FLOAT* x1, FLOAT* x2, FLOAT* y1 ,FLOAT* y2) CONST
+{
+	*x1 = max(min(left, right), min(lpRect->left, lpRect->right));
+	*x2 = min(min(left, right), min(lpRect->left, lpRect->right));
+	*y1 = max(min(top, bottom), min(lpRect->top, lpRect->bottom));
+	*y2 = min(min(top, bottom), min(lpRect->top, lpRect->bottom));
 
 	return *x1 <= *x2 && *y1 <= *y2;
 }

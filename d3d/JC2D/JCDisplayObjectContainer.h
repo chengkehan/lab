@@ -31,9 +31,7 @@ public:
 	JCDisplayObject* getChildByName(LPCWCHAR name);
 	JCDisplayObject* setChildIndex(JCDisplayObject* child, INT index);
 	virtual VOID render();
-
-protected:
-	inline VOID updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY);
+	virtual CONST JCRect* getBoundsGlobal();
 
 private:
 	JCDisplayObjectContainer();

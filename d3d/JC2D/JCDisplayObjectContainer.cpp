@@ -5,7 +5,7 @@ using namespace jcstring;
 
 JCDisplayObjectContainer::JCDisplayObjectContainer(IDirect3DDevice9* lpd3dd):JCDisplayObject(lpd3dd)
 {
-	m_isContainer = TRUE;
+
 }
 
 JCDisplayObjectContainer::~JCDisplayObjectContainer()
@@ -220,33 +220,32 @@ VOID JCDisplayObjectContainer::render()
 	}
 }
 
-inline VOID JCDisplayObjectContainer::updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY)
+CONST JCRect* JCDisplayObjectContainer::getBoundsGlobal()
 {
 	if(m_childrenList.size() == 0)
 	{
-		JCDisplayObject::updateRealWHAndBounds(parentGlobalX, parentGlobalY);
+		return JCDisplayObject::getBoundsGlobal();
 	}
 	else
 	{
-		FLOAT minX = FLT_MAX;
-		FLOAT maxX = FLT_MIN;
-		FLOAT minY = FLT_MAX;
-		FLOAT maxY = FLT_MIN;
+		BOOL first = TRUE;
+		JCRect boundsGlobal;
 		jccommon_stdIterForEachM(list<JCDisplayObject*>, m_childrenList, iter)
 		{
-			JCDisplayObject* displayObject = *iter;
-			CONST JCRect* bounds = displayObject->getBounds();
-			minX = min(minX, bounds->x);
-			minY = min(minY, bounds->y);
-			maxX = max(maxX, bounds->x + bounds->width);
-			maxY = max(maxY, bounds->y + bounds->height);
+			JCDisplayObject* child = *iter;
+			CONST JCRect* childBounds = child->getBoundsGlobal();
+			if(first)
+			{
+				first = FALSE;
+				m_boundsGlobal.copy(childBounds);
+			}
+			else
+			{
+				m_boundsGlobal.combine(childBounds, &boundsGlobal);
+				m_boundsGlobal.copy(&boundsGlobal);
+			}
 		}
-		m_widthReal = maxX - minX;
-		m_heightReal = maxY - minY;
 
-		m_bounds.width = m_widthReal;
-		m_bounds.height = m_heightReal;
-		m_bounds.x = parentGlobalX + minX;
-		m_bounds.y = parentGlobalY + minY;
+		return &m_boundsGlobal;
 	}
 }

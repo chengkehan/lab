@@ -6,10 +6,11 @@ CONST UINT JCDisplayObject::VB_SIZE = 4 * sizeof(JCDisplayObject::Vertex);
 JCDisplayObject::JCDisplayObject(IDirect3DDevice9* lpd3dd):
 m_refX(0.0f), m_refY(0.0f), m_x(0.0f), m_y(0.0f), m_scaleX(1.0f), m_scaleY(1.0f), 
 m_widthOriginal(0.0f), m_heightOriginal(0.0f), m_rotation(0.0f), m_lpTexture(NULL), 
-m_lpParent(NULL), m_lpVB(NULL), m_alpha(1.0f), m_alphaEnabled(TRUE), m_isContainer(FALSE), 
-m_widthReal(0.0f), m_heightReal(0.0f)
+m_lpParent(NULL), m_lpVB(NULL), m_alpha(1.0f), m_alphaEnabled(TRUE)
 {
 	jccommon_assertM(lpd3dd != NULL);
+	jccommon_zeromem(&m_boundsGlobal, sizeof(m_boundsGlobal));
+	jccommon_zeromem(&m_vbXyData, sizeof(m_vbXyData));
 	m_lpd3dd = lpd3dd;
 	initVertexBuffer();
 }
@@ -77,11 +78,6 @@ FLOAT JCDisplayObject::getWidthOriginal()
 	return m_widthOriginal;
 }
 
-FLOAT JCDisplayObject::getWidthReal()
-{
-	return m_widthReal;
-}
-
 VOID JCDisplayObject::setHeight(FLOAT value)
 {
 	m_scaleY = value / m_heightOriginal;
@@ -97,14 +93,13 @@ FLOAT JCDisplayObject::getHeightOriginal()
 	return m_heightOriginal;
 }
 
-FLOAT JCDisplayObject::getHeightReal()
+CONST JCRect* JCDisplayObject::getBoundsGlobal()
 {
-	return m_heightReal;
-}
-
-CONST JCRect* JCDisplayObject::getBounds()
-{
-	return &m_bounds;
+	m_boundsGlobal.left = min(min(min(m_vbXyData[0].x, m_vbXyData[1].x), m_vbXyData[2].x), m_vbXyData[3].x);
+	m_boundsGlobal.top = min(min(min(m_vbXyData[0].y, m_vbXyData[1].y), m_vbXyData[2].y), m_vbXyData[3].y);
+	m_boundsGlobal.right = max(max(max(m_vbXyData[0].x, m_vbXyData[1].x), m_vbXyData[2].x), m_vbXyData[3].x);
+	m_boundsGlobal.bottom = max(max(max(m_vbXyData[0].y, m_vbXyData[1].y), m_vbXyData[2].y), m_vbXyData[3].y);
+	return &m_boundsGlobal;
 }
 
 VOID JCDisplayObject::setScaleX(FLOAT value)
@@ -152,8 +147,8 @@ VOID JCDisplayObject::setTexture(JCTexture* texture)
 	{
 		m_widthOriginal = 0.0f;
 		m_heightOriginal = 0.0f;
-		m_widthReal = 0.0f;
-		m_heightReal = 0.0f;
+		jccommon_zeromem(&m_boundsGlobal, sizeof(m_boundsGlobal));
+		jccommon_zeromem(&m_vbXyData, sizeof(m_vbXyData));
 	}
 }
 
@@ -190,11 +185,6 @@ VOID JCDisplayObject::setAlphaEnabled(BOOL value)
 BOOL JCDisplayObject::getAlphaEnabled()
 {
 	return m_alphaEnabled;
-}
-
-BOOL JCDisplayObject::isContainer()
-{
-	return m_isContainer;
 }
 
 VOID JCDisplayObject::render()
@@ -299,35 +289,19 @@ inline VOID JCDisplayObject::updateVertexBuffer()
 	m_lpVBData[3].x = x + cosf(rotation) * (width - refX) - sinf(rotation) * (-refY);
 	m_lpVBData[3].y = y + cosf(rotation) * (-refY) + sinf(rotation) * (width - refX);
 
-	updateRealWHAndBounds(global_x, global_y);
+	m_vbXyData[0].x = m_lpVBData[0].x;
+	m_vbXyData[0].y = m_lpVBData[0].y;
+	m_vbXyData[1].x = m_lpVBData[1].x;
+	m_vbXyData[1].y = m_lpVBData[1].y;
+	m_vbXyData[2].x = m_lpVBData[2].x;
+	m_vbXyData[2].y = m_lpVBData[2].y;
+	m_vbXyData[3].x = m_lpVBData[3].x;
+	m_vbXyData[3].y = m_lpVBData[3].y;
 
 	m_lpVBData[0].diffuse = (((INT)(global_alpha * m_alpha * 255.0f) & 0xFF) << 24) + (m_lpVBData[0].diffuse & 0xFFFFFF);
 	m_lpVBData[1].diffuse = m_lpVBData[0].diffuse;
 	m_lpVBData[2].diffuse = m_lpVBData[0].diffuse;
 	m_lpVBData[3].diffuse = m_lpVBData[0].diffuse;
-}
-
-inline VOID JCDisplayObject::updateRealWHAndBounds(FLOAT parentGlobalX, FLOAT parentGlobalY)
-{
-	FLOAT xMin = min(min(min(min(FLT_MAX, m_lpVBData[0].x), m_lpVBData[1].x), m_lpVBData[2].x), m_lpVBData[3].x);
-	FLOAT xMax = max(max(max(max(FLT_MIN, m_lpVBData[0].x), m_lpVBData[1].x), m_lpVBData[2].x), m_lpVBData[3].x);
-	FLOAT yMin = min(min(min(min(FLT_MAX, m_lpVBData[0].y), m_lpVBData[1].y), m_lpVBData[2].y), m_lpVBData[3].y);
-	FLOAT yMax = max(max(max(max(FLT_MIN, m_lpVBData[0].y), m_lpVBData[1].y), m_lpVBData[2].y), m_lpVBData[3].y);
-	m_widthReal = xMax - xMin;
-	m_heightReal = yMax - yMin;
-
-	if(m_lpParent == NULL)
-	{
-		m_bounds.x = xMin;
-		m_bounds.y = yMin;
-	}
-	else
-	{
-		m_bounds.x = xMin - parentGlobalX;
-		m_bounds.y = yMin - parentGlobalY;
-	}
-	m_bounds.width = m_widthReal;
-	m_bounds.height = m_heightReal;
 }
 
 inline VOID JCDisplayObject::unlockVertexBuffer()

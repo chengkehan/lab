@@ -3,25 +3,29 @@
 
 #include <Windows.h>
 
-class JCRect
+#include "JCObject.h"
+
+class JCRect : public JCObject
 {
 public:
 	JCRect();
-	~JCRect();
-	JCRect(FLOAT px, FLOAT py, FLOAT pwidth, FLOAT pheight);
+	JCRect(FLOAT pLeft, FLOAT pTop, FLOAT pRight, FLOAT pBottom);
 	JCRect(CONST JCRect& rect);
+	~JCRect();
 
-	FLOAT x, y, width, height;
+	FLOAT left, top, right, bottom;
 
 	BOOL contains(FLOAT px, FLOAT py);
-	BOOL contains(JCRect* lpRect);
-	BOOL intersects(JCRect* lpRect);
-	JCRect* intersection(JCRect* lpDestRect, JCRect* lpIntersectionResult);
-	JCRect* combine(JCRect* lpDestRect, JCRect* lpCombineResult);
+	BOOL contains(CONST JCRect* lpRect) CONST;
+	BOOL intersects(CONST JCRect* lpRect) CONST;
+	JCRect* intersection(CONST JCRect* lpDestRect, JCRect* lpIntersectionResult) CONST;
+	JCRect* combine(CONST JCRect* lpDestRect, JCRect* lpCombineResult) CONST;
+	JCRect* clone(JCRect* lpDestRect) CONST;
+	CONST JCRect* copy(CONST JCRect* lpSrcRect);
 
 private:
-	inline BOOL containsPoint(FLOAT px, FLOAT py);
-	inline BOOL intersectoinInternal(JCRect* lpDestRect, FLOAT* x1, FLOAT* x2, FLOAT* y1 ,FLOAT* y2);
+	inline BOOL containsPoint(FLOAT px, FLOAT py) CONST;
+	inline BOOL intersectoinInternal(CONST JCRect* lpDestRect, FLOAT* x1, FLOAT* x2, FLOAT* y1 ,FLOAT* y2) CONST;
 };
 
 #endif
