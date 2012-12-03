@@ -1,7 +1,6 @@
 #include "JCDisplayObject.h"
 
 CONST DWORD JCDisplayObject::Vertex::FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-CONST UINT JCDisplayObject::VB_SIZE = 4 * sizeof(JCDisplayObject::Vertex);
 
 JCDisplayObject::JCDisplayObject(IDirect3DDevice9* lpd3dd):
 m_refX(0.0f), m_refY(0.0f), m_x(0.0f), m_y(0.0f), m_scaleX(1.0f), m_scaleY(1.0f), 
@@ -222,7 +221,7 @@ VOID JCDisplayObject::initVertexBuffer()
 {
 	if(m_lpVB == NULL)
 	{
-		jccommon_hResultVerifyM(m_lpd3dd->CreateVertexBuffer(VB_SIZE, D3DUSAGE_WRITEONLY, Vertex::FVF, D3DPOOL_MANAGED, &m_lpVB, NULL));
+		jccommon_hResultVerifyM(m_lpd3dd->CreateVertexBuffer(4 * sizeof(JCDisplayObject::Vertex), D3DUSAGE_WRITEONLY, Vertex::FVF, D3DPOOL_MANAGED, &m_lpVB, NULL));
 		lockVertexBuffer();
 		Vertex vbData[] = {
 			Vertex(0.0f, 0.0f, 0xFF000000, 0.0f, 1.0f), 
@@ -230,7 +229,7 @@ VOID JCDisplayObject::initVertexBuffer()
 			Vertex(0.0f, 0.0f, 0xFF000000, 1.0f, 1.0f), 
 			Vertex(0.0f, 0.0f, 0xFF000000, 1.0f, 0.0f)
 		};
-		jccommon_memcpyM(m_lpVBData, &vbData, VB_SIZE);
+		jccommon_memcpyM(m_lpVBData, &vbData, 4 * sizeof(JCDisplayObject::Vertex));
 		unlockVertexBuffer();
 	}
 }
@@ -243,7 +242,7 @@ VOID JCDisplayObject::releaseVertexBuffer()
 
 inline VOID JCDisplayObject::lockVertexBuffer()
 {
-	jccommon_hResultVerifyM(m_lpVB->Lock(0, VB_SIZE, (VOID**)&m_lpVBData, 0));
+	jccommon_hResultVerifyM(m_lpVB->Lock(0, 4 * sizeof(JCDisplayObject::Vertex), (VOID**)&m_lpVBData, 0));
 }
 
 inline VOID JCDisplayObject::updateVertexBuffer()

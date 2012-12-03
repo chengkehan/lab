@@ -108,8 +108,6 @@ private:
 	FLOAT m_alpha;
 	BOOL m_alphaEnabled;
 
-	static CONST UINT VB_SIZE;
-
 	VOID initVertexBuffer();
 	VOID releaseVertexBuffer();
 	inline VOID lockVertexBuffer();
