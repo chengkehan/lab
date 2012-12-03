@@ -14,10 +14,12 @@
 #include "jccommon.h"
 
 class JCDisplayObjectContainer;
+class JCRender;
 
 class JCDisplayObject : public JCEventDispatcher
 {
 friend class JCDisplayObjectContainer;
+friend class JCRender;
 
 public:
 	JCDisplayObject(IDirect3DDevice9* lpd3dd);
@@ -65,7 +67,8 @@ public:
 	VOID setAlphaEnabled(BOOL value);
 	BOOL getAlphaEnabled();
 
-	virtual VOID render();
+	BOOL isContainer();
+	VOID updateVertexBufferData();
 
 	struct Vertex
 	{
@@ -73,6 +76,7 @@ public:
 		FLOAT rhw;
 		D3DCOLOR diffuse;
 		FLOAT u, v;
+		Vertex(){}
 		Vertex(FLOAT px, FLOAT py, D3DCOLOR pdiffuse, FLOAT pu, FLOAT pv)
 		{
 			x = px; y = py; z = 0.0f;
@@ -85,6 +89,7 @@ public:
 
 protected:
 	JCRect m_boundsGlobal;
+	BOOL m_isContainer;
 
 private:
 	JCDisplayObject();
@@ -101,18 +106,12 @@ private:
 	FLOAT m_rotation;
 	JCTexture* m_lpTexture;
 	JCDisplayObjectContainer* m_lpParent;
-	IDirect3DVertexBuffer9* m_lpVB;
-	Vertex* m_lpVBData;
-	JCPoint m_vbXyData[4];
+	Vertex m_vbData[4];
 	IDirect3DDevice9* m_lpd3dd;
 	FLOAT m_alpha;
 	BOOL m_alphaEnabled;
 
-	VOID initVertexBuffer();
-	VOID releaseVertexBuffer();
-	inline VOID lockVertexBuffer();
-	inline VOID updateVertexBuffer();
-	inline VOID unlockVertexBuffer();
+	VOID initVertexBufferData();
 	VOID setParent(JCDisplayObjectContainer* parent);
 };
 

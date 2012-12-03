@@ -11,10 +11,12 @@
 #include "jccommon.h"
 
 class JC2D;
+class JCRender;
 
 class JCDisplayObjectContainer : public JCDisplayObject
 {
 friend class JC2D;
+friend class JCRender;
 
 public:
 	JCDisplayObjectContainer(IDirect3DDevice9* lpd3dd);
@@ -30,7 +32,6 @@ public:
 	JCDisplayObject* getChildAt(INT index);
 	JCDisplayObject* getChildByName(LPCWCHAR name);
 	JCDisplayObject* setChildIndex(JCDisplayObject* child, INT index);
-	virtual VOID render();
 	virtual CONST JCRect* getBoundsGlobal();
 
 private:

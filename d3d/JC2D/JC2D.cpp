@@ -37,6 +37,10 @@ BOOL JC2D::init(HINSTANCE hInstance, JCD3D::SETUPCALLBACK setupCallback, JCD3D::
 	{
 		return FALSE;
 	}
+	if(!m_jcRender.init(m_jc3d.getDirect3DDevice()))
+	{
+		return FALSE;
+	}
 
 	m_stage = new JCDisplayObjectContainer(m_jc3d.getDirect3DDevice());
 
@@ -64,6 +68,11 @@ JCDI* JC2D::getJCDI()
 JCTextureManager* JC2D::getTextureManager()
 {
 	return &m_textureManager;
+}
+
+JCRender* JC2D::getJCRender()
+{
+	return &m_jcRender;
 }
 
 JCDisplayObjectContainer* JC2D::getStage()
@@ -138,7 +147,35 @@ VOID JC2D::jc2dFrameCallback(DWORD timeDelta)
 	{
 		JC2D::getInstance()->m_frameCallback(timeDelta);
 	}
-	JC2D::getInstance()->getStage()->render();
+	
+	JC2D::getInstance()->getJCRender()->beginScene();
+	jc2dRenderDisplayObjectContainer(JC2D::getInstance()->getStage());
+	JC2D::getInstance()->getJCRender()->endScene();
+}
+
+VOID JC2D::jc2dRenderDisplayObjectContainer(JCDisplayObjectContainer* lpContainer)
+{
+	if(lpContainer == NULL)
+	{
+		return;
+	}
+	else
+	{
+		list<JCDisplayObject*>* children = &lpContainer->m_childrenList;
+		jccommon_stdRIterForEachM(list<JCDisplayObject*>, (*children), iter)
+		{
+			JCDisplayObject* child = *iter;
+			if(child->isContainer())
+			{
+				jc2dRenderDisplayObjectContainer((JCDisplayObjectContainer*)child);
+			}
+			else
+			{
+				child->updateVertexBufferData();
+				JC2D::getInstance()->getJCRender()->renderDisplayObject(child);
+			}
+		}
+	}
 }
 
 VOID JC2D::jc2dMouseLockOnWindowProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)

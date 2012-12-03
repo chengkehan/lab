@@ -5,7 +5,7 @@ using namespace jcstring;
 
 JCDisplayObjectContainer::JCDisplayObjectContainer(IDirect3DDevice9* lpd3dd):JCDisplayObject(lpd3dd)
 {
-
+	m_isContainer = TRUE;
 }
 
 JCDisplayObjectContainer::~JCDisplayObjectContainer()
@@ -208,15 +208,6 @@ JCDisplayObject* JCDisplayObjectContainer::setChildIndex(JCDisplayObject* child,
 	else
 	{
 		return NULL;
-	}
-}
-
-VOID JCDisplayObjectContainer::render()
-{
-	JCDisplayObject::render();
-	for (list<JCDisplayObject*>::iterator iter = m_childrenList.begin(); iter != m_childrenList.end(); ++iter)
-	{
-		(*iter)->render();
 	}
 }
 

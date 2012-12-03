@@ -2,7 +2,7 @@
 
 using namespace jc2dGame;
 
-CONST INT numBoxes = 500;
+CONST INT numBoxes = 1000;
 JCDisplayObject* lpBoxes[numBoxes];
 
 JCDisplayObject* createBox(FLOAT x, FLOAT y)

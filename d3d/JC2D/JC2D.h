@@ -2,12 +2,14 @@
 #define __JC_2D_H__
 
 #include <Windows.h>
+#include <list>
 
 #include "JCD3D.h"
 #include "JCDI.h"
 #include "JCDisplayObject.h"
 #include "JCDisplayObjectContainer.h"
 #include "JCTextureManager.h"
+#include "JCRender.h"
 #include "jccommon.h"
 #include "jcSingleton.h"
 #include "jcwin32.h"
@@ -28,6 +30,7 @@ public:
 	JCD3D* getJCD3D();
 	JCDI* getJCDI();
 	JCTextureManager* getTextureManager();
+	JCRender* getJCRender();
 	JCDisplayObjectContainer* getStage();
 	VOID run();
 	VOID setExitWhileEscapeDown(BOOL value);
@@ -45,13 +48,16 @@ private:
 	JCDI m_jcdi;
 	JCTextureManager m_textureManager;
 	JCDisplayObjectContainer* m_stage;
+	JCRender m_jcRender;
 	JCD3D::FRAMECALLBACK m_frameCallback;
 	JCD3D::SETUPCALLBACK m_setupCallback;
 	JCD3D::RELEASECALLBACK m_releaseCallback;
 	BOOL m_exitWhileEscapeDown;
 	BOOL m_mouseVisible;
 
+	
 	static VOID jc2dFrameCallback(DWORD timeDelta);
+	static VOID jc2dRenderDisplayObjectContainer(JCDisplayObjectContainer* lpContainer);
 	static VOID jc2dMouseLockOnWindowProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	static VOID jc2dUpdateMouseEvent(JCDisplayObjectContainer* lpContainer);
 };
