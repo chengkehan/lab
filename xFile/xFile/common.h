@@ -9,6 +9,7 @@
 #include <InitGuid.h>
 #include <rmxftmpl.h>
 #include <rmxfguid.h>
+#include <fstream>
 
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
@@ -27,5 +28,31 @@ CHAR printBuffer[PRINT_BUFFER_SIZE];
 #define DXvBegin(hr) if(FAILED(hr)){ DXTRACE_ERR_MSGBOX(DXGetErrorDescription(hr), hr); DXTRACE_ERR_MSGBOX(DXGetErrorString(hr), hr); DXTRACE_MSG(DXGetErrorDescription(hr)); DXTRACE_ERR(DXGetErrorDescription(hr), hr); 
 #define DXvEnd }
 #define DXreleaseCom(com) if(com != NULL){ com->Release(); com = NULL; }
+
+BOOL readXFile(LPCSTR file, CHAR** lplpFileData, INT* lpFileDataBytes)
+{
+	std::ifstream reader;
+	reader.open(file, std::ios_base::in);
+	BOOL r = FALSE;
+	if(reader.good())
+	{
+		reader.seekg(0, std::ios_base::end);
+		INT bytes = (INT)reader.tellg();
+		reader.seekg(0, std::ios_base::beg);
+		if(lpFileDataBytes != NULL)
+		{
+			*lpFileDataBytes = bytes;
+		}
+		if(lplpFileData != NULL)
+		{
+			reader.read(*lplpFileData, bytes);
+		}
+
+		r = TRUE;
+	}
+
+	reader.close();
+	return r;
+}
 
 #endif

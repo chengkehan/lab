@@ -1,31 +1,24 @@
-#include <fstream>
 #include "common.h"
-
-using namespace std;
 
 VOID parseXFile(ID3DXFile* lpXFile);
 VOID parseXFileData(ID3DXFileData* lpXFileData, INT depth);
 
 INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, __in LPSTR lpCmdLine, __in int nShowCmd )
 {
-	char* xFile = NULL;
-	ifstream xFileReader;
-	xFileReader.open("Warrior.x", ios_base::in);
-	if(xFileReader.good())
+	char* lpFileChar = NULL;
+	INT fileChars;
+	if(!readXFile("Warrior.x", NULL, &fileChars))
 	{
-		xFileReader.seekg(0, ios_base::end);
-		INT xFileSize = (INT)xFileReader.tellg();
-		xFileReader.seekg(0, ios_base::beg);
-		xFile = new CHAR[xFileSize];
-		ZeroMemory(xFile, xFileSize);
-		xFileReader.read(xFile, xFileSize);
+		goto finallyDo;
 	}
-	else
+	lpFileChar = new CHAR[fileChars];
+	ZeroMemory(lpFileChar, fileChars);
+	if(!readXFile("Warrior.x", &lpFileChar, &fileChars))
 	{
 		goto finallyDo;
 	}
 
-	ID3DXFile* lpXFile;
+	ID3DXFile* lpXFile = NULL;
 	DXvBegin(D3DXFileCreate(&lpXFile))
 		goto finallyDo;
 	DXvEnd
@@ -34,15 +27,14 @@ INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 		goto finallyDo;
 	DXvEnd
 
-	DXvBegin(lpXFile->RegisterTemplates(xFile, strlen(xFile)))
+	DXvBegin(lpXFile->RegisterTemplates(lpFileChar, strlen(lpFileChar)))
 		goto finallyDo;
 	DXvEnd
 
 	parseXFile(lpXFile);
 
 finallyDo:
-	delete []xFile;
-	xFileReader.close();
+	delete []lpFileChar;
 	DXreleaseCom(lpXFile);
 
 	return 0;
