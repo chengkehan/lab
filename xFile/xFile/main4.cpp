@@ -1,11 +1,12 @@
 #include "common.h"
 #include "D3DXFrameEx.h"
 
-D3DXFrameEx* lpFrameRoot = NULL;
+D3DXFrameEx* lpBoneRoot = NULL;
 
 VOID parseXFile(ID3DXFile* lpXFile);
 VOID parseXFileData(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, D3DXFrameEx* lpFrameParent);
 VOID printBone(D3DXFrameEx* lpBone, INT depth);
+D3DXFrameEx* findBone(D3DXFrameEx* lpBone, LPCSTR boneName);
 
 INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, __in LPSTR lpCmdLine, __in int nShowCmd )
 {
@@ -33,12 +34,22 @@ INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	DXvEnd
 
 	parseXFile(lpXFile);
-	printBone(lpFrameRoot, 0);
+	printBone(lpBoneRoot, 0);
+	CHAR* boneName = "Bip01_Neck";
+	D3DXFrameEx* neckBone = findBone(lpBoneRoot, boneName);
+	if(neckBone != NULL)
+	{
+		trace("get the bone %s\n", boneName);
+	}
+	else
+	{
+		trace("cannot find the bone %s\n", boneName);
+	}
 
 finallyDo:
 	delete []lpFileChar;
 	DXreleaseCom(lpXFile);
-	delete lpFrameRoot;
+	delete lpBoneRoot;
 	return 0;
 }
 
@@ -65,7 +76,7 @@ VOID parseXFile(ID3DXFile* lpXFile)
 		DXvBegin(lpEnum->GetChild(i, &lpXFileData))
 			goto finallyDo;
 		DXvEnd
-		parseXFileData(lpXFileData, NULL, lpFrameRoot);
+		parseXFileData(lpXFileData, NULL, lpBoneRoot);
 		DXreleaseCom(lpXFileData);
 	}
 
@@ -104,8 +115,8 @@ VOID parseXFileData(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent
 
 		if(lpXFileDataParent == NULL)
 		{
-			lpFrameThis->pFrameSibling = lpFrameRoot;
-			lpFrameRoot = lpFrameThis;
+			lpFrameThis->pFrameSibling = lpBoneRoot;
+			lpBoneRoot = lpFrameThis;
 		}
 		else
 		{
@@ -171,4 +182,31 @@ VOID printBone(D3DXFrameEx* lpBone, INT depth)
 	delete []lpTab;
 
 	printBone((D3DXFrameEx*)lpBone->pFrameFirstChild, depth + 1);
+}
+
+D3DXFrameEx* findBone(D3DXFrameEx* lpBone, LPCSTR boneName)
+{
+	if(lpBone == NULL || boneName == NULL || lpBone->Name == NULL)
+	{
+		return NULL;
+	}
+
+	if(strcmp(lpBone->Name, boneName) == 0)
+	{
+		return lpBone;
+	}
+
+	D3DXFrameEx* lpR = findBone((D3DXFrameEx*)lpBone->pFrameSibling, boneName);
+	if(lpR != NULL)
+	{
+		return lpR;
+	}
+
+	lpR = findBone((D3DXFrameEx*)lpBone->pFrameFirstChild, boneName);
+	if(lpR != NULL)
+	{
+		return lpR;
+	}
+
+	return NULL;
 }
