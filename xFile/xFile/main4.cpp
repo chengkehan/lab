@@ -5,7 +5,7 @@ D3DXFrameEx* lpFrameRoot = NULL;
 
 VOID parseXFile(ID3DXFile* lpXFile);
 VOID parseXFileData(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, D3DXFrameEx* lpFrameParent);
-VOID printBone(D3DXFrameEx* bone);
+VOID printBone(D3DXFrameEx* lpBone, INT depth);
 
 INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, __in LPSTR lpCmdLine, __in int nShowCmd )
 {
@@ -33,7 +33,7 @@ INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	DXvEnd
 
 	parseXFile(lpXFile);
-	printBone(lpFrameRoot);
+	printBone(lpFrameRoot, 0);
 
 finallyDo:
 	delete []lpFileChar;
@@ -148,14 +148,27 @@ finallyDo:
 	return;
 }
 
-VOID printBone(D3DXFrameEx* bone)
+VOID printBone(D3DXFrameEx* lpBone, INT depth)
 {
-	if(bone == NULL)
+	if(lpBone == NULL)
 	{
 		return;
 	}
 
-	trace("%s\n", bone->Name);
-	printBone((D3DXFrameEx*)bone->pFrameSibling);
-	printBone((D3DXFrameEx*)bone->pFrameFirstChild);
+	printBone((D3DXFrameEx*)lpBone->pFrameSibling, depth);
+
+	CHAR* lpTab = NULL;
+	if(depth > 0)
+	{
+		lpTab = new CHAR[depth + 1];
+		for (INT i = 0; i < depth; ++i)
+		{
+			lpTab[i] = '	';
+		}
+		lpTab[depth] = '\0';
+	}
+	trace2("%s%s\n", lpTab == NULL ? "" : lpTab, lpBone->Name);
+	delete []lpTab;
+
+	printBone((D3DXFrameEx*)lpBone->pFrameFirstChild, depth + 1);
 }
