@@ -12,7 +12,6 @@ INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 		goto finallyDo;
 	}
 	lpFileChar = new CHAR[fileChars];
-	ZeroMemory(lpFileChar, fileChars);
 	if(!readXFile("Warrior.x", &lpFileChar, &fileChars))
 	{
 		goto finallyDo;

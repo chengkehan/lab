@@ -45,6 +45,7 @@ BOOL readXFile(LPCSTR file, CHAR** lplpFileData, INT* lpFileDataBytes)
 		}
 		if(lplpFileData != NULL)
 		{
+			ZeroMemory(*lplpFileData, bytes);
 			reader.read(*lplpFileData, bytes);
 		}
 

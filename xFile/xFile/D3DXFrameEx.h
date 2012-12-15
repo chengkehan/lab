@@ -12,6 +12,9 @@ public:
 
 	D3DXMATRIX matrixCombine;
 	D3DXMATRIX matrixOriginal;
+
+private:
+	D3DXFrameEx(CONST D3DXFrameEx& value);
 };
 
 #endif
