@@ -1,15 +1,27 @@
 #include "common.h"
 #include "D3DXFrameEx.h"
+#include "D3DXMeshContainerEx.h"
+#include "jcd3d.h"
+#include "jcwin32.h"
+
+using namespace jcd3d;
+using namespace jcwin32;
 
 D3DXFrameEx* lpBoneRoot = NULL;
+D3DXMeshContainerEx* lpMeshContainerRoot = NULL;
 
 VOID parseXFile(ID3DXFile* lpXFile);
 VOID parseXFileData(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, D3DXFrameEx* lpFrameParent);
 VOID printBone(D3DXFrameEx* lpBone, INT depth);
 D3DXFrameEx* findBone(D3DXFrameEx* lpBone, LPCSTR boneName);
+VOID updateHierarchy(D3DXFrameEx* bone, D3DXMATRIX* lpTransform);
 
-INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, __in LPSTR lpCmdLine, __in int nShowCmd )
+BOOL jcd3d::jcd3d_setup()
 {
+	jcd3d_initRenderState(jcd3d_lpd3dd, D3DCULL_CCW, FALSE, TRUE, D3DSHADE_GOURAUD, D3DFILL_SOLID, TRUE);
+	jcd3d_setProjectionPerspectiveTransform(jcd3d_lpd3dd, 800, 600);
+	jcd3d_setViewTransform(jcd3d_lpd3dd, 0.0f, 0.0f, -50.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
 	CHAR* lpFileChar = NULL;
 	INT fileChars;
 	if(!readXFile("Warrior.x", NULL, &fileChars))
@@ -26,10 +38,10 @@ INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	DXvBegin(D3DXFileCreate(&lpXFile))
 		goto finallyDo;
 	DXvEnd
-	DXvBegin(lpXFile->RegisterTemplates(D3DRM_XTEMPLATES, D3DRM_XTEMPLATE_BYTES))
+		DXvBegin(lpXFile->RegisterTemplates(D3DRM_XTEMPLATES, D3DRM_XTEMPLATE_BYTES))
 		goto finallyDo;
 	DXvEnd
-	DXvBegin(lpXFile->RegisterTemplates(lpFileChar, strlen(lpFileChar)))
+		DXvBegin(lpXFile->RegisterTemplates(lpFileChar, strlen(lpFileChar)))
 		goto finallyDo;
 	DXvEnd
 
@@ -47,9 +59,75 @@ INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	}
 
 finallyDo:
-	delete []lpFileChar;
+	delete []lpFileChar; lpFileChar = NULL;
 	DXreleaseCom(lpXFile);
-	delete lpBoneRoot;
+
+	return TRUE;
+}
+
+VOID jcd3d::jcd3d_display(DWORD timeDelta)
+{
+	if(jcd3d_keyDown(VK_ESCAPE))
+	{
+		jcwin32_exit();
+		return;
+	}
+
+	D3DXMATRIX matrixRoot;
+	D3DXMatrixIdentity(&matrixRoot);
+	D3DXMatrixScaling(&matrixRoot, 0.5f, 0.5f, 0.5f);
+	updateHierarchy(lpBoneRoot, &matrixRoot);
+
+	D3DXMeshContainerEx* lpMeshContainer = lpMeshContainerRoot;
+	while(lpMeshContainer != NULL)
+	{
+		for (DWORD boneIndex = 0; boneIndex < lpMeshContainer->pSkinInfo->GetNumBones(); ++boneIndex)
+		{
+			lpMeshContainer->lpBoneMatrices[boneIndex] = *lpMeshContainer->pSkinInfo->GetBoneOffsetMatrix(boneIndex);
+			if(lpMeshContainer->lplpFrameMatrices[boneIndex] != NULL)
+			{
+				lpMeshContainer->lpBoneMatrices[boneIndex] *= (*lpMeshContainer->lplpFrameMatrices[boneIndex]);
+			}
+		}
+
+		VOID* lpSrc, *lpDest;
+		DXvBegin(lpMeshContainer->lpSkinMesh->LockVertexBuffer(D3DLOCK_READONLY, &lpSrc))DXvEnd
+		DXvBegin(lpMeshContainer->MeshData.pMesh->LockVertexBuffer(0, &lpDest))DXvEnd
+		DXvBegin(lpMeshContainer->pSkinInfo->UpdateSkinnedMesh(lpMeshContainer->lpBoneMatrices, NULL, lpSrc, lpDest))DXvEnd
+		DXvBegin(lpMeshContainer->lpSkinMesh->UnlockVertexBuffer())DXvEnd
+		DXvBegin(lpMeshContainer->MeshData.pMesh->UnlockVertexBuffer())DXvEnd
+
+		for (DWORD materialIndex = 0; materialIndex < lpMeshContainer->NumMaterials; ++materialIndex)
+		{
+			DXvBegin(jcd3d_lpd3dd->SetMaterial(&lpMeshContainer->pMaterials[materialIndex].MatD3D))DXvEnd
+			DXvBegin(jcd3d_lpd3dd->SetTexture(0, lpMeshContainer->lplpTextures[materialIndex]))DXvEnd
+			DXvBegin(lpMeshContainer->MeshData.pMesh->DrawSubset(materialIndex))DXvEnd
+		}
+		trace("%d\n", lpMeshContainer->NumMaterials);
+
+		lpMeshContainer = (D3DXMeshContainerEx*)lpMeshContainer->pNextMeshContainer;
+	}
+
+	static FLOAT angle = 0.0f;
+	static FLOAT radius = 50.0f;
+	jcd3d_setViewTransform(jcd3d_lpd3dd, cosf(angle) * radius, 0.0f, sinf(angle) * radius, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	angle += 0.05f;
+}
+
+VOID jcd3d::jcd3d_release()
+{
+	delete lpBoneRoot; lpBoneRoot = NULL;
+	delete lpMeshContainerRoot; lpMeshContainerRoot = NULL;
+}
+
+INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, __in LPSTR lpCmdLine, __in int nShowCmd )
+{
+	if(!jcd3d_init(hInstance))
+	{
+		return 0;
+	}
+	jcd3d_loop();
+
 	return 0;
 }
 
@@ -141,6 +219,85 @@ VOID parseXFileData(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent
 		DXvEnd
 	}
 
+	if(guid == TID_D3DRMMesh)
+	{
+		ID3DXBuffer* lpAdjacency = NULL;
+		ID3DXBuffer* lpMaterials = NULL;
+		DWORD numMaterials = 0;
+		ID3DXSkinInfo* lpSkinInfo = NULL;
+		ID3DXMesh* lpMesh = NULL;
+		DXvBegin(D3DXLoadSkinMeshFromXof(lpXFileData, D3DXMESH_SYSTEMMEM, jcd3d_lpd3dd, &lpAdjacency, &lpMaterials, NULL, &numMaterials, &lpSkinInfo, &lpMesh))
+			goto finallyDo;
+		DXvEnd
+
+		if(lpSkinInfo == NULL || lpSkinInfo->GetNumBones() == 0)
+		{
+			jcwin32_messageBoxErrorM("Not a skin mesh");
+			DXreleaseCom(lpAdjacency);
+			DXreleaseCom(lpMaterials);
+			goto finallyDo;
+		}
+
+		D3DXMeshContainerEx* lpMeshContainer = new D3DXMeshContainerEx();
+		if(lpMeshContainerRoot == NULL)
+		{
+			lpMeshContainerRoot = lpMeshContainer;
+		}
+		else
+		{
+			lpMeshContainerRoot->pNextMeshContainer = lpMeshContainer;
+		}
+		lpMeshContainer->MeshData.pMesh = lpMesh;
+		lpMeshContainer->NumMaterials = numMaterials;
+		lpMeshContainer->pSkinInfo = lpSkinInfo;
+		lpMeshContainer->pMaterials = new D3DXMATERIAL[numMaterials];
+		lpMeshContainer->lplpTextures = new IDirect3DTexture9*[numMaterials];
+		D3DXMATERIAL* lpMaterialsBufferData = (D3DXMATERIAL*)lpMaterials->GetBufferPointer();
+		for (DWORD materialIndex = 0; materialIndex < numMaterials; ++materialIndex)
+		{
+			lpMeshContainer->pMaterials[materialIndex].MatD3D = lpMaterialsBufferData[materialIndex].MatD3D;
+			lpMeshContainer->pMaterials[materialIndex].MatD3D.Ambient = lpMeshContainer->pMaterials[materialIndex].MatD3D.Diffuse;
+			lpMeshContainer->lplpTextures[materialIndex] = NULL;
+			if(lpMaterialsBufferData[materialIndex].pTextureFilename != NULL)
+			{
+				DXvBegin(D3DXCreateTextureFromFileA(jcd3d_lpd3dd, lpMaterialsBufferData[materialIndex].pTextureFilename, &lpMeshContainer->lplpTextures[materialIndex]))
+					DXreleaseCom(lpAdjacency);
+					DXreleaseCom(lpMaterials);
+					goto finallyDo;
+				DXvEnd
+			}
+		}
+		lpMeshContainer->pAdjacency = new DWORD[lpAdjacency->GetBufferSize()];
+		memcpy(lpMeshContainer->pAdjacency, lpAdjacency->GetBufferPointer(), lpAdjacency->GetBufferSize());
+
+		DXvBegin(lpMeshContainer->MeshData.pMesh->CloneMeshFVF(D3DXMESH_SYSTEMMEM, lpMeshContainer->MeshData.pMesh->GetFVF(), jcd3d_lpd3dd, &lpMeshContainer->lpSkinMesh))
+			DXreleaseCom(lpAdjacency);
+			DXreleaseCom(lpMaterials);
+			goto finallyDo;
+		DXvEnd
+
+		DXreleaseCom(lpAdjacency);
+		DXreleaseCom(lpMaterials);
+
+		lpMeshContainer->lplpFrameMatrices = new D3DXMATRIX*[lpMeshContainer->pSkinInfo->GetNumBones()];
+		lpMeshContainer->lpBoneMatrices = new D3DXMATRIX[lpMeshContainer->pSkinInfo->GetNumBones()];
+		for (DWORD boneIndex = 0; boneIndex < lpMeshContainer->pSkinInfo->GetNumBones(); ++boneIndex)
+		{
+			LPCSTR boneName = lpMeshContainer->pSkinInfo->GetBoneName(boneIndex);
+			D3DXFrameEx* bone = findBone(lpBoneRoot, boneName);
+			if(bone == NULL)
+			{
+				jcwin32_messageBoxErrorM("Cannot find the bone");
+				trace("cannot fine the bone %s\n", boneName);
+				goto finallyDo;
+			}
+			else
+			{
+				lpMeshContainer->lplpFrameMatrices[boneIndex] = &bone->matrixCombine;
+			}
+		}
+	}
+
 	SIZE_T numChildren;
 	DXvBegin(lpXFileData->GetChildren(&numChildren))
 		goto finallyDo;
@@ -209,4 +366,16 @@ D3DXFrameEx* findBone(D3DXFrameEx* lpBone, LPCSTR boneName)
 	}
 
 	return NULL;
+}
+
+VOID updateHierarchy(D3DXFrameEx* bone, D3DXMATRIX* lpTransform)
+{
+	if(bone == NULL || lpTransform == NULL)
+	{
+		return;
+	}
+
+	bone->matrixCombine = bone->TransformationMatrix * (*lpTransform);
+	updateHierarchy((D3DXFrameEx*)bone->pFrameSibling, lpTransform);
+	updateHierarchy((D3DXFrameEx*)bone->pFrameFirstChild, &bone->matrixCombine);
 }
