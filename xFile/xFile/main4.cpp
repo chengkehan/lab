@@ -10,7 +10,7 @@ using namespace jcwin32;
 D3DXFrameEx* lpBoneRoot = NULL;
 D3DXMeshContainerEx* lpMeshContainerRoot = NULL;
 
-VOID parseXFile(ID3DXFile* lpXFile);
+VOID parseXFile(ID3DXFile* lpXFile, CHAR* lpFileChar);
 VOID parseXFileData(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, D3DXFrameEx* lpFrameParent);
 VOID printBone(D3DXFrameEx* lpBone, INT depth);
 D3DXFrameEx* findBone(D3DXFrameEx* lpBone, LPCSTR boneName);
@@ -45,7 +45,7 @@ BOOL jcd3d::jcd3d_setup()
 		goto finallyDo;
 	DXvEnd
 
-	parseXFile(lpXFile);
+	parseXFile(lpXFile, lpFileChar);
 	printBone(lpBoneRoot, 0);
 	CHAR* boneName = "Bip01_Neck";
 	D3DXFrameEx* neckBone = findBone(lpBoneRoot, boneName);
@@ -131,15 +131,19 @@ INT WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	return 0;
 }
 
-VOID parseXFile(ID3DXFile* lpXFile)
+VOID parseXFile(ID3DXFile* lpXFile, CHAR* lpFileChar)
 {
 	if(lpXFile == NULL)
 	{
 		return;
 	}
 
+	D3DXF_FILELOADMEMORY fileData;
+	fileData.lpMemory = lpFileChar;
+	fileData.dSize = strlen(lpFileChar);
+
 	ID3DXFileEnumObject* lpEnum = NULL;
-	DXvBegin(lpXFile->CreateEnumObject("Warrior.x", D3DXF_FILELOAD_FROMFILE, &lpEnum))
+	DXvBegin(lpXFile->CreateEnumObject(&fileData, D3DXF_FILELOAD_FROMMEMORY, &lpEnum))
 		goto finallyDo;
 	DXvEnd
 
