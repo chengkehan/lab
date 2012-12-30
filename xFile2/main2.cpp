@@ -3,6 +3,7 @@
 #include "JCXModel.h"
 #include "JCXFile.h"
 #include "jccommon.h"
+#include "jcxcommon.h"
 
 using namespace jcd3d;
 using namespace jcwin32;
@@ -12,12 +13,12 @@ JCXModel* lpModel = NULL;
 BOOL jcd3d::jcd3d_setup()
 {
 	UINT fileDataBytes = 0;
-	if(!JCXFile::readXFile("Warrior.x", NULL, &fileDataBytes))
+	if(!JCXFile::readXFile("tiny.x", NULL, &fileDataBytes))
 	{
 		return FALSE;
 	}
 	CHAR* lpFileData = new CHAR[fileDataBytes];
-	if(!JCXFile::readXFile("Warrior.x", lpFileData, NULL))
+	if(!JCXFile::readXFile("tiny.x", lpFileData, NULL))
 	{
 		jccommon_deleteM(lpFileData);
 		return FALSE;
@@ -35,9 +36,7 @@ BOOL jcd3d::jcd3d_setup()
 	jcd3d_setViewTransform(jcd3d_lpd3dd, 0.0f, 0.0f, -50.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	jcd3d_initRenderState(jcd3d_lpd3dd, D3DCULL_CCW, FALSE);
 
-	D3DXMATRIX mat;
-	D3DXMatrixIdentity(&mat);
-	lpModel->getBone()->updateHierarchy(lpModel->getBone()->getRootBone(), &mat);
+	//jcxcommon_printBones(lpModel->getBone()->getRootBone(), 0);
 
 	return TRUE;
 }
@@ -50,12 +49,16 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 		return;
 	}
 
+	static DWORD time = 0;
+	lpModel->getAnimation()->play("", time);
+	time += 100;
+
 	lpModel->draw();
 
-	static FLOAT radius = 50.0f;
+	static FLOAT radius = 300.0f;
 	static FLOAT angle = 0.0f;
 	jcd3d_setViewTransform(jcd3d_lpd3dd, cosf(angle) * radius, 0.0f, sinf(angle) * radius, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	angle += 0.05;
+	angle += 0.01f;
 }
 
 VOID jcd3d::jcd3d_release()

@@ -10,9 +10,9 @@ JCXFileBoneTransform::~JCXFileBoneTransform()
 
 }
 
-VOID* JCXFileBoneTransform::parseChild(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid)
+VOID* JCXFileBoneTransform::parseChild(ID3DXFileData* lpXFileData, BOOL isReference, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid)
 {
-	if(*lpGuid == TID_D3DRMFrameTransformMatrix)
+	if(*lpGuid == TID_D3DRMFrameTransformMatrix && !isReference)
 	{
 		jccommon_assertM(lpXFileDataParent != NULL);
 

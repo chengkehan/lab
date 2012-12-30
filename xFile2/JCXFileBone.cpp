@@ -24,20 +24,42 @@ JCXFrame* JCXFileBone::findBone(LPCSTR lpBoneName)
 
 BOOL JCXFileBone::updateHierarchy(JCXFrame* lpBone, D3DXMATRIX* lpTransform)
 {
-	if(lpBone == NULL || lpTransform == NULL)
+	if(lpBone == NULL)
 	{
 		return FALSE;
+	}
+
+	D3DXMATRIX matrixIdentity;
+	if(lpTransform == NULL)
+	{
+		D3DXMatrixIdentity(&matrixIdentity);
+		lpTransform = &matrixIdentity;
 	}
 
 	lpBone->matrixCombine = lpBone->TransformationMatrix * (*lpTransform);
 	updateHierarchy((JCXFrame*)lpBone->pFrameSibling, lpTransform);
 	updateHierarchy((JCXFrame*)lpBone->pFrameFirstChild, &lpBone->matrixCombine);
+
 	return TRUE;
 }
 
-VOID* JCXFileBone::parseChild(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid)
+BOOL JCXFileBone::resetHierarchy(JCXFrame* lpBone)
+{
+	if(lpBone == NULL)
+	{
+		return FALSE;
+	}
+
+	lpBone->TransformationMatrix = lpBone->matrixOriginal;
+	resetHierarchy((JCXFrame*)lpBone->pFrameSibling);
+	resetHierarchy((JCXFrame*)lpBone->pFrameFirstChild);
+
+	return TRUE;
+}
+
+VOID* JCXFileBone::parseChild(ID3DXFileData* lpXFileData, BOOL isReference, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid)
 {	
-	if(*lpGuid == TID_D3DRMFrame)
+	if(*lpGuid == TID_D3DRMFrame && !isReference)
 	{
 		JCXFrame* lpBone = new JCXFrame();
 

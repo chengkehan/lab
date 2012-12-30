@@ -22,13 +22,13 @@ public:
 	static BOOL readXFile(LPCSTR file, CHAR* lpFileData, UINT* lpFileDataBytes);
 
 protected:
-	virtual VOID* parseChild(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid) = 0;
+	virtual VOID* parseChild(ID3DXFileData* lpXFileData, BOOL isReference, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid) = 0;
 	virtual VOID cleanUp() = 0;
 
 private:
 	JCXFile(CONST JCXFile& value);
 
-	VOID parseChildren(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent);
+	VOID parseChildren(ID3DXFileData* lpXFileData, BOOL isReference, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent);
 };
 
 #endif

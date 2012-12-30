@@ -22,7 +22,7 @@ public:
 	JCXMeshContainer* getMeshContainerHeadNode();
 
 protected:
-	virtual VOID* parseChild(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid);
+	virtual VOID* parseChild(ID3DXFileData* lpXFileData, BOOL isReference, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid);
 	virtual VOID cleanUp();
 
 private:

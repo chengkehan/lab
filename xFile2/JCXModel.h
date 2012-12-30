@@ -7,6 +7,7 @@
 #include "JCXFileBone.h"
 #include "JCXFileBoneTransform.h"
 #include "JCXFileSkinMesh.h"
+#include "JCXFileAnimation.h"
 #include "jccommon.h"
 
 class JCXModel
@@ -17,6 +18,7 @@ public:
 
 	JCXFileBone* getBone();
 	JCXFileSkinMesh* getSkinMesh();
+	JCXFileAnimation* getAnimation();
 	VOID draw();
 	BOOL parse(LPCSTR lpXFileData);
 
@@ -26,6 +28,7 @@ private:
 
 	JCXFileBone* m_lpBone;
 	JCXFileSkinMesh* m_lpSkinMesh;
+	JCXFileAnimation* m_lpAnimation;
 	IDirect3DDevice9* m_lpd3dd;
 
 	VOID cleanUp();

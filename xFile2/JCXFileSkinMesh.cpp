@@ -16,9 +16,9 @@ JCXMeshContainer* JCXFileSkinMesh::getMeshContainerHeadNode()
 	return m_lpMeshContainerHeadNode;
 }
 
-VOID* JCXFileSkinMesh::parseChild(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid)
+VOID* JCXFileSkinMesh::parseChild(ID3DXFileData* lpXFileData, BOOL isReference, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid)
 {
-	if(*lpGuid == TID_D3DRMMesh)
+	if(*lpGuid == TID_D3DRMMesh && !isReference)
 	{
 		ID3DXBuffer* lpMaterials = NULL;
 		DWORD numMaterials = 0;

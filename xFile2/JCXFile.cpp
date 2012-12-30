@@ -63,7 +63,7 @@ BOOL JCXFile::parse(LPCSTR lpXFileData)
 		xVerifyFailedIf(lpEnum->GetChild(childIndex, &lpXFileData))
 			break;
 		xVerifyFailedEndIf
-		parseChildren(lpXFileData, NULL, NULL);
+		parseChildren(lpXFileData, FALSE, NULL, NULL);
 		jccommon_releaseComM(lpXFileData);
 	}
 
@@ -99,9 +99,9 @@ BOOL JCXFile::readXFile(LPCSTR file, CHAR* lpFileData, UINT* lpFileDataBytes)
 	return r;
 }
 
-VOID JCXFile::parseChildren(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent)
+VOID JCXFile::parseChildren(ID3DXFileData* lpXFileData, BOOL isReference, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent)
 {
-	if(lpXFileData == NULL || lpXFileData->IsReference())
+	if(lpXFileData == NULL)
 	{
 		return;
 	}
@@ -111,7 +111,7 @@ VOID JCXFile::parseChildren(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDa
 		return;
 	xVerifyFailedEndIf
 
-	VOID* lpData = parseChild(lpXFileData, lpXFileDataParent, lpDataParent, &guid);
+	VOID* lpData = parseChild(lpXFileData, isReference || lpXFileData->IsReference(), lpXFileDataParent, lpDataParent, &guid);
 
 	SIZE_T numChlidren;
 	xVerifyFailedIf(lpXFileData->GetChildren(&numChlidren))
@@ -123,7 +123,7 @@ VOID JCXFile::parseChildren(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDa
 		xVerifyFailedIf(lpXFileData->GetChild(childIndex, &lpChildXFileData))
 			return;
 		xVerifyFailedEndIf
-		parseChildren(lpChildXFileData, lpXFileData, lpData);
+		parseChildren(lpChildXFileData, isReference || lpXFileData->IsReference() || lpChildXFileData->IsReference(), lpXFileData, lpData);
 		jccommon_releaseComM(lpChildXFileData);
 	}
 }

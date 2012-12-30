@@ -20,10 +20,11 @@ public:
 
 	JCXFrame* getRootBone();
 	JCXFrame* findBone(LPCSTR lpBoneName);
-	static BOOL updateHierarchy(JCXFrame* lpBone, D3DXMATRIX* lpTransform);
+	static BOOL updateHierarchy(JCXFrame* lpBone, D3DXMATRIX* lpTransform = NULL);
+	static BOOL resetHierarchy(JCXFrame* lpBone);
 
 protected:
-	virtual VOID* parseChild(ID3DXFileData* lpXFileData, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid);
+	virtual VOID* parseChild(ID3DXFileData* lpXFileData, BOOL isReference, ID3DXFileData* lpXFileDataParent, VOID* lpDataParent, GUID* lpGuid);
 	virtual VOID cleanUp();
 
 private:

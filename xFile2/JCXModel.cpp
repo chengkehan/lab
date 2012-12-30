@@ -1,8 +1,12 @@
 #include "JCXModel.h"
 
-JCXModel::JCXModel(IDirect3DDevice9* lpd3dd):m_lpBone(NULL), m_lpSkinMesh(NULL), m_lpd3dd(lpd3dd)
+JCXModel::JCXModel(IDirect3DDevice9* lpd3dd)
 {
 	jccommon_assertM(lpd3dd);
+	m_lpd3dd = lpd3dd;
+	m_lpBone = NULL;
+	m_lpSkinMesh = NULL;
+	m_lpAnimation = NULL;
 }
 
 JCXModel::~JCXModel()
@@ -64,6 +68,12 @@ BOOL JCXModel::parse(LPCSTR lpXFileData)
 		return FALSE;
 	}
 
+	m_lpAnimation = new JCXFileAnimation(m_lpBone);
+	if(!m_lpAnimation->parse(lpXFileData))
+	{
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
@@ -77,8 +87,14 @@ JCXFileSkinMesh* JCXModel::getSkinMesh()
 	return m_lpSkinMesh;
 }
 
+JCXFileAnimation* JCXModel::getAnimation()
+{
+	return m_lpAnimation;
+}
+
 VOID JCXModel::cleanUp()
 {
 	jccommon_deleteM(m_lpBone);
 	jccommon_deleteM(m_lpSkinMesh);
+	jccommon_deleteM(m_lpAnimation);
 }
