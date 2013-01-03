@@ -175,6 +175,7 @@ VOID* JCXFileAnimation::parseChild(ID3DXFileData* lpXFileData, BOOL isReference,
 					lpAnimation->m_lpRotationKeys[i].m_quaternionKey.x = *lpMemDataF; ++lpMemDataF;
 					lpAnimation->m_lpRotationKeys[i].m_quaternionKey.y = *lpMemDataF; ++lpMemDataF;
 					lpAnimation->m_lpRotationKeys[i].m_quaternionKey.z = *lpMemDataF; ++lpMemDataF;
+					// lpMemData += sizeof(D3DXQUATERNIONG) / sizeof(FLOAT)
 					lpMemData += 4;
 				}
 				break;
@@ -195,6 +196,7 @@ VOID* JCXFileAnimation::parseChild(ID3DXFileData* lpXFileData, BOOL isReference,
 
 					D3DXVECTOR3* lpMemDataVec = (D3DXVECTOR3*)lpMemData;
 					lpAnimation->m_lpScaleKeys[i].m_vectorKey = *lpMemDataVec;
+					// lpMemData += sizeof(D3DXVECTOR3) / sizeof(DWORD);
 					lpMemData += 3;
 				}
 				break;
@@ -215,6 +217,7 @@ VOID* JCXFileAnimation::parseChild(ID3DXFileData* lpXFileData, BOOL isReference,
 
 					D3DXVECTOR3* lpMemDataVec = (D3DXVECTOR3*)lpMemData;
 					lpAnimation->m_lpTransformKeys[i].m_vectorKey = *lpMemDataVec;
+					// lpMemData += sizeof(D3DXVECTOR3) / sizeof(DWORD);
 					lpMemData += 3;
 				}
 				break;
@@ -235,6 +238,7 @@ VOID* JCXFileAnimation::parseChild(ID3DXFileData* lpXFileData, BOOL isReference,
 
 					D3DXMATRIX* lpMemDataMatrix = (D3DXMATRIX*)lpMemData;
 					lpAnimation->m_lpMatrixKeys[i].m_matrixKey = *lpMemDataMatrix;
+					// lpMemData += sizeof(D3DXMATRIX) / sizeof(FLOAT);
 					lpMemData += 16;
 				}
 				break;
