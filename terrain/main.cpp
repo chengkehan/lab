@@ -136,7 +136,7 @@ FLOAT computeShade(INT row, INT col)
 	float height_c = getTerrainY(row + 1, col);
 
 	D3DXVECTOR3 u(CELL_WIDTH, height_b - height_a, 0.0f);
-	D3DXVECTOR3 v(0.0f, height_c - height_a, -CELL_DEPTH);
+	D3DXVECTOR3 v(0.0f, height_c - height_a, CELL_DEPTH);
 
 	D3DXVECTOR3 n;
 	D3DXVec3Cross(&n, &u, &v);
@@ -149,14 +149,15 @@ FLOAT computeShade(INT row, INT col)
 		cosine = 0.0f;
 	}
 
-	return min(cosine + 0.6f, 1.0f);
+	return cosine;
 }
 
 BOOL createTexture()
 {
 	lightDir.x = 0.0f;
-	lightDir.y = -1.0f;
+	lightDir.y = -0.5f;
 	lightDir.z = 1.0f;
+	D3DXVec3Normalize(&lightDir, &lightDir);
 
 	xVerifyFailedIf(D3DXCreateTexture(jcd3d_lpd3dd, COLS, ROWS, 0, 0, D3DFMT_X8B8G8R8, D3DPOOL_MANAGED, &lpTexture))
 		return FALSE;
