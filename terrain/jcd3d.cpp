@@ -64,7 +64,7 @@ BOOL jcd3d::jcd3d_setProjectionPerspectiveTransform(LPDIRECT3DDEVICE9 lpd3dd, IN
 	else
 	{
 		D3DXMATRIX out;
-		D3DXMatrixPerspectiveFovLH(&out, D3DX_PI * 0.5f, (FLOAT)windowWidth / (FLOAT)windowHeight, 1.0f, 1000.0f);
+		D3DXMatrixPerspectiveFovLH(&out, D3DX_PI * 0.3f, (FLOAT)windowWidth / (FLOAT)windowHeight, 1.0f, 1000.0f);
 		if(FAILED(lpd3dd->SetTransform(D3DTS_PROJECTION, &out)))
 		{
 			return FALSE;
