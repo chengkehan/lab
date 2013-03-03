@@ -1,4 +1,6 @@
-uniform extern float4x4 wvpMatrix;
+uniform extern float4x4 worldMatrix;
+uniform extern float4x4 vpMatrix;
+uniform extern float radian;
 
 struct InputVS
 {
@@ -15,6 +17,9 @@ struct OutputVS
 OutputVS Main(InputVS input)
 {
 	OutputVS outVS = (OutputVS)0;
+	worldMatrix._11 = cos(radian); worldMatrix._13 = -sin(radian);
+	worldMatrix._31 = sin(radian); worldMatrix._33 = cos(radian);
+	float4x4 wvpMatrix = mul(worldMatrix, vpMatrix);
 	outVS.pos0 = mul(float4(input.pos0, 1.0f), wvpMatrix);
 	outVS.diffuse0 = input.diffuse0;
 	return outVS;

@@ -7,15 +7,16 @@ using namespace jcwin32;
 
 IDirect3DVertexBuffer9* lpvb = NULL;
 IDirect3DIndexBuffer9* lpib = NULL;
-ID3DXConstantTable* lpShaderConstantTable = NULL;
+ID3DXConstantTable* lpVertexShaderConstantTable = NULL;
 IDirect3DVertexShader9* lpVertexShader = NULL;
-IDirect3DVertexDeclaration9* lpVertexDecl = NULL;
+IDirect3DVertexDeclaration9* lpVertexShaderDeclaration = NULL;
+D3DXHANDLE vertexShaderConstantRadianHandle = NULL;
 
 BOOL jcd3d::jcd3d_setup()
 {
 	jcd3d_setProjectionPerspectiveTransform(jcd3d_lpd3dd, 800, 600);
-	jcd3d_setViewTransform(jcd3d_lpd3dd, 2.0f, 2.0f, -2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	jcd3d_initRenderState(jcd3d_lpd3dd, D3DCULL_CCW, FALSE, TRUE, D3DSHADE_GOURAUD, D3DFILL_SOLID, FALSE);
+	jcd3d_setViewTransform(jcd3d_lpd3dd, 0.0f, 0.0f, -2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	jcd3d_initRenderState(jcd3d_lpd3dd, D3DCULL_NONE, FALSE, TRUE, D3DSHADE_GOURAUD, D3DFILL_SOLID, FALSE);
 
 	xVerifyFailedIf(jcd3d_lpd3dd->CreateIndexBuffer(3 * sizeof(WORD), D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_MANAGED, &lpib, NULL))xVerifyFailedEndIf
 	WORD* lpibData = NULL;
@@ -33,7 +34,7 @@ BOOL jcd3d::jcd3d_setup()
 
 	ID3DXBuffer* lpShader = NULL;
 	ID3DXBuffer* lpError = NULL;
-	xVerifyFailedIf(D3DXCompileShaderFromFileA("testVS2.vs", NULL, NULL, "Main", "vs_1_1", D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY, &lpShader, &lpError, &lpShaderConstantTable))xVerifyFailedEndIf
+	xVerifyFailedIf(D3DXCompileShaderFromFileA("testVS2.vs", NULL, NULL, "Main", "vs_1_1", D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY, &lpShader, &lpError, &lpVertexShaderConstantTable))xVerifyFailedEndIf
 	if(lpError != NULL)
 	{
 		MessageBoxA(NULL, (CHAR*)lpError->GetBufferPointer(), "Error", MB_OK);
@@ -43,7 +44,9 @@ BOOL jcd3d::jcd3d_setup()
 	xVerifyFailedIf(jcd3d_lpd3dd->CreateVertexShader((DWORD*)lpShader->GetBufferPointer(), &lpVertexShader))xVerifyFailedEndIf
 	jccommon_releaseComM(lpShader);
 
-	D3DXHANDLE wvpMatrixHandle = lpShaderConstantTable->GetConstantByName(NULL, "wvpMatrix");
+	D3DXHANDLE wMatrixHandle = lpVertexShaderConstantTable->GetConstantByName(NULL, "worldMatrix");
+	D3DXHANDLE vpMatrixHandle = lpVertexShaderConstantTable->GetConstantByName(NULL, "vpMatrix");
+	vertexShaderConstantRadianHandle = lpVertexShaderConstantTable->GetConstantByName(NULL, "radian");
 
 	D3DXMATRIX worldMatrix;
 	D3DXMatrixIdentity(&worldMatrix);
@@ -52,17 +55,18 @@ BOOL jcd3d::jcd3d_setup()
 	xVerifyFailedIf(jcd3d_lpd3dd->GetTransform(D3DTS_VIEW, &viewMatrix))	xVerifyFailedEndIf
 	D3DXMATRIX projectionMatrix;
 	xVerifyFailedIf(jcd3d_lpd3dd->GetTransform(D3DTS_PROJECTION, &projectionMatrix))	xVerifyFailedEndIf
-	D3DXMATRIX wvpMatrix = worldMatrix * viewMatrix * projectionMatrix;
+	D3DXMATRIX vpMatrix = viewMatrix * projectionMatrix;
 
-	xVerifyFailedIf(lpShaderConstantTable->SetMatrix(jcd3d_lpd3dd, wvpMatrixHandle, &wvpMatrix))xVerifyFailedEndIf
-	xVerifyFailedIf(lpShaderConstantTable->SetDefaults(jcd3d_lpd3dd))xVerifyFailedEndIf
+	xVerifyFailedIf(lpVertexShaderConstantTable->SetMatrix(jcd3d_lpd3dd, wMatrixHandle, &worldMatrix))xVerifyFailedEndIf
+	xVerifyFailedIf(lpVertexShaderConstantTable->SetMatrix(jcd3d_lpd3dd, vpMatrixHandle, &vpMatrix))xVerifyFailedEndIf
+	xVerifyFailedIf(lpVertexShaderConstantTable->SetDefaults(jcd3d_lpd3dd))xVerifyFailedEndIf
 
 	D3DVERTEXELEMENT9 vertexDecl[] = {
 		{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 }, 
 		{ 0, sizeof(float) * 3, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0}, 
 		D3DDECL_END()
 	};
-	xVerifyFailedIf(jcd3d_lpd3dd->CreateVertexDeclaration(vertexDecl, &lpVertexDecl))xVerifyFailedEndIf
+	xVerifyFailedIf(jcd3d_lpd3dd->CreateVertexDeclaration(vertexDecl, &lpVertexShaderDeclaration))xVerifyFailedEndIf
 
 	return TRUE;
 }
@@ -71,9 +75,9 @@ VOID jcd3d::jcd3d_release()
 {
 	jccommon_releaseComM(lpvb);
 	jccommon_releaseComM(lpib);
-	jccommon_releaseComM(lpShaderConstantTable);
+	jccommon_releaseComM(lpVertexShaderConstantTable);
 	jccommon_releaseComM(lpVertexShader);
-	jccommon_releaseComM(lpVertexDecl);
+	jccommon_releaseComM(lpVertexShaderDeclaration);
 }
 
 VOID jcd3d::jcd3d_display(DWORD timeDelta)
@@ -84,7 +88,11 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 		return;
 	}
 
-	jcd3d_lpd3dd->SetVertexDeclaration(lpVertexDecl);
+	static float radian = 0.0f;
+	xVerifyFailedIf(lpVertexShaderConstantTable->SetFloat(jcd3d_lpd3dd, vertexShaderConstantRadianHandle, radian))xVerifyFailedEndIf
+	radian += 0.01f;
+
+	jcd3d_lpd3dd->SetVertexDeclaration(lpVertexShaderDeclaration);
 	jcd3d_lpd3dd->SetVertexShader(lpVertexShader);
 	jcd3d_lpd3dd->SetStreamSource(0, lpvb, 0, sizeof(JCD3D_Vertex_xyz_diffuse));
 	jcd3d_lpd3dd->SetIndices(lpib);
