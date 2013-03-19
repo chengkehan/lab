@@ -122,6 +122,7 @@ void ParticleSystem::render()
 
 void ParticleSystem::preRender()
 {
+	m_lpd3dd->SetRenderState(D3DRS_ZENABLE, FALSE);
 	m_lpd3dd->SetRenderState(D3DRS_LIGHTING,	 FALSE);
 	m_lpd3dd->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
 	m_lpd3dd->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
@@ -135,15 +136,14 @@ void ParticleSystem::preRender()
 
 	// use alpha from texture
 	m_lpd3dd->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	m_lpd3dd->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-	m_lpd3dd->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	m_lpd3dd->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 
 	m_lpd3dd->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	m_lpd3dd->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 
 	m_lpd3dd->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	m_lpd3dd->SetRenderState(D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA);
-	m_lpd3dd->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	m_lpd3dd->SetRenderState(D3DRS_SRCBLEND,  D3DBLEND_ONE);
+	m_lpd3dd->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 }
 
 void ParticleSystem::postRender()

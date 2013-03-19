@@ -10,9 +10,9 @@ IDirect3DTexture9* lpTexture = NULL;
 BOOL jcd3d::jcd3d_setup()
 {
 	jcd3d_setProjectionPerspectiveTransform(jcd3d_lpd3dd, 800, 600);
-	jcd3d_setViewTransform(jcd3d_lpd3dd, 0.0f, 0.0f, -5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	jcd3d_setViewTransform(jcd3d_lpd3dd, 0.0f, 0.0f, -4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
-	assert(SUCCEEDED(D3DXCreateTextureFromFileA(jcd3d_lpd3dd, "tt.png", &lpTexture)));
+	assert(SUCCEEDED(D3DXCreateTextureFromFileA(jcd3d_lpd3dd, "smoke.bmp", &lpTexture)));
 	lpParticleSys = new ParticleSys1(jcd3d_lpd3dd, lpTexture);
 
 	return TRUE;

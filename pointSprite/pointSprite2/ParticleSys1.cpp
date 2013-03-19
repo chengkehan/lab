@@ -3,7 +3,7 @@
 
 ParticleSys1::ParticleSys1(IDirect3DDevice9* lpd3dd, IDirect3DTexture9* lpTexture)
 {
-	init(lpd3dd, D3DXVECTOR3(0.0f, 0.0f, 0.0f), Box(D3DXVECTOR3(-2.0f, -2.0f, -2.0f), D3DXVECTOR3(2.0f, 2.0f, 2.0f)), 0.15f, lpTexture, 500, 100);
+	init(lpd3dd, D3DXVECTOR3(0.0f, 0.0f, 0.0f), Box(D3DXVECTOR3(-2.0f, -2.0f, -2.0f), D3DXVECTOR3(2.0f, 2.0f, 2.0f)), 0.15f, lpTexture, 1000, 100);
 }
 
 ParticleSys1::~ParticleSys1()
