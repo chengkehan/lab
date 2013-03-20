@@ -142,12 +142,12 @@ BOOL Ctest1App::InitInstance()
 	// 仅当具有后缀时才调用 DragAcceptFiles
 	//  在 SDI 应用程序中，这应在 ProcessShellCommand 之后发生
 
-	if(!jcd3d::jcd3d_init(NULL, 0, 0, TRUE, D3DDEVTYPE_HAL, 1, m_pMainWnd->m_hWnd))
+	if(!jcd3d::jcd3d_init(NULL, 300, 300, TRUE, D3DDEVTYPE_HAL, 1, m_pMainWnd->m_hWnd))
 	{
 		return FALSE;
 	}
-	D3DVIEWPORT9 d3dViewPort = {200, 200, 300, 300, 0.0f, 1.0f};
-	jcd3d::jcd3d_lpd3dd->SetViewport(&d3dViewPort);
+	//D3DVIEWPORT9 d3dViewPort = {0, 0, 300, 300, 0.0f, 1.0f};
+	//jcd3d::jcd3d_lpd3dd->SetViewport(&d3dViewPort);
 	jcd3d::jcd3d_setProjectionPerspectiveTransform(jcd3d::jcd3d_lpd3dd, 300, 300);
 	jcd3d::jcd3d_initRenderState(jcd3d::jcd3d_lpd3dd, D3DCULL_CCW, FALSE, TRUE, D3DSHADE_GOURAUD, D3DFILL_WIREFRAME, FALSE);
 	D3DXCreateTeapot(jcd3d::jcd3d_lpd3dd, &lpMeshTeapot, NULL);
@@ -230,11 +230,12 @@ VOID jcd3d::jcd3d_display(DWORD timeDelta)
 	jcd3d::jcd3d_setViewTransform(jcd3d::jcd3d_lpd3dd, cosf(eyeAngle) * eyeRadius, 1.0f, sinf(eyeAngle) * eyeRadius, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	eyeAngle += eyeSpeed;
 
+	RECT srchRect = {0, 0, 300, 300};
 	RECT refreshRect = {200, 200, 500, 500};
 	jcd3d::jcd3d_lpd3dd->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0);
 	jcd3d::jcd3d_lpd3dd->BeginScene();
 	lpMeshTeapot->DrawSubset(0);
 
 	jcd3d::jcd3d_lpd3dd->EndScene();
-	jcd3d::jcd3d_lpd3dd->Present(&refreshRect, &refreshRect, NULL, NULL);
+	jcd3d::jcd3d_lpd3dd->Present(&srchRect, &refreshRect, NULL, NULL);
 }
