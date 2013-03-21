@@ -35,3 +35,6 @@ spriteTest/*.bmp
 *.dds
 *.raw
 testtesttest/
+*.tar.gz
+pointSprite/particles/
+*.xml
