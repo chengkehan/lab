@@ -38,3 +38,4 @@ testtesttest/
 *.tar.gz
 pointSprite/particles/
 *.xml
+*.log
