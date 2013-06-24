@@ -4,9 +4,6 @@
 
 class Derived : public Base
 {
-public:
-	void DoNow();
-
-protected:
+private:
 	virtual void func0();
 };

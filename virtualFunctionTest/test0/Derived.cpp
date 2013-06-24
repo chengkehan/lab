@@ -2,11 +2,6 @@
 
 #include "Derived.h"
 
-void Derived::DoNow()
-{
-	func0();
-}
-
 void Derived::func0()
 {
 	Base::func0();
